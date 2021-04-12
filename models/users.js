@@ -1,12 +1,8 @@
 'use strict';
 const moment = require('moment-timezone');
-const { Sequelize } = require('sequelize');
 const {
   Model
 } = require('sequelize');
-const {
-  Party
-} = require('../models/parties');
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     /**

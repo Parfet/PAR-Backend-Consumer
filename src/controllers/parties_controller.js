@@ -85,4 +85,18 @@ module.exports = {
       console.log(e);
     }
   },
+
+
+  getAllParty: async (req, res) => {
+    try {
+        const data = await models.parties.findAll();
+        res.status(200).json({
+            parties: data
+        })
+    } catch (e) {
+        res.status(e.status).json({
+            message: e.message
+        })
+    }
+  }
 };
