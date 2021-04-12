@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     party_id: {
       type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: Sequelize.UUIDV4
+      defaultValue: DataTypes.UUIDV4
       // references: {
       //   model: Parties,
       //   key: party_id,
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     restaurant_id: {
       type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: Sequelize.UUIDV4
+      defaultValue: DataTypes.UUIDV4
       // references: {
       //   model: Restaurants,
       //   key: restaurant_id,
@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id: {
       type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: Sequelize.UUIDV4
+      defaultValue: DataTypes.UUIDV4
       // references: {
       //   model: Users,
       //   key: user_id,

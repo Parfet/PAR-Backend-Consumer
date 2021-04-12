@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      unique: true,
+      primaryKey: true,
     },
     username: {
       type: DataTypes.STRING,
@@ -92,8 +92,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'user',
+    timestamps: false,
+    modelName: 'users',
   });
-  Users.hasMany(Parties)
   return Users;
 };

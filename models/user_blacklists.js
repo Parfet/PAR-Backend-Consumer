@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   };
-  UserBlackLists.init({
+  UserBlacklists.init({
     user_id: {
       type: DataTypes.UUID,
       // references: {
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       // },
     },
     blacklist_user_id: {
-      type: DataType.ARRAY(DataTypes.UUID),
+      type: DataTypes.ARRAY(DataTypes.UUID),
       // references: {
       //   model: Users,
       //   key: user_id,
