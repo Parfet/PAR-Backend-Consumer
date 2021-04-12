@@ -38,6 +38,12 @@ module.exports = {
         ) {
           message.push("if party type is private passcode can not be null");
         }
+        if(!req.body.interested_topic){
+            message.push("interest topic can not be null")
+        }
+        if(!req.body.interested_tag){
+            message.push("interest tag can not be null")
+        }
         if (req.body.max_member === undefined) {
           console.log(req.body.max_member);
           message.push("max maxber cannot be null");
@@ -63,6 +69,8 @@ module.exports = {
         party_name: req.body.party_name,
         passcode: req.body.passcode,
         party_type: req.body.party_type,
+        interested_topic: req.body.interested_topic,
+        interested_tag: req.body.interested_tag,
         max_member: req.body.max_member,
         schedule_time: req.body.schedule_time,
         created_at: moment().format(),

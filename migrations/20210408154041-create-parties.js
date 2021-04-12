@@ -29,7 +29,14 @@ module.exports = {
         type: Sequelize.ENUM('PRIVATE', 'PUBLIC'),
         allowNull: false,
       },
-      interested_topic: Sequelize.STRING,
+      interested_topic: { 
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      interested_tag: {
+        type: Sequelize.ARRAY(Sequelize.UUID),
+        allowNull: false,
+      },
       max_member: {
         type: Sequelize.INTEGER,
         allowNull: false
