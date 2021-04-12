@@ -19,7 +19,6 @@ module.exports = {
         //   model: Users,
         //   key: Users.user_id,
         // },
-        unique: true,
       },
       party_name: {
         type: Sequelize.STRING,

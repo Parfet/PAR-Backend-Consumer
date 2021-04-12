@@ -18,17 +18,16 @@ module.exports = (sequelize, DataTypes) => {
   };
   Parties.init({
     party_id: {
-      type: DataType.UUID,
+      type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
     head_party: {
       type: DataTypes.UUID,
-      references: {
-        model: Users,
-        key: user_id,
-      },
-      unique: true,
+      // references: {
+      //   model: Users,
+      //   key: user_id,
+      // },
     },
     party_name: {
       type: DataTypes.STRING,
@@ -58,15 +57,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     member: {
       type: DataTypes.ARRAY(DataTypes.UUID),
-      references: {
-        model: Users,
-        key: user_id,
-      }
+      // references: {
+      //   model: Users,
+      //   key: user_id,
+      // }
     },
   }, {
     sequelize,
     modelName: 'parties',
+    timestamps: false
   });
-  Parties.belongsTo(Users);
   return Parties;
 };
