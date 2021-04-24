@@ -2,7 +2,7 @@
 
 1. Get All Party
 
-` https://${url}/api/party/`
+` https://${url}/party/`
 
 > ### Method
 
