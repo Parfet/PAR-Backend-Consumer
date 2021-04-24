@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // Parties.belongsTo(models.users,{
+      //   as: 'head_party',
+      //   constraints: true,
+      //   foreignKeyConstraint: 'head_party'
+      // });
     }
   }
   Parties.init(
@@ -18,23 +23,23 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      head_party: {
-        type: DataTypes.UUID,
-        references: {
-          model: "users",
-          key: "user_id",
-        },
-      },
       party_name: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      head_party: {
+        type: DataTypes.UUID,
+        references: {
+          table: 'users',
+          fields: 'user_id',
+        }
       },
       passcode: DataTypes.STRING,
       party_type: {
         type: DataTypes.ENUM("PRIVATE", "PUBLIC"),
         allowNull: false,
       },
-      interested_topic: { 
+      interested_topic: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -70,6 +75,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "parties",
       timestamps: false,
+      underscored: true,
     }
   );
   return Parties;

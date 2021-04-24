@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(_models) {
       // define association here
+      
     }
   };
   InterestTags.init({

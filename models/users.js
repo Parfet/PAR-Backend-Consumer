@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // Users.hasOne(models.parties, {
+      //   foreignKey: 'head_party_user_id',
+      //   foreignKeyConstraint: false
+      // })
     }
   };
   Users.init({
@@ -90,6 +94,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     timestamps: false,
     modelName: 'users',
-  });
+    underscored: true,
+  }, );
   return Users;
 };

@@ -1,35 +1,25 @@
-'use strict';
-const {
-  Users
-} = require('../models/users');
-const {
-  user_id
-} =
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('parties', {
+    await queryInterface.createTable("parties", {
       party_id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      head_party: {
-        type: Sequelize.UUID,
-        // references: {
-        //   model: Users,
-        //   key: Users.user_id,
-        // },
-      },
       party_name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      head_party: {
+        type: Sequelize.UUID,
+      },
       passcode: Sequelize.STRING,
       party_type: {
-        type: Sequelize.ENUM('PRIVATE', 'PUBLIC'),
+        type: Sequelize.ENUM("PRIVATE", "PUBLIC"),
         allowNull: false,
       },
-      interested_topic: { 
+      interested_topic: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -39,7 +29,7 @@ module.exports = {
       },
       max_member: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       schedule_time: {
         type: Sequelize.DATE,
@@ -54,15 +44,23 @@ module.exports = {
         defaultValue: null,
       },
       member: {
-        type: Sequelize.ARRAY(Sequelize.UUID)
-        // references: {
-        //   model: Users,
-        //   key: Users.user_id,
-        // }
-      }
+        type: Sequelize.ARRAY(Sequelize.UUID),
+      },
+    });
+    await queryInterface.addConstraint("parties", {
+      fields: ["head_party"],
+      type: 'foreign key',
+      name: 'head_party',
+      references: {
+        table: "users",
+        field: "user_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL",
     });
   },
   down: async (queryInterface, _Sequelize) => {
-    await queryInterface.dropTable('parties');
-  }
+    await queryInterface.removeColumn("parties", "head_party");
+    await queryInterface.dropTable("parties");
+  },
 };
