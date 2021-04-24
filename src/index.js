@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const app = express();
 
@@ -14,6 +15,6 @@ app.use('/party', partiesRouter);
 
 app.use(handleErrors);
 
-app.listen(3000, () => {
-  console.log('Run on http://localhost:3000');
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Run on http://localhost:${process.env.APP_PORT}`);
 });
