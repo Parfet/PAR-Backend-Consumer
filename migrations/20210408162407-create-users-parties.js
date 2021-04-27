@@ -7,6 +7,7 @@ module.exports = {
       },
       party_id: {
         type: Sequelize.UUID,
+        primaryKey: true,
       },
       status: {
         type: Sequelize.ENUM(['ACCEPT', 'DECLINE', 'WAITING']),

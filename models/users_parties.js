@@ -14,10 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   UsersParties.init({
-    user_id: {
-      type: DataTypes.UUID,
-    },
     party_id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+    },
+    user_id: {
       type: DataTypes.UUID,
     },
     status: {
@@ -26,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
+    timestamps: false,
     modelName: 'users_parties',
   });
   return UsersParties;
