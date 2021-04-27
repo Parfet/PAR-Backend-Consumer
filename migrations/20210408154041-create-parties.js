@@ -50,7 +50,7 @@ module.exports = {
     await queryInterface.addConstraint("parties", {
       fields: ["head_party"],
       type: 'foreign key',
-      name: 'head_party',
+      name: 'parties-users-user_id',
       references: {
         table: "users",
         field: "user_id",

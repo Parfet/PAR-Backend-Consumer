@@ -4,18 +4,36 @@ module.exports = {
     await queryInterface.createTable('users_parties', {
       user_id: {
         type: Sequelize.UUID,
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
       },
       party_id: {
         type: Sequelize.UUID,
-        // references: {
-        //   model: Parties,
-        //   key: party_id,
-        // },
+      },
+      status: {
+        type: Sequelize.ENUM(['ACCEPT', 'DECLINE', 'WAITING']),
+        allowNull: false,
       }
+    });
+    await queryInterface.addConstraint("users_parties", {
+      fields: ["user_id"],
+      type: "foreign key",
+      name: "users_parties-user_id",
+      references: {
+        table: "users",
+        field: "user_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL",
+    });
+    await queryInterface.addConstraint("users_parties", {
+      fields: ["party_id"],
+      type: "foreign key",
+      name: "users_parties-party_id",
+      references: {
+        table: "parties",
+        field: "party_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL",
     });
   },
   down: async (queryInterface, _Sequelize) => {

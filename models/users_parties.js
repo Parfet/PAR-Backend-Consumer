@@ -16,17 +16,13 @@ module.exports = (sequelize, DataTypes) => {
   UsersParties.init({
     user_id: {
       type: DataTypes.UUID,
-      // references: {
-      //   model: Users,
-      //   key: user_id,
-      // },
     },
     party_id: {
       type: DataTypes.UUID,
-      // references: {
-      //   model: Parties,
-      //   key: party_id,
-      // },
+    },
+    status: {
+      type: DataTypes.ENUM(['ACCEPT', 'DECLINE', 'WAITING']),
+      allowNull: false,
     }
   }, {
     sequelize,
