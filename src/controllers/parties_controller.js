@@ -2,8 +2,9 @@ const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
 const models = require("../../models/index");
+const partyService = require("../services/parties_service");
 const ENUM = require("../constants/enum");
-const checkErrorService = require("../services/check_error");
+const checkErrorService = require("../utils/check_error");
 const { BadRequest } = require("../utils/errors");
 
 module.exports = {
@@ -38,11 +39,11 @@ module.exports = {
         ) {
           message.push("if party type is private passcode can not be null");
         }
-        if(!req.body.interested_topic){
-            message.push("interest topic can not be null")
+        if (!req.body.interested_topic) {
+          message.push("interest topic can not be null");
         }
-        if(!req.body.interested_tag){
-            message.push("interest tag can not be null")
+        if (!req.body.interested_tag) {
+          message.push("interest tag can not be null");
         }
         if (req.body.max_member === undefined) {
           console.log(req.body.max_member);
@@ -63,8 +64,7 @@ module.exports = {
         });
       }
 
-      const party = await models.parties.create({
-        party_id: uuidv4(),
+      const party = await partyService.insertParty({
         head_party: req.body.head_party,
         party_name: req.body.party_name,
         passcode: req.body.passcode,
@@ -73,30 +73,122 @@ module.exports = {
         interested_tag: req.body.interested_tag,
         max_member: req.body.max_member,
         schedule_time: req.body.schedule_time,
-        created_at: moment().format(),
       });
-      res.status(200).json({
-        party: party.dataValues,
+
+      return res.status(200).json({
+        party_id: party.party_id,
       });
     } catch (e) {
-      res.status(400).json({
+      console.log(e);
+      return res.status(400).json({
         message: e,
       });
-      console.log(e);
     }
   },
 
-
-  getAllParty: async (req, res) => {
+  getAllParty: async (_req, res) => {
     try {
-        const data = await models.parties.findAll();
-        res.status(200).json({
-            parties: data
-        })
+      const data = await partyService.findPartyAll();
+      if (data.length <= 0) {
+        return res.status(204).send();
+      }
+      return res.status(200).json({
+        parties: data,
+      });
     } catch (e) {
-        res.status(e.status).json({
-            message: e.message
-        })
+      return res.status(e.status).json({
+        message: e.message,
+      });
     }
-  }
+  },
+
+  getPartyByPartyId: async (req, res) => {
+    try {
+      const data = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (!data) {
+        return res.status(204).send();
+      }
+      return res.status(200).json({
+        party: data.dataValues,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  checkMemberRequestList: async (req, res) => {
+    try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (!party) {
+        throw new BadRequest("Party not found");
+      }
+      if (party.head_party !== req.body.user_id) {
+        throw new BadRequest("Only party owner can view request join party");
+      }
+      const data = await partyService.checkRequestJoinList({
+        party_id: req.params.party_id,
+      });
+
+      if (data.length === 0) {
+        return res.status(204).json();
+      }
+
+      return res.status(200).json({
+        request: data,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  joinPartyByPartyId: async (req, res) => {
+    try {
+      const err = [];
+      const user = await models.users.findByPk(req.body.user_id);
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (user === null) {
+        err.push("User not found");
+      }
+      if (party === null) {
+        err.push("Party not found");
+      }
+
+      if (
+        party.party_type === ENUM.PARTY_TYPE.PRIVATE &&
+        req.body.passcode !== party.passcode
+      ) {
+        err.push("Passcode incorrect");
+      }
+
+      if (err.length > 0) {
+        throw new BadRequest([...err]);
+      }
+      const data = await partyService.joinParty({
+        party_id: req.params.party_id,
+        user_id: req.body.user_id,
+      });
+      if (data.status === null) {
+        return res.status(500).json({
+          message: "Cannot join party",
+        });
+      }
+      return res.status(200).json({
+        message: "Request Success",
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
 };

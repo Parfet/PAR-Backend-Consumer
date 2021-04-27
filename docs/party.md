@@ -17,6 +17,8 @@
 > ### Success Response
 
 ```
+Status 204,
+Status 200
 {
     "parties": [
         {
@@ -74,21 +76,9 @@
 > ### Success Response
 
 ```
+Status 200
 {
-    "party": {
-        "archived_at": null,
-        "party_id": "c9120d19-27fe-46ee-931f-5c9847112af0",
-        "party_name": "Hola test",
-        "passcode": "123456",
-        "party_type": "PRIVATE",
-        "interested_topic": "test",
-        "interested_tag": [],
-        "max_member": 1,
-        "schedule_time": "2021-04-09T15:51:41.000Z",
-        "created_at": "2021-04-21T14:55:56.000Z",
-        "member": null,
-        "headPartyUserId": null
-    }
+    "party_id": UUID<party_id>
 }
 ```
 
@@ -112,6 +102,99 @@
         ]
     }
  }
+```
+
+> ### Notes
+
+-
+
+3. Get Request Join Party List
+
+` https://${url}/party/:party_id/join`
+
+> ### Method
+
+    GET
+
+> ### Request Body
+
+```
+{
+    "user_id": UUID<user_id>
+}
+```
+
+> ### Success Response
+
+```
+Status 204,
+Status 200
+{
+    "request": [
+        {
+            "party_id": UUID<party_id>,
+            "user_id": UUID<user_id>,
+            "status": ENUM<PARTY_STATUS>
+        }
+    ]
+}
+```
+
+> ### Error Response
+
+```
+{
+    "message": "Party not found"
+}
+{
+    "message": "Only party owner can view request join party"
+}
+```
+
+> ### Notes
+
+-
+
+4. Join Party
+
+` https://${url}/party/:party_id/join`
+
+> ### Method
+
+    POST
+
+> ### Request Body
+
+```
+{
+    "user_id": UUID<user_id>,
+    "passcode": String
+}
+```
+
+> ### Success Response
+
+```
+{
+    "message": "Request Success"
+}
+```
+
+> ### Error Response
+
+```
+Status 400
+{
+    "message": [
+        "User not found",
+        "Party not found",
+        "Passcode incorrect"
+    ]
+}
+Status 500
+{
+    "message": "Cannot join party"
+}
 ```
 
 > ### Notes
