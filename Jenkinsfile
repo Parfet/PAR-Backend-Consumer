@@ -1,6 +1,6 @@
 pipeline {
-     agent any
-     stages {
+    agent any
+    stages {
         stage("Preparing") {
             when {
                 branch 'main'
@@ -28,8 +28,9 @@ pipeline {
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'yarn install'
                     sh 'yarn add --dev typescript'
+                }
             }
-        }
+        }    
         stage("build") {
             when {
                 branch 'main'
@@ -61,3 +62,4 @@ pipeline {
             }
         }
     }
+} 
