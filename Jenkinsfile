@@ -30,7 +30,7 @@ pipeline {
                     sh 'yarn add --dev typescript'
                 }
             }
-        }    
+        }
         stage("build") {
             when {
                 branch 'main'
@@ -62,4 +62,4 @@ pipeline {
             }
         }
     }
-} 
+}
