@@ -40,7 +40,23 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
 };
 
 const findPartyByPartyId = async ({ party_id }) =>
-  partyModel.findByPk(party_id);
+  partyModel.findAll({
+    where: {
+      party_id: party_id
+    },
+    include: {
+      model: userModel,
+      as: "members",
+      through: {
+        attributes: [],
+        where: {
+          status: {
+            [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT
+          }
+        }
+      },
+    },
+  });
 
 const createParty = async ({
   head_party,

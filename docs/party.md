@@ -25,7 +25,7 @@ Status 200
             "party_id": UUID,
             "party_name": String,
             "passcode": String,
-            "party_type": enum "PRIVATE", "PUBLIC",
+            "party_type": ENUM<PARTY_TYPE>,
             "interested_topic": String,
             "interested_tag": [ UUID<interest_tag_id> ],
             "max_member": int,
@@ -236,6 +236,70 @@ Status 500
 {
     "message": "archive failed"
 }
+```
+
+> ### Notes
+
+-
+
+6. Get Party By Party Id
+
+` https://${url}/info/:party_id`
+
+> ### Method
+
+    GET
+
+> ### Request Body
+
+```
+
+```
+
+> ### Success Response
+
+```
+{
+    "party": {
+        "party_id": UUID<party_id>,
+        "party_name": String,
+        "head_party": UUID<user_id>,
+        "passcode": String,
+        "party_type": ENUM<PARTY_TYPE>,
+        "interested_topic": String,
+        "interested_tag": UUID<tag_id>[],
+        "max_member": int,
+        "schedule_time": "2021-04-09T15:51:41.000Z",
+        "created_at": "2021-04-29T19:18:42.000Z",
+        "archived_at": null,
+        "updated_at": null,
+        "members": [
+            {
+                "user_id": UUID<user_id>,
+                "username": String,
+                "email": String,
+                "password": String,
+                "first_name_th": String,
+                "last_name_th": String,
+                "first_name_en": String,
+                "last_name_en": String,
+                "tel_no": String,
+                "verify_status": bool,
+                "created_at": "2021-04-24T18:50:18.000Z",
+                "updated_at": "2021-07-29T18:50:18.000Z",
+                "archived_at": "2021-08-29T18:50:18.000Z",
+                "deleted_at": null,
+                "image_url": null
+            }
+        ]
+    }
+}
+```
+
+> ### Error Response
+
+```
+
 ```
 
 > ### Notes

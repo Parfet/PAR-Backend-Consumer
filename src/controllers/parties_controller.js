@@ -67,7 +67,6 @@ module.exports = {
           message.push("interest tag can not be null");
         }
         if (req.body.max_member === undefined) {
-          console.log(req.body.max_member);
           message.push("max maxber cannot be null");
         } else if (req.body.max_member < 1) {
           message.push("max member must be more than 0");
@@ -107,7 +106,6 @@ module.exports = {
         party_id: party.party_id,
       });
     } catch (e) {
-      console.log(e);
       return res.status(400).json({
         message: e,
       });
@@ -147,7 +145,7 @@ module.exports = {
         return res.status(204).send();
       }
       return res.status(200).json({
-        party: data.dataValues,
+        party: data[0],
       });
     } catch (e) {
       return res.status(500).json({
@@ -200,16 +198,12 @@ module.exports = {
       if (party === null) {
         throw new BadRequest("Party not found");
       }
-      console.log(party)
       if (
         party.party_type === ENUM.PARTY_TYPE.PRIVATE &&
         req.body.passcode !== party.passcode
       ) {
         throw new BadRequest("Passcode incorrect");
       }
-      console.log(req.params.party_id, 'party_id')
-      console.log(req.body.user_id, 'user_id')
-      console.log(ENUM.REQUEST_STATUS.WATING, 'enum')
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
         user_id: req.body.user_id,
