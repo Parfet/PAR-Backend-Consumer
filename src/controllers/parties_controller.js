@@ -1,8 +1,8 @@
-const { v4: uuidv4 } = require("uuid");
-const moment = require("moment");
+const moment = require('moment')
 
 const models = require("../../models/index");
 const partyService = require("../services/parties_service");
+const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
 const checkErrorService = require("../utils/check_error");
 const { BadRequest } = require("../utils/errors");
@@ -12,16 +12,37 @@ module.exports = {
   // * [POST] create party
   // TODO: implement error if request invalid
   // TODO: wait jwt and check head party user id from jwt
-  //
+  /* 
+  @param restaurant_id
+  @body head_party
+  @body party_name
+  @body party_type
+  @body passcode
+  @body interested_topic
+  @body interested_tag
+  @body max_member
+  @body schedule_time
+   */
   createParty: async (req, res) => {
     try {
-      // * check is owner is member of system
-      const head_party = await models.users.findByPk(req.body.head_party);
-      const message = [];
-      // TODO: wait refactor to service method
-      if (Object.keys(req.body).length !== 0) {
+      if (Object.keys(req.body).length === 0) {
+        throw new BadRequest("Invalid Request");
+      } else {
+        // * check is owner is member of system
+        const head_party = await models.users.findByPk(req.body.head_party);
+        // * check isValid restaurant
+        const restaurant = await restaurantService.findRestaurantByRestaurantId(
+          {
+            restaurant_id: req.params.restaurant_id,
+          }
+        );
+        const message = [];
+        // TODO: wait refactor to util method
         if (!head_party) {
           message.push("Owner party invalid");
+        }
+        if (!restaurant) {
+          message.push("Restaurant not found");
         }
         if (!req.body.party_type) {
           message.push("party type cannot be null");
@@ -58,13 +79,9 @@ module.exports = {
         if (message.length > 0) {
           throw new BadRequest([...message]);
         }
-      } else {
-        return res.status(400).json({
-          message: "Invalid Request",
-        });
       }
 
-      const party = await partyService.insertParty({
+      const party = await partyService.createParty({
         head_party: req.body.head_party,
         party_name: req.body.party_name,
         passcode: req.body.passcode,
@@ -73,6 +90,17 @@ module.exports = {
         interested_tag: req.body.interested_tag,
         max_member: req.body.max_member,
         schedule_time: req.body.schedule_time,
+      });
+
+      await restaurantService.createParty({
+        restaurant_id: req.params.restaurant_id,
+        party_id: party.party_id,
+      });
+
+      await partyService.joinParty({
+        user_id: req.body.head_party,
+        party_id: party.party_id,
+        status: ENUM.REQUEST_STATUS.ACCEPT,
       });
 
       return res.status(200).json({
@@ -86,22 +114,30 @@ module.exports = {
     }
   },
 
-  getAllParty: async (_req, res) => {
+  /* 
+    @param rstaurant_id
+   */
+  getAllPartyByRestaurantId: async (req, res) => {
     try {
-      const data = await partyService.findPartyAll();
-      if (data.length <= 0) {
-        return res.status(204).send();
+      const data = await partyService.findPartyByRestaurantId({
+        restaurant_id: req.params.restaurant_id,
+      });
+      if (data.length === 0) {
+        return res.status(204).json();
       }
       return res.status(200).json({
-        parties: data,
+        parties: data[0].parties,
       });
     } catch (e) {
-      return res.status(e.status).json({
+      return res.status(500).json({
         message: e.message,
       });
     }
   },
 
+  /* 
+    @param party_id
+  */
   getPartyByPartyId: async (req, res) => {
     try {
       const data = await partyService.findPartyByPartyId({
@@ -128,9 +164,12 @@ module.exports = {
       if (!party) {
         throw new BadRequest("Party not found");
       }
-      if (party.head_party !== req.body.user_id) {
-        throw new BadRequest("Only party owner can view request join party");
-      }
+      // TODO: wait jwt
+      // if (party.head_party !== req.body.user_id) {
+      //   res.status(403).json({
+      //     message: "Only party owner can view request join party",
+      //   });
+      // }
       const data = await partyService.checkRequestJoinList({
         party_id: req.params.party_id,
       });
@@ -151,31 +190,30 @@ module.exports = {
 
   joinPartyByPartyId: async (req, res) => {
     try {
-      const err = [];
       const user = await models.users.findByPk(req.body.user_id);
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
       if (user === null) {
-        err.push("User not found");
+        throw new BadRequest("User not found");
       }
       if (party === null) {
-        err.push("Party not found");
+        throw new BadRequest("Party not found");
       }
-
+      console.log(party)
       if (
         party.party_type === ENUM.PARTY_TYPE.PRIVATE &&
         req.body.passcode !== party.passcode
       ) {
-        err.push("Passcode incorrect");
+        throw new BadRequest("Passcode incorrect");
       }
-
-      if (err.length > 0) {
-        throw new BadRequest([...err]);
-      }
+      console.log(req.params.party_id, 'party_id')
+      console.log(req.body.user_id, 'user_id')
+      console.log(ENUM.REQUEST_STATUS.WATING, 'enum')
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
         user_id: req.body.user_id,
+        status: ENUM.REQUEST_STATUS.WATING,
       });
       if (data.status === null) {
         return res.status(500).json({
@@ -185,6 +223,39 @@ module.exports = {
       return res.status(200).json({
         message: "Request Success",
       });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  archivedParty: async (req, res) => {
+    try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (!party) {
+        throw new BadRequest("Party not found");
+      }
+      if (party.head_party !== req.body.user_id) {
+        return res.status(403).json({
+          message: "Only party owner can close party.",
+        });
+      }
+      const data = await partyService.archiveParty({
+        party_id: req.params.party_id,
+        archived_at: moment(),
+      });
+      if (data) {
+        return res.status(200).json({
+          message: "archive success",
+        });
+      } else {
+        return res.status(500).json({
+          message: "archive failed",
+        });
+      }
     } catch (e) {
       return res.status(500).json({
         message: e.message,

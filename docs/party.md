@@ -1,8 +1,8 @@
 # PARTY API
 
-1. Get All Party
+1. Get All Party By Restaurant ID
 
-` https://${url}/party/`
+` https://${url}/party/:restaurant_id`
 
 > ### Method
 
@@ -32,7 +32,7 @@ Status 200
             "schedule_time": "2021-04-09T15:51:41.000Z",
             "created_at": "2021-04-17T11:47:17.000Z",
             "archived_at": "2021-04-17T11:47:17.000Z",
-            "member": [ UUID<user_id>],
+            "members": [ UUID<user_id>],
             "head_party_user_id": UUID
         }
     ]
@@ -52,7 +52,7 @@ Status 200
 
 2. Create Party
 
-` https://${url}/party/`
+` https://${url}/party/:restaurant_id`
 
 > ### Method
 
@@ -110,7 +110,7 @@ Status 200
 
 3. Get Request Join Party List
 
-` https://${url}/party/:party_id/join`
+` https://${url}/party/info/:party_id/join`
 
 > ### Method
 
@@ -157,7 +157,7 @@ Status 200
 
 4. Join Party
 
-` https://${url}/party/:party_id/join`
+` https://${url}/party/info/:party_id/join`
 
 > ### Method
 
@@ -194,6 +194,47 @@ Status 400
 Status 500
 {
     "message": "Cannot join party"
+}
+```
+
+> ### Notes
+
+-
+
+5. Archived Party
+
+` https://${url}/party/info/:party_id`
+
+> ### Method
+
+    PUT
+
+> ### Request Body
+
+```
+{
+    "user_id": UUID<user_id>
+}
+```
+
+> ### Success Response
+
+```
+{
+    "message": "archive success"
+}
+```
+
+> ### Error Response
+
+```
+Status 403
+{
+    "message": "Only party owner can close party."
+}
+Status 500
+{
+    "message": "archive failed"
 }
 ```
 
