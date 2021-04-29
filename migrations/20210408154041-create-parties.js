@@ -47,9 +47,6 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: null,
       },
-      member: {
-        type: Sequelize.ARRAY(Sequelize.UUID),
-      },
     });
     await queryInterface.addConstraint("parties", {
       fields: ["head_party"],

@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     party_id: {
       type: DataTypes.UUID,
       primaryKey: true,
+      unique: false
     },
     user_id: {
       type: DataTypes.UUID,

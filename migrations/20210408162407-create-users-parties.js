@@ -1,19 +1,19 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('users_parties', {
+    await queryInterface.createTable("users_parties", {
       user_id: {
         type: Sequelize.UUID,
         allowNull: false,
       },
       party_id: {
         type: Sequelize.UUID,
-        primaryKey: true,
+        allowNull: false,
       },
       status: {
-        type: Sequelize.ENUM(['ACCEPT', 'DECLINE', 'WAITING']),
+        type: Sequelize.ENUM(["ACCEPT", "DECLINE", "WAITING"]),
         allowNull: false,
-      }
+      },
     });
     await queryInterface.addConstraint("users_parties", {
       fields: ["user_id"],
@@ -39,6 +39,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, _Sequelize) => {
-    await queryInterface.dropTable('users_parties');
-  }
+    await queryInterface.dropTable("users_parties");
+  },
 };

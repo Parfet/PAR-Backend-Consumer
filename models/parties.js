@@ -12,6 +12,8 @@ module.exports = (sequelize, DataTypes) => {
       Parties.belongsToMany(models.users, {
         through: models.users_parties,
         foreignKey: "party_id",
+        as: 'members',
+        constraint: false
       });
       Parties.hasMany(models.rating_restaurants, {
         foreignKey: "party_id",
@@ -76,7 +78,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: null,
       },
-      member: DataTypes.ARRAY(DataTypes.UUID),
     },
     {
       sequelize,
