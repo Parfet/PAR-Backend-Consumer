@@ -1,4 +1,4 @@
-const moment = require('moment')
+const moment = require("moment");
 
 const models = require("../../models/index");
 const partyService = require("../services/parties_service");

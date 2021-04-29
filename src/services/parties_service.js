@@ -7,6 +7,7 @@ const userModel = require("../../models/index").users;
 const userPartyModel = require("../../models/index").users_parties;
 const restaurantModel = require("../../models/index").restaurants;
 const ENUM = require("../constants/enum");
+const { Op } = require("sequelize");
 
 const findPartyByRestaurantId = async ({ restaurant_id }) => {
   const data = restaurantModel.findAll({
@@ -23,8 +24,16 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       },
       include: {
         model: userModel,
-        as: 'members'
-      }
+        as: "members",
+        through: {
+          attributes: [],
+          where: {
+            status: {
+              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT
+            }
+          }
+        },
+      },
     },
   });
   return data;
