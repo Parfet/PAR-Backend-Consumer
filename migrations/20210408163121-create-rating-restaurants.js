@@ -7,11 +7,6 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4,
       },
-      restaurant_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        defaultValue: Sequelize.UUIDV4,
-      },
       user_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -33,17 +28,6 @@ module.exports = {
       references: {
         table: "parties",
         field: "party_id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
-    });
-    await queryInterface.addConstraint("rating_restaurants", {
-      fields: ["restaurant_id"],
-      type: "foreign key",
-      name: "rating_restaurants-restaurants-restaurant_id",
-      references: {
-        table: "restaurants",
-        field: "restaurant_id",
       },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",

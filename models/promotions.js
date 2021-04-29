@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
+    timestamp: false,
     modelName: 'promotions',
   });
   return Promotions;

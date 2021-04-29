@@ -4,6 +4,7 @@ module.exports = {
     await queryInterface.createTable('users_parties', {
       user_id: {
         type: Sequelize.UUID,
+        allowNull: false,
       },
       party_id: {
         type: Sequelize.UUID,

@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       //   foreignKey: 'head_party_user_id',
       //   foreignKeyConstraint: false
       // })
+      Users.belongsToMany(models.parties, {
+        through: models.users_parties,
+        foreignKey: 'user_id'
+      })
     }
   };
   Users.init({

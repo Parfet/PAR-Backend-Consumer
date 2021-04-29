@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
+    timestamps: false,
     modelName: 'user_blacklists',
   });
   return UserBlacklists;

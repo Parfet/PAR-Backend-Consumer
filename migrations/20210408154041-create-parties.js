@@ -39,6 +39,10 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
+      updated_at: {
+        type: Sequelize.DATE,
+        defaultValue: null,
+      },
       archived_at: {
         type: Sequelize.DATE,
         defaultValue: null,
