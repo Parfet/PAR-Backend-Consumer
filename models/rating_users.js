@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       RatingUsers.belongsTo(models.users, {
         through: "user_id",
+        foreignKey: 'give_rate_user_id'
       });
     }
   }
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       party_id: {
         type: DataTypes.UUID,
+        primaryKey: true,
         allowNull: false,
       },
       give_rate_user_id: {

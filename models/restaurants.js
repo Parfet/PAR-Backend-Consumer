@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       Restaurants.hasOne(models.schedule_days, {
         foreignKey: "restaurant_id",
       });
+      Restaurants.belongsToMany(models.promotions, {
+        through: models.restaurants_promotions,
+        foreignKey: 'restaurant_id'
+      })
     }
   }
   Restaurants.init(

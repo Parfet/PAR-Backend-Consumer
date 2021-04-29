@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Promotions.belongsToMany(models.restaurants, {
+        through: models.restaurants_promotions,
+        foreignKey: 'promotion_id'
+      })
     }
   };
   Promotions.init({
@@ -33,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    timestamp: false,
+    timestamps: false,
     modelName: 'promotions',
   });
   return Promotions;

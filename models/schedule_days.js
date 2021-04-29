@@ -11,15 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      ScheduleDays.belongsTo(models.restaurants, {
+        foreignKey: 'restaurant_id'
+      })
     }
   };
   ScheduleDays.init({
     restaurant_id: {
       type: DataTypes.UUID,
-      // references: {
-      //   model: Restaurant,
-      //   key: restaurant_id,
-      // },
+      primaryKey: true
     },
     schedule_day: {
       type: DataTypes.ENUM(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']),

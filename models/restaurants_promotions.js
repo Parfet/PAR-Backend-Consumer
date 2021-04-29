@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Restaurants_promotions extends Model {
+  class RestaurantsPromotions extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   };
-  Restaurants_promotions.init({
+  RestaurantsPromotions.init({
     restaurant_id: {
       type: DataTypes.UUID,
       // references: {
@@ -33,5 +33,5 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false,
     modelName: 'restaurants_promotions',
   });
-  return Restaurants_promotions;
+  return RestaurantsPromotions;
 };
