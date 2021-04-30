@@ -2,10 +2,10 @@ const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 
 const models = require("../../models/index");
-const partyModel = require("../../models/index").parties;
-const userModel = require("../../models/index").users;
-const userPartyModel = require("../../models/index").users_parties;
-const restaurantModel = require("../../models/index").restaurants;
+const partyModel = models.parties;
+const userModel = models.users;
+const userPartyModel = models.users_parties;
+const restaurantModel = models.restaurants;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
 
@@ -24,6 +24,9 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       },
       include: {
         model: userModel,
+        attributes: {
+          exclude: ["password"],
+        },
         as: "members",
         through: {
           attributes: [],
@@ -47,6 +50,9 @@ const findPartyByPartyId = async ({ party_id }) =>
     include: {
       model: userModel,
       as: "members",
+      attributes: {
+        exclude: ["password"],
+      },
       through: {
         attributes: [],
         where: {
@@ -87,9 +93,17 @@ const createParty = async ({
 
 const checkRequestJoinList = async ({ party_id }) => {
   const data = await userPartyModel.findAll({
+    attributes: {
+      exclude: ['user_id', 'party_id', 'status']
+    },
     where: {
       party_id: party_id,
+      status: ENUM.REQUEST_STATUS.WATING,
     },
+    include: {
+      model: userModel,
+      as: 'user',
+    }
   });
   return data;
 };

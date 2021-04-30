@@ -244,7 +244,7 @@ Status 500
 
 6. Get Party By Party Id
 
-` https://${url}/info/:party_id`
+` https://${url}/party/info/:party_id`
 
 > ### Method
 

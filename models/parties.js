@@ -12,8 +12,8 @@ module.exports = (sequelize, DataTypes) => {
       Parties.belongsToMany(models.users, {
         through: models.users_parties,
         foreignKey: "party_id",
-        as: 'members',
-        constraint: false
+        as: "members",
+        constraint: false,
       });
       Parties.hasMany(models.rating_restaurants, {
         foreignKey: "party_id",
@@ -23,8 +23,12 @@ module.exports = (sequelize, DataTypes) => {
       });
       Parties.belongsToMany(models.restaurants, {
         through: models.restaurants_parties,
-        foreignKey: "party_id"
-      })
+        foreignKey: "party_id",
+      });
+      Parties.belongsToMany(models.interest_tags, {
+        through: models.parties_interest_tags,
+        foreignKey: "party_id",
+      });
     }
   }
   Parties.init(

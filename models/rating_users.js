@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       RatingUsers.belongsTo(models.users, {
         through: "user_id",
-        foreignKey: 'give_rate_user_id'
+        foreignKey: ["give_rate_user_id", "receive_rate_user_id"],
       });
     }
   }

@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class RestaurantsPromotions extends Model {
     /**
@@ -12,26 +10,24 @@ module.exports = (sequelize, DataTypes) => {
     static associate(_models) {
       // define association here
     }
-  };
-  RestaurantsPromotions.init({
-    restaurant_id: {
-      type: DataTypes.UUID,
-      // references: {
-      //   model: Restaurants,
-      //   key: restaurant_id
-      // }
+  }
+  RestaurantsPromotions.init(
+    {
+      restaurant_id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        unique: false,
+      },
+      promotion_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
     },
-    promotion_id: {
-      type: DataTypes.UUID,
-      // references: {
-      //   model: Promotions,
-      //   key: promotion_id
-      // }
+    {
+      sequelize,
+      timestamps: false,
+      modelName: "restaurants_promotions",
     }
-  }, {
-    sequelize,
-    timestamps: false,
-    modelName: 'restaurants_promotions',
-  });
+  );
   return RestaurantsPromotions;
 };
