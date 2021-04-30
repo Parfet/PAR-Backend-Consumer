@@ -168,7 +168,7 @@ module.exports = {
       //     message: "Only party owner can view request join party",
       //   });
       // }
-      const data = await partyService.checkRequestJoinList({
+      const data = await partyService.requestJoinList({
         party_id: req.params.party_id,
       });
 
@@ -188,21 +188,24 @@ module.exports = {
 
   joinPartyByPartyId: async (req, res) => {
     try {
-      const user = await models.users.findByPk(req.body.user_id);
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (user === null) {
-        throw new BadRequest("User not found");
-      }
       if (party === null) {
         throw new BadRequest("Party not found");
       }
       if (
-        party.party_type === ENUM.PARTY_TYPE.PRIVATE &&
-        req.body.passcode !== party.passcode
+        party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&
+        (req.body.passcode === null || req.body.passcode !== party[0].passcode)
       ) {
         throw new BadRequest("Passcode incorrect");
+      }
+      const everJoin = await partyService.requestJoinByUserId({
+        party_id: party[0].party_id,
+        user_id: req.body.user_id,
+      });
+      if (everJoin.length > 1) {
+        throw new BadRequest('You already request to join this party')
       }
       const data = await partyService.joinParty({
         party_id: req.params.party_id,

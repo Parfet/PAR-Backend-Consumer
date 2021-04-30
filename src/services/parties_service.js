@@ -91,22 +91,43 @@ const createParty = async ({
   return data;
 };
 
-const checkRequestJoinList = async ({ party_id }) => {
+const requestJoinList = async ({ party_id }) => {
   const data = await userPartyModel.findAll({
     attributes: {
-      exclude: ['user_id', 'party_id', 'status']
+      exclude: ["user_id", "party_id", "status"],
     },
     where: {
       party_id: party_id,
+      // user_id: null,
       status: ENUM.REQUEST_STATUS.WATING,
     },
     include: {
       model: userModel,
-      as: 'user',
-    }
+      as: "user",
+      attributes: ["user_id", "username", "image_url"],
+    },
   });
   return data;
 };
+
+const requestJoinByUserId = async ({ party_id, user_id }) =>
+  userPartyModel.findAll({
+    attributes: {
+      exclude: ["user_id", "party_id", "status"],
+    },
+    where: {
+      party_id: party_id,
+      user_id: user_id,
+      status: {
+        [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WATING]
+      },
+    },
+    include: {
+      model: userModel,
+      as: "user",
+      attributes: ["user_id", "username", "image_url"],
+    },
+  });
 
 const joinParty = async ({ party_id, user_id, status }) => {
   const data = await userPartyModel.create({
@@ -141,7 +162,6 @@ const updatePartyInfo = async ({
   interested_tag,
   max_member,
   schedule_time,
-  created_at,
   archived_at,
 }) => {
   console.log(party_name);
@@ -196,8 +216,9 @@ module.exports = {
   findPartyByPartyId,
   createParty,
   joinParty,
-  checkRequestJoinList,
+  requestJoinList,
   archiveParty,
   updatePartyInfo,
   checkIsMemberParty,
+  requestJoinByUserId,
 };
