@@ -29,9 +29,9 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
           attributes: [],
           where: {
             status: {
-              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT
-            }
-          }
+              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+            },
+          },
         },
       },
     },
@@ -42,7 +42,7 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
 const findPartyByPartyId = async ({ party_id }) =>
   partyModel.findAll({
     where: {
-      party_id: party_id
+      party_id: party_id,
     },
     include: {
       model: userModel,
@@ -51,9 +51,9 @@ const findPartyByPartyId = async ({ party_id }) =>
         attributes: [],
         where: {
           status: {
-            [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT
-          }
-        }
+            [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+          },
+        },
       },
     },
   });
@@ -103,10 +103,11 @@ const joinParty = async ({ party_id, user_id, status }) => {
   return data;
 };
 
-const archiveParty = async ({ party_id, archived_at }) => {
+const archiveParty = async ({ party_id }) => {
   const data = await partyModel.update(
     {
-      archived_at: archived_at,
+      archived_at: moment(),
+      updated_at: moment(),
     },
     {
       where: {
@@ -117,6 +118,65 @@ const archiveParty = async ({ party_id, archived_at }) => {
   return data;
 };
 
+const updatePartyInfo = async ({
+  party_name,
+  head_party,
+  passcode,
+  party_type,
+  interested_topic,
+  interested_tag,
+  max_member,
+  schedule_time,
+  created_at,
+  archived_at,
+}) => {
+  console.log(party_name);
+  const data = await partyModel.update(
+    {
+      party_name: party_name,
+      head_party: head_party,
+      passcode: passcode,
+      party_type: party_type,
+      interested_topic: interested_topic,
+      interested_tag: interested_tag,
+      max_member: max_member,
+      schedule_time: schedule_time,
+      archived_at: archived_at,
+      updated_at: moment(),
+    },
+    {
+      where: {
+        party_id: "24e248e4-1f64-4f15-821b-24fbd81d6c0f",
+      },
+    }
+  );
+  return data;
+};
+
+const checkIsMemberParty = async ({ party_id, user_id }) => {
+  const data = await partyModel.findAll({
+    where: {
+      party_id: party_id,
+    },
+    include: {
+      model: userModel,
+      as: "members",
+      where: {
+        user_id: user_id,
+      },
+      through: {
+        attributes: ["status"],
+        where: {
+          status: {
+            [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+          },
+        },
+      },
+    },
+  });
+  return data;
+};
+
 module.exports = {
   findPartyByRestaurantId,
   findPartyByPartyId,
@@ -124,4 +184,6 @@ module.exports = {
   joinParty,
   checkRequestJoinList,
   archiveParty,
+  updatePartyInfo,
+  checkIsMemberParty,
 };

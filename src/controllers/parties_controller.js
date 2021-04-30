@@ -239,7 +239,6 @@ module.exports = {
       }
       const data = await partyService.archiveParty({
         party_id: req.params.party_id,
-        archived_at: moment(),
       });
       if (data) {
         return res.status(200).json({
@@ -248,6 +247,60 @@ module.exports = {
       } else {
         return res.status(500).json({
           message: "archive failed",
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  updatePartyInfo: async (req, res) => {
+    try {
+      // TODO: wait jwt check is party owner
+      if (req.params.party_id) {
+        const party = await partyService.findPartyByPartyId({
+          party_id: req.params.party_id,
+        });
+        if (!party) {
+          throw new BadRequest("Party not found");
+        }
+      }
+      if (req.body.head_party) {
+        const user = await models.users.findByPk(req.body.head_party);
+        if (!user) {
+          throw new BadRequest("User not found");
+        }
+        const member = await partyService.checkIsMemberParty({
+          party_id: req.params.party_id,
+          user_id: user.user_id,
+        });
+        if (member.length === 0) {
+          throw new BadRequest("Only member can assign to be party owner.");
+        }
+      }
+      if (req.body.party_type) {
+        if (
+          !checkErrorService.checkMatchEnum("PARTY_TYPE", req.body.party_type)
+        ) {
+          throw new BadRequest("Party type invalid");
+        }
+        if (
+          req.body.party_type === ENUM.PARTY_TYPE.PRIVATE &&
+          !req.body.passcode
+        ) {
+          throw new BadRequest("Private party must have passcode");
+        }
+      }
+      const data = await partyService.updatePartyInfo(req.body);
+      if (data) {
+        return res.status(200).json({
+          message: "update success",
+        });
+      } else {
+        return res.status(500).json({
+          message: "update failed",
         });
       }
     } catch (e) {

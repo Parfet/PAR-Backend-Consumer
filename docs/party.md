@@ -207,7 +207,7 @@ Status 500
 
 > ### Method
 
-    PUT
+    POST
 
 > ### Request Body
 
@@ -300,6 +300,67 @@ Status 500
 
 ```
 
+```
+
+> ### Notes
+
+-
+
+7. Update Party Info
+
+` https://${url}/party/info/:party_id`
+
+> ### Method
+
+    PUT
+
+> ### Request Body
+
+```
+{
+    {
+      party_name: String,
+      head_party: UUID<user_id>,
+      passcode: String,
+      party_type: ENUM<PARTY_TYPE>,
+      interested_topic: String,
+      interested_tag: UUID<tag_id>[],
+      max_member: int,
+      schedule_time: "2021-04-24T18:50:18.000Z",
+    },
+}
+```
+
+> ### Success Response
+
+```
+{
+    "message": "update success"
+}
+```
+
+> ### Error Response
+
+```
+Status 403
+{
+    "message": "Party not found"
+{
+    "message": "User not found"
+}
+{
+    "message": "Only member can assign to be party owner."
+}
+{
+    "message": "Party type invalid"
+}
+{
+    "message": "Private party must have passcode"
+}
+Status 500 
+{
+    "message": "update failed"
+}
 ```
 
 > ### Notes
