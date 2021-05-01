@@ -4,9 +4,8 @@ pipeline {
         stage("build") {
             steps {
                 echo ' Executing yarn '
-                environment {withCredentials([file(credentialsId: 'APIenv', variable: 'env')]){
-                    sh 'cp $env $WORKSPACE'
-                    }
+                withCredentials([file(credentialsId: 'APIenv', variable: 'envFile')]){
+                    sh 'cp $envFile $WORKSPACE'
                 }
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'yarn install'
