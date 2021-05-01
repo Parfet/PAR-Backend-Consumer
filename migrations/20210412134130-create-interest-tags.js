@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Interest_Topics', {
+    await queryInterface.createTable('interest_tags', {
       tag_id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -14,7 +14,7 @@ module.exports = {
       }
     });
   },
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Interest_Topics');
+  down: async (queryInterface, _Sequelize) => {
+    await queryInterface.dropTable('interest_tags');
   }
 };

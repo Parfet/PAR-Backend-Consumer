@@ -1,9 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class RatinRestaurants extends Model {
+  class RatingRestaurants extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,47 +9,38 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      RatingRestaurants.belongsTo(models.parties, {
+        foreignKey: "party_id",
+      });
     }
-  };
-  RatinRestaurants.init({
-    party_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4
-      // references: {
-      //   model: Parties,
-      //   key: party_id,
-      // },
+  }
+  RatingRestaurants.init(
+    {
+      party_id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      user_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      rating: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0.0,
+      },
+      review: {
+        type: DataTypes.TEXT,
+      },
     },
-    restaurant_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4
-      // references: {
-      //   model: Restaurants,
-      //   key: restaurant_id,
-      // },
-    },
-    user_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4
-      // references: {
-      //   model: Users,
-      //   key: user_id,
-      // },
-    },
-    rating: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      defaultValue: 0.0,
-    },
-    review: {
-      type: DataTypes.TEXT,
+    {
+      sequelize,
+      timestamps: false,
+      modelName: "rating_restaurants",
     }
-  }, {
-    sequelize,
-    modelName: 'rating_restaurants',
-  });
-  return RatinRestaurants;
+  );
+  return RatingRestaurants;
 };

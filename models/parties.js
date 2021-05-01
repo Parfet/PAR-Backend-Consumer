@@ -9,6 +9,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Parties.belongsToMany(models.users, {
+        through: models.users_parties,
+        foreignKey: "party_id",
+        as: "members",
+        constraint: false,
+      });
+      Parties.hasMany(models.rating_restaurants, {
+        foreignKey: "party_id",
+      });
+      Parties.hasMany(models.rating_users, {
+        foreignKey: "party_id",
+      });
+      Parties.belongsToMany(models.restaurants, {
+        through: models.restaurants_parties,
+        foreignKey: "party_id",
+      });
+      Parties.belongsToMany(models.interest_tags, {
+        through: models.parties_interest_tags,
+        foreignKey: "party_id",
+      });
     }
   }
   Parties.init(
@@ -18,23 +38,23 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      head_party: {
-        type: DataTypes.UUID,
-        references: {
-          model: "users",
-          key: "user_id",
-        },
-      },
       party_name: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      head_party: {
+        type: DataTypes.UUID,
+        references: {
+          table: "users",
+          fields: "user_id",
+        },
       },
       passcode: DataTypes.STRING,
       party_type: {
         type: DataTypes.ENUM("PRIVATE", "PUBLIC"),
         allowNull: false,
       },
-      interested_topic: { 
+      interested_topic: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -58,18 +78,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: null,
       },
-      member: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // }
+      updated_at: {
+        type: DataTypes.DATE,
+        defaultValue: null,
       },
     },
     {
       sequelize,
       modelName: "parties",
       timestamps: false,
+      underscored: true,
     }
   );
   return Parties;
