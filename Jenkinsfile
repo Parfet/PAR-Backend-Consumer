@@ -1,6 +1,6 @@
 pipeline {
      agent any
-     evironment {
+     environment {
          withCredentials([file(credentialsId: 'APIenv', variable: 'env')]){
             sh 'cp $env $WORKSPACE'
         }
