@@ -1,13 +1,12 @@
 pipeline {
      agent any
-     
-     }
      stages {
         stage("build") {
             steps {
                 echo ' Executing yarn '
                 environment {withCredentials([file(credentialsId: 'APIenv', variable: 'env')]){
                     sh 'cp $env $WORKSPACE'
+                    }
                 }
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'yarn install'
