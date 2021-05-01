@@ -5,7 +5,7 @@ pipeline {
             steps {
                 echo ' Executing yarn '
                 withCredentials([file(credentialsId: 'APIenv', variable: 'envFile')]){
-                    sh 'cp $envFile $WORKSPACE'
+                    sh 'sudo cp $envFile $WORKSPACE'
                 }
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'yarn install'
