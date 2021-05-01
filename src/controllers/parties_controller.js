@@ -26,7 +26,7 @@ module.exports = {
   createParty: async (req, res) => {
     try {
       if (Object.keys(req.body).length === 0) {
-        throw new BadRequest("Invalid Request");
+        res.status(400).json({ message: "Invalid Request" });
       } else {
         // * check is owner is member of system
         const head_party = await models.users.findByPk(req.body.head_party);
@@ -76,7 +76,7 @@ module.exports = {
         }
 
         if (message.length > 0) {
-          throw new BadRequest([...message]);
+          res.status(400).json({ message: [...message] });
         }
       }
 
@@ -160,7 +160,7 @@ module.exports = {
         party_id: req.params.party_id,
       });
       if (!party) {
-        throw new BadRequest("Party not found");
+        res.status(400).json({ message: "Party not found" });
       }
       // TODO: wait jwt
       // if (party.head_party !== req.body.user_id) {
@@ -191,21 +191,23 @@ module.exports = {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (party === null) {
-        throw new BadRequest("Party not found");
+      if (party.length === 0) {
+        res.status(400).json({ message: "Party not found" });
       }
       if (
         party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&
         (req.body.passcode === null || req.body.passcode !== party[0].passcode)
       ) {
-        throw new BadRequest("Passcode incorrect");
+        res.status(400).json({ message: "Passcode incorrect" });
       }
       const everJoin = await partyService.requestJoinByUserId({
         party_id: party[0].party_id,
         user_id: req.body.user_id,
       });
       if (everJoin.length > 1) {
-        throw new BadRequest('You already request to join this party')
+        res
+          .status(400)
+          .json({ message: "You already request to join this party" });
       }
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
@@ -233,7 +235,7 @@ module.exports = {
         party_id: req.params.party_id,
       });
       if (!party) {
-        throw new BadRequest("Party not found");
+        res.status(400).json({ message: "Party not found" });
       }
       if (party.head_party !== req.body.user_id) {
         return res.status(403).json({
@@ -267,33 +269,35 @@ module.exports = {
           party_id: req.params.party_id,
         });
         if (!party) {
-          throw new BadRequest("Party not found");
+          res.status(400).json({ message: "Party not found" });
         }
       }
       if (req.body.head_party) {
         const user = await models.users.findByPk(req.body.head_party);
         if (!user) {
-          throw new BadRequest("User not found");
+          res.status(400).json({ message: "User not found" });
         }
         const member = await partyService.checkIsMemberParty({
           party_id: req.params.party_id,
           user_id: user.user_id,
         });
         if (member.length === 0) {
-          throw new BadRequest("Only member can assign to be party owner.");
+          res
+            .status(400)
+            .json({ message: "Only member can assign to be party owner." });
         }
       }
       if (req.body.party_type) {
         if (
           !checkErrorService.checkMatchEnum("PARTY_TYPE", req.body.party_type)
         ) {
-          throw new BadRequest("Party type invalid");
+          res.status(400).json({ message: "Party type invalid" });
         }
         if (
           req.body.party_type === ENUM.PARTY_TYPE.PRIVATE &&
           !req.body.passcode
         ) {
-          throw new BadRequest("Private party must have passcode");
+          res.status(400).json({ message: "Private party must have passcode" });
         }
       }
       const data = await partyService.updatePartyInfo(req.body);
