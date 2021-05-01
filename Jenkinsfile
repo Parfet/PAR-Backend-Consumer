@@ -1,5 +1,10 @@
 pipeline {
      agent any
+     evironment {
+         withCredentials([file(credentialsId: 'APIenv', variable: 'env')]){
+            sh 'cp $env $WORKSPACE'
+        }
+     }
      stages {
         stage("build") {
             steps {
@@ -11,7 +16,7 @@ pipeline {
             }
         }
         stage("Deploy"){
-            step{
+            steps{
                 echo ' Executing yarn '
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'pm2 delete ${JOB_NAME} || :'
