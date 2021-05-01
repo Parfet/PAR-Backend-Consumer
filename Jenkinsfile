@@ -1,14 +1,14 @@
 pipeline {
      agent any
-     environment {
-         withCredentials([file(credentialsId: 'APIenv', variable: 'env')]){
-            sh 'cp $env $WORKSPACE'
-        }
+     
      }
      stages {
         stage("build") {
             steps {
                 echo ' Executing yarn '
+                environment {withCredentials([file(credentialsId: 'APIenv', variable: 'env')]){
+                    sh 'cp $env $WORKSPACE'
+                }
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'yarn install'
                     sh 'yarn add --dev typescript'
