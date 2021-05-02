@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
         constraint: false,
       });
+      Users.hasMany(models.rating_users, {
+        foreignKey: "receive_rate_user_id",
+      });
     }
   }
   Users.init(

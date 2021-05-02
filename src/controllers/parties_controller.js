@@ -175,7 +175,6 @@ module.exports = {
       if (data.length === 0) {
         return res.status(204).json();
       }
-
       return res.status(200).json({
         request: data,
       });
@@ -239,7 +238,7 @@ module.exports = {
       }
       if (party.head_party !== req.body.user_id) {
         return res.status(403).json({
-          message: "Only party owner can close party.",
+          message: "Permission Denied",
         });
       }
       const data = await partyService.archiveParty({

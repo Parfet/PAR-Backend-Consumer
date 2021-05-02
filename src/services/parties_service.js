@@ -6,6 +6,7 @@ const partyModel = models.parties;
 const userModel = models.users;
 const userPartyModel = models.users_parties;
 const restaurantModel = models.restaurants;
+const ratingUserModel = models.rating_users;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
 
@@ -98,7 +99,6 @@ const requestJoinList = async ({ party_id }) => {
     },
     where: {
       party_id: party_id,
-      // user_id: null,
       status: ENUM.REQUEST_STATUS.WATING,
     },
     include: {
@@ -107,11 +107,27 @@ const requestJoinList = async ({ party_id }) => {
       attributes: ["user_id", "username", "image_url"],
     },
   });
+  const rate = await ratingUserModel.findAll();
+
+  data.map((e, _i) => {
+    let rating = [];
+    let finalRate = 0;
+    for (let j = 0; j < rate.length; j++) {
+      if (e.user.user_id === rate[j].receive_rate_user_id) {
+        rating.push(rate[j].rating);
+      }
+    }
+    rating.forEach((tempRate, _k) => {
+      finalRate = parseFloat(finalRate) + parseFloat(tempRate);
+    });
+    e.user.dataValues.rating = parseFloat(finalRate / rating.length).toFixed(2);
+  });
+
   return data;
 };
 
-const requestJoinByUserId = async ({ party_id, user_id }) =>
-  userPartyModel.findAll({
+const requestJoinByUserId = async ({ party_id, user_id }) => {
+  const data = await userPartyModel.findAll({
     attributes: {
       exclude: ["user_id", "party_id", "status"],
     },
@@ -119,16 +135,18 @@ const requestJoinByUserId = async ({ party_id, user_id }) =>
       party_id: party_id,
       user_id: user_id,
       status: {
-        [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WATING]
+        [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WATING],
       },
     },
     include: {
       model: userModel,
       as: "user",
-      attributes: ["user_id", "username", "image_url"],
+      attributes: ["user_id"],
     },
   });
 
+  return data;
+};
 const joinParty = async ({ party_id, user_id, status }) => {
   const data = await userPartyModel.create({
     user_id: user_id,
@@ -150,6 +168,7 @@ const archiveParty = async ({ party_id }) => {
       },
     }
   );
+
   return data;
 };
 
@@ -184,6 +203,7 @@ const updatePartyInfo = async ({
       },
     }
   );
+
   return data;
 };
 
@@ -208,6 +228,7 @@ const checkIsMemberParty = async ({ party_id, user_id }) => {
       },
     },
   });
+  
   return data;
 };
 

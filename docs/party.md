@@ -119,9 +119,7 @@ Status 200
 > ### Request Body
 
 ```
-{
-    "user_id": UUID<user_id>
-}
+
 ```
 
 > ### Success Response
@@ -134,7 +132,8 @@ Status 200
         {
             "party_id": UUID<party_id>,
             "user_id": UUID<user_id>,
-            "status": ENUM<PARTY_STATUS>
+            "status": ENUM<PARTY_STATUS>,
+            "rating": float
         }
     ]
 }
@@ -143,11 +142,13 @@ Status 200
 > ### Error Response
 
 ```
+Status 400
 {
     "message": "Party not found"
 }
+Status 403
 {
-    "message": "Only party owner can view request join party"
+    "message": "Permission Denied"
 }
 ```
 
