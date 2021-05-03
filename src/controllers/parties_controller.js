@@ -1,6 +1,7 @@
 const moment = require("moment");
 
 const models = require("../../models/index");
+const userService = require("../services/users_service");
 const partyService = require("../services/parties_service");
 const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
@@ -204,7 +205,7 @@ module.exports = {
         user_id: req.body.user_id,
       });
       if (everJoin.length > 1) {
-        res
+        return res
           .status(400)
           .json({ message: "You already request to join this party" });
       }
@@ -299,8 +300,74 @@ module.exports = {
           res.status(400).json({ message: "Private party must have passcode" });
         }
       }
-      const data = await partyService.updatePartyInfo(req.body);
-      if (data) {
+      const data = await partyService.updatePartyInfo({
+        party_id: req.params.party_id,
+        party_name: req.body.party_name,
+        head_party: req.body.head_party,
+        passcode: req.body.passcode,
+        party_type: req.body.party_type,
+        interested_topic: req.body.interested_topic,
+        interested_tag: req.body.interested_tag,
+        max_member: req.body.max_member,
+        schedule_time: req.body.schedule_time,
+        archived_at: req.body.archived_at,
+      });
+      if (data.includes(1)) {
+        return res.status(200).json({
+          message: "update success",
+        });
+      } else {
+        return res.status(500).json({
+          message: "update failed",
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  handleMemberRequest: async (req, res) => {
+    try {
+      if (
+        !checkErrorService.checkMatchEnum("REQUEST_STATUS", req.body.status)
+      ) {
+        return res.status(400).json({
+          message: "Status is invalid",
+        });
+      }
+
+      if (!req.body.user_id) {
+        return res.status(400).json({
+          message: "User is invalid",
+        });
+      } else {
+        const user = await userService.getUserByUserId({
+          user_id: req.body.user_id,
+        });
+        if (!user) {
+          return res.status(400).json({
+            message: "User not found",
+          });
+        }
+        const findUserInParty = await partyService.handleCheckMemberRequest({
+          party_id: req.params.party_id,
+          user_id: req.body.user_id,
+        });
+        if (findUserInParty.length > 0) {
+          return res.status(400).json({
+            message: "update failed"
+          })
+        }
+      }
+
+      const data = await partyService.handleMemberRequest({
+        user_id: req.body.user_id,
+        status: req.body.status,
+      });
+
+      if (data.includes(1)) {
         return res.status(200).json({
           message: "update success",
         });

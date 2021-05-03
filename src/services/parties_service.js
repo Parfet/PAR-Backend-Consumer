@@ -173,6 +173,7 @@ const archiveParty = async ({ party_id }) => {
 };
 
 const updatePartyInfo = async ({
+  party_id,
   party_name,
   head_party,
   passcode,
@@ -199,7 +200,7 @@ const updatePartyInfo = async ({
     },
     {
       where: {
-        party_id: "24e248e4-1f64-4f15-821b-24fbd81d6c0f",
+        party_id: party_id,
       },
     }
   );
@@ -228,9 +229,35 @@ const checkIsMemberParty = async ({ party_id, user_id }) => {
       },
     },
   });
-  
+
   return data;
 };
+
+const handleMemberRequest = async ({ status, user_id }) => {
+  const data = await userPartyModel.update(
+    {
+      status: status,
+    },
+    {
+      where: {
+        user_id: user_id,
+      },
+    }
+  );
+
+  return data;
+};
+
+const handleCheckMemberRequest = async ({ party_id, user_id }) =>
+  userPartyModel.findAll({
+    where: {
+      party_id: party_id,
+      user_id: user_id,
+      status: {
+        [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.DECLINE],
+      },
+    },
+  });
 
 module.exports = {
   findPartyByRestaurantId,
@@ -242,4 +269,6 @@ module.exports = {
   updatePartyInfo,
   checkIsMemberParty,
   requestJoinByUserId,
+  handleMemberRequest,
+  handleCheckMemberRequest,
 };

@@ -368,6 +368,58 @@ Status 500
 
 -
 
+8. Handle Member Request
+
+` https://${url}/party/info/:party_id/join`
+
+> ### Method
+
+    PUT
+
+> ### Request Body
+
+```
+{
+    user_id: UUID<user_id>,
+    status: ENUM<REQUEST_STATUS>
+}
+```
+
+> ### Success Response
+
+```
+{
+    message: "update success"
+}
+```
+
+> ### Error Response
+
+```
+Status 400
+{
+    message: "Status is invalid"
+}
+{
+    message: "User is invalid"
+}
+{
+    message: "User not found"
+}
+{
+    message: "update failed"
+}
+Status 500
+{
+    message: "update failed"
+}
+
+```
+
+> ### Notes
+
+-
+
 i. template
 
 ` https://${url}/api`

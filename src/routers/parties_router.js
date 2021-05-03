@@ -22,4 +22,6 @@ partiesRouter.post(
   partiesController.joinPartyByPartyId
 );
 
+partiesRouter.put("/info/:party_id/join", partiesController.handleMemberRequest)
+
 module.exports = partiesRouter;
