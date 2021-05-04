@@ -123,6 +123,9 @@ const requestJoinList = async ({ party_id }) => {
     e.user.dataValues.rating = parseFloat(finalRate / rating.length).toFixed(2);
   });
 
+  data.map((e, _) => {
+    e.dataValues = e.dataValues.user.dataValues;
+  });
   return data;
 };
 
