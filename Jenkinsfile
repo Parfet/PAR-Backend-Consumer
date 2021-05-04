@@ -20,7 +20,7 @@ pipeline {
                 echo ' Executing yarn '
                 nodejs(nodeJSInstallationName:'nodejs') {
                     sh 'pm2 delete ${JOB_NAME} || :'
-                    sh 'pm2 start $WORKSPACE/src/index.js -n "${JOB_NAME}" 
+                    sh 'pm2 start $WORKSPACE/src/index.js --name "${JOB_NAME}" 
                 }
             }
         }
