@@ -5,7 +5,8 @@ pipeline {
             steps {
                 echo ' Executing yarn '
                 withCredentials([file(credentialsId: 'APIenv', variable: 'envFile')]){
-                    sh 'whoami'
+                    sh 'chmod 700 $WORKSPACE/.env || :'
+                    sh 'rm -rf $WORKSPACE/.env || :'
                     sh 'cp $envFile $WORKSPACE'
                 }
                 nodejs(nodeJSInstallationName:'nodejs') {
