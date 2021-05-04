@@ -1,12 +1,9 @@
-const moment = require("moment");
-
 const models = require("../../models/index");
 const userService = require("../services/users_service");
 const partyService = require("../services/parties_service");
 const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
 const checkErrorService = require("../utils/check_error");
-const { BadRequest } = require("../utils/errors");
 
 module.exports = {
   //
@@ -40,40 +37,52 @@ module.exports = {
         const message = [];
         // TODO: wait refactor to util method
         if (!head_party) {
-          message.push("Owner party invalid");
+          return res.status(400).json({ message: "Owner party invalid" });
         }
         if (!restaurant) {
-          message.push("Restaurant not found");
+          return res.status(400).json({ message: "Restaurant not found" });
         }
         if (!req.body.party_type) {
-          message.push("party type cannot be null");
+          return res.status(400).json({ message: "party type cannot be null" });
         } else if (
           !checkErrorService.checkMatchEnum("PARTY_TYPE", req.body.party_type)
         ) {
-          message.push("party type is invalid");
+          return res.status(400).json({ message: "party type is invalid" });
         }
         if (!req.body.party_name) {
-          message.push("party name cannot be null");
+          return res.status(400).json({ message: "party name cannot be null" });
         }
         if (
           req.body.party_type === ENUM.PARTY_TYPE.PRIVATE &&
           !req.body.passcode
         ) {
-          message.push("if party type is private passcode can not be null");
+          return res
+            .status(400)
+            .json({
+              message: "if party type is private passcode can not be null",
+            });
         }
         if (!req.body.interested_topic) {
-          message.push("interest topic can not be null");
+          return res
+            .status(400)
+            .json({ message: "interest topic can not be null" });
         }
         if (!req.body.interested_tag) {
-          message.push("interest tag can not be null");
+          return res
+            .status(400)
+            .json({ message: "interest tag can not be null" });
         }
         if (req.body.max_member === undefined) {
-          message.push("max maxber cannot be null");
+          return res.status(400).json({ message: "max maxber cannot be null" });
         } else if (req.body.max_member < 1) {
-          message.push("max member must be more than 0");
+          return res
+            .status(400)
+            .json({ message: "max member must be more than 0" });
         }
         if (!req.body.schedule_time) {
-          message.push("schedule time cannot be null");
+          return res
+            .status(400)
+            .json({ message: "schedule time cannot be null" });
         }
 
         if (message.length > 0) {
@@ -166,7 +175,7 @@ module.exports = {
       // TODO: wait jwt
       // if (party.head_party !== req.body.user_id) {
       //   res.status(403).json({
-      //     message: "Only party owner can view request join party",
+      //     message: "Permission Denied",
       //   });
       // }
       const data = await partyService.requestJoinList({
@@ -357,8 +366,8 @@ module.exports = {
         });
         if (findUserInParty.length > 0) {
           return res.status(400).json({
-            message: "update failed"
-          })
+            message: "update failed",
+          });
         }
       }
 

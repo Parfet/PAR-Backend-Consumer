@@ -85,23 +85,31 @@ Status 200
 > ### Error Response
 
 ```
+Status 400
 {
     "message": "Invalid Request"
 }
-
- {
-     "message": {
-        "message": [
-            "Owner party invalid",
-            "party type cannot be null",
-            "party name cannot be null",
-            "interest topic can not be null",
-            "interest tag can not be null",
-            "max maxber cannot be null",
-            "schedule time cannot be null
-        ]
-    }
- }
+{
+    message: "Owner party invalid",
+}
+{
+    message: "party type cannot be null",
+}
+{
+    message: "party name cannot be null",
+}
+{
+    message: "interest topic can not be null"
+},
+{
+    message: "interest tag can not be null"
+},
+{
+    message: "max maxber cannot be null",
+}
+{
+    message: "schedule time cannot be null"
+},
 ```
 
 > ### Notes
@@ -186,11 +194,16 @@ Status 403
 ```
 Status 400
 {
-    "message": [
-        "User not found",
-        "Party not found",
-        "Passcode incorrect"
-    ]
+    message: "User not found"
+}
+{
+    message: "Party not found"
+}
+{
+    message: "Passcode incorrect"
+}
+{
+    message: "You already request to join this party"
 }
 Status 500
 {
@@ -231,7 +244,7 @@ Status 500
 ```
 Status 403
 {
-    "message": "Only party owner can close party."
+    "message": "Permission Denied"
 }
 Status 500
 {
@@ -345,12 +358,14 @@ Status 500
 ```
 Status 403
 {
-    "message": "Party not found"
+    "message": "Permission Denied"
+}
+Status 400
 {
-    "message": "User not found"
+    "message": "Party not found"
 }
 {
-    "message": "Only member can assign to be party owner."
+    "message": "User not found"
 }
 {
     "message": "Party type invalid"
