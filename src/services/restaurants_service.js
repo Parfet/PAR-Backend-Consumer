@@ -10,9 +10,12 @@ const createParty = async ({ restaurant_id, party_id }) => {
   return data;
 };
 
-const findAllRestaurant = async () => restaurantModel.findAll();
+const findAllRestaurant = async ({ query }) => restaurantModel.findAll({
+  where: query
+});
 
-const findRestaurantByRestaurantId = async ({ restaurant_id }) => restaurantModel.findByPk(restaurant_id)
+const findRestaurantByRestaurantId = async ({ restaurant_id }) =>
+  restaurantModel.findByPk(restaurant_id);
 module.exports = {
   createParty,
   findAllRestaurant,
