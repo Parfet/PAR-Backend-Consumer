@@ -8,10 +8,12 @@
 
     GET
 
-> ### Request Body
+> ### Request Param
 
 ```
-
+{
+    status: ENUM<RESTAURANT_AVAILABLE>
+}
 ```
 
 > ### Success Response
