@@ -85,7 +85,7 @@ const findPartyByPartyId = async ({ party_id }) =>
       {
         model: interestTagModel,
         as: "interest_tags",
-        attributes: [["tag_id", "value"], "tag_name", "label"],
+        attributes: [["tag_id", "value"], ["tag_name", "label"]],
         through: {
           attributes: [],
         }
