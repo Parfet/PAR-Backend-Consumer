@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       InterestTags.belongsToMany(models.parties, {
         through: models.parties_interest_tags,
         foreignKey: "tag_id",
+        constraint: false,
       });
     }
   }

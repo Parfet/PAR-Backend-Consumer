@@ -4,8 +4,7 @@ module.exports = {
     await queryInterface.createTable("parties_interest_tags", {
       party_id: {
         type: Sequelize.UUID,
-        primaryKey: true,
-        unique: false,
+        allowNull: false,
       },
       tag_id: {
         type: Sequelize.UUID,

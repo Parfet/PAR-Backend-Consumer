@@ -23,82 +23,81 @@ module.exports = {
    */
   createParty: async (req, res) => {
     try {
+      const {
+        party_type,
+        party_name,
+        passcode,
+        interested_topic,
+        interest_tags,
+        max_member,
+        schedule_time,
+        head_party,
+      } = req.body;
       if (Object.keys(req.body).length === 0) {
         res.status(400).json({ message: "Invalid Request" });
       } else {
         // * check is owner is member of system
-        const head_party = await models.users.findByPk(req.body.head_party);
+        const _head_party = await models.users.findByPk(head_party);
         // * check isValid restaurant
         const restaurant = await restaurantService.findRestaurantByRestaurantId(
           {
             restaurant_id: req.params.restaurant_id,
           }
         );
-        const message = [];
         // TODO: wait refactor to util method
-        if (!head_party) {
+        if (!_head_party) {
           return res.status(400).json({ message: "Owner party invalid" });
         }
         if (!restaurant) {
           return res.status(400).json({ message: "Restaurant not found" });
         }
-        if (!req.body.party_type) {
+        if (!party_type) {
           return res.status(400).json({ message: "party type cannot be null" });
         } else if (
-          !checkErrorService.checkMatchEnum("PARTY_TYPE", req.body.party_type)
+          !checkErrorService.checkMatchEnum("PARTY_TYPE", party_type)
         ) {
           return res.status(400).json({ message: "party type is invalid" });
         }
-        if (!req.body.party_name) {
+        if (!party_name) {
           return res.status(400).json({ message: "party name cannot be null" });
         }
-        if (
-          req.body.party_type === ENUM.PARTY_TYPE.PRIVATE &&
-          !req.body.passcode
-        ) {
-          return res
-            .status(400)
-            .json({
-              message: "if party type is private passcode can not be null",
-            });
+        if (party_type === ENUM.PARTY_TYPE.PRIVATE && !passcode) {
+          return res.status(400).json({
+            message: "if party type is private passcode can not be null",
+          });
         }
-        if (!req.body.interested_topic) {
+        if (!interested_topic) {
           return res
             .status(400)
             .json({ message: "interest topic can not be null" });
         }
-        if (!req.body.interested_tag) {
+        if (!interest_tags) {
           return res
             .status(400)
             .json({ message: "interest tag can not be null" });
         }
-        if (req.body.max_member === undefined) {
+        if (!max_member) {
           return res.status(400).json({ message: "max maxber cannot be null" });
-        } else if (req.body.max_member < 1) {
+        } else if (max_member < 1) {
           return res
             .status(400)
             .json({ message: "max member must be more than 0" });
         }
-        if (!req.body.schedule_time) {
+        if (!schedule_time) {
           return res
             .status(400)
             .json({ message: "schedule time cannot be null" });
         }
-
-        if (message.length > 0) {
-          res.status(400).json({ message: [...message] });
-        }
       }
 
       const party = await partyService.createParty({
-        head_party: req.body.head_party,
-        party_name: req.body.party_name,
-        passcode: req.body.passcode,
-        party_type: req.body.party_type,
-        interested_topic: req.body.interested_topic,
-        interested_tag: req.body.interested_tag,
-        max_member: req.body.max_member,
-        schedule_time: req.body.schedule_time,
+        head_party: head_party,
+        party_name: party_name,
+        passcode: passcode,
+        party_type: party_type,
+        interested_topic: interested_topic,
+        max_member: max_member,
+        schedule_time: schedule_time,
       });
 
       await restaurantService.createParty({
@@ -107,17 +106,32 @@ module.exports = {
       });
 
       await partyService.joinParty({
-        user_id: req.body.head_party,
+        user_id: head_party,
         party_id: party.party_id,
         status: ENUM.REQUEST_STATUS.ACCEPT,
       });
+
+      interest_tags.forEach(
+        async (e) =>
+          await models.parties_interest_tags.create({
+            party_id: party.party_id,
+            tag_id: e,
+          })
+      );
+
+      for (let i = 0; i < interest_tags.length; i++) {
+        await models.parties_interest_tags.create({
+          party_id: party.party_id,
+          tag_id: interest_tags[i]
+        })
+      }
 
       return res.status(200).json({
         party_id: party.party_id,
       });
     } catch (e) {
-      return res.status(400).json({
-        message: e,
+      return res.status(500).json({
+        message: e.message,
       });
     }
   },
@@ -391,4 +405,11 @@ module.exports = {
       });
     }
   },
+
+  getAllTag: async (_, res) => {
+    const data = await partyService.getInterestTag();
+    return res.status(200).json({
+      tags: data
+    })
+  }
 };

@@ -22,20 +22,42 @@
 Status 204,
 Status 200
 {
-    "parties": [
+    parties: [
         {
-            "party_id": UUID,
-            "party_name": String,
-            "passcode": String,
-            "party_type": ENUM<PARTY_TYPE>,
-            "interested_topic": String,
-            "interested_tag": [ UUID<interest_tag_id> ],
-            "max_member": int,
-            "schedule_time": "2021-04-09T15:51:41.000Z",
-            "created_at": "2021-04-17T11:47:17.000Z",
-            "archived_at": "2021-04-17T11:47:17.000Z",
-            "members": [ UUID<user_id>],
-            "head_party_user_id": UUID
+            party_id: UUID<party_id>,
+            party_name: String,
+            head_party: UUID<user_id>
+            passcode: String,
+            party_type: ENUM<PARTY_TYPE>,
+            interested_topic: String,
+            max_member: int,
+            schedule_time: 2021-04-09T15:51:41.000Z,
+            created_at: 2021-04-17T11:47:17.000Z,
+            archived_at: 2021-04-17T11:47:17.000Z,
+            members: [
+                {
+                    user_id: UUID<user_id>,
+                    username: String,
+                    email: Strin,
+                    first_name_th: String,
+                    last_name_th: String,
+                    first_name_en: String
+                    last_name_en: String,
+                    tel_no: String,
+                    verify_status: bool,
+                    created_at: DateTime,
+                    updated_at: DateTime,
+                    archived_at: DateTime,
+                    deleted_at: DateTime,
+                    image_url: String,
+                },
+            ],
+            interest_tags: [
+                {
+                    tag_id: UUID<tag_id>,
+                    tag_name: String,
+                },
+            ],
         }
     ]
 }
@@ -64,14 +86,14 @@ Status 200
 
 ```
 {
-    "head_party": UUID<user_id>,
-    "party_name": String,
-    "party_type": enum("PRIVATE", "PUBLIC"),
-    "passcode": String length 6,
-    "interested_topic": String,
-    "interested_tag": [ UUID<interest_tag_id> ],
-    "max_member": int,
-    "schedule_time": "2021-04-09 22:51:41"
+    head_party: UUID<user_id>,
+    party_name: String,
+    party_type: enum(PRIVATE, PUBLIC),
+    passcode: String length 6,
+    interested_topic: String,
+    interest_tags: [ UUID<interest_tag_id> ],
+    max_member: int,
+    schedule_time: DateTime
 }
 ```
 
@@ -80,7 +102,7 @@ Status 200
 ```
 Status 200
 {
-    "party_id": UUID<party_id>
+    party_id: UUID<party_id>
 }
 ```
 
@@ -89,28 +111,28 @@ Status 200
 ```
 Status 400
 {
-    "message": "Invalid Request"
+    message: Invalid Request
 }
 {
-    message: "Owner party invalid",
+    message: Owner party invalid,
 }
 {
-    message: "party type cannot be null",
+    message: party type cannot be null,
 }
 {
-    message: "party name cannot be null",
+    message: party name cannot be null,
 }
 {
-    message: "interest topic can not be null"
+    message: interest topic can not be null
 },
 {
-    message: "interest tag can not be null"
+    message: interest tag can not be null
 },
 {
-    message: "max maxber cannot be null",
+    message: max maxber cannot be null,
 }
 {
-    message: "schedule time cannot be null"
+    message: schedule time cannot be null
 },
 ```
 
@@ -138,12 +160,12 @@ Status 400
 Status 204,
 Status 200
 {
-    "request": [
+    request: [
         {
-            "party_id": UUID<party_id>,
-            "user_id": UUID<user_id>,
-            "status": ENUM<PARTY_STATUS>,
-            "rating": float
+            party_id: UUID<party_id>,
+            user_id: UUID<user_id>,
+            status: ENUM<PARTY_STATUS>,
+            rating: float
         }
     ]
 }
@@ -154,11 +176,11 @@ Status 200
 ```
 Status 400
 {
-    "message": "Party not found"
+    message: Party not found
 }
 Status 403
 {
-    "message": "Permission Denied"
+    message: Permission Denied
 }
 ```
 
@@ -178,8 +200,8 @@ Status 403
 
 ```
 {
-    "user_id": UUID<user_id>,
-    "passcode": String
+    user_id: UUID<user_id>,
+    passcode: String
 }
 ```
 
@@ -187,7 +209,7 @@ Status 403
 
 ```
 {
-    "message": "Request Success"
+    message: Request Success
 }
 ```
 
@@ -196,20 +218,20 @@ Status 403
 ```
 Status 400
 {
-    message: "User not found"
+    message: User not found
 }
 {
-    message: "Party not found"
+    message: Party not found
 }
 {
-    message: "Passcode incorrect"
+    message: Passcode incorrect
 }
 {
-    message: "You already request to join this party"
+    message: You already request to join this party
 }
 Status 500
 {
-    "message": "Cannot join party"
+    message: Cannot join party
 }
 ```
 
@@ -229,7 +251,7 @@ Status 500
 
 ```
 {
-    "user_id": UUID<user_id>
+    user_id: UUID<user_id>
 }
 ```
 
@@ -237,7 +259,7 @@ Status 500
 
 ```
 {
-    "message": "archive success"
+    message: archive success
 }
 ```
 
@@ -246,11 +268,11 @@ Status 500
 ```
 Status 403
 {
-    "message": "Permission Denied"
+    message: Permission Denied
 }
 Status 500
 {
-    "message": "archive failed"
+    message: archive failed
 }
 ```
 
@@ -276,36 +298,36 @@ Status 500
 
 ```
 {
-    "party": {
-        "party_id": UUID<party_id>,
-        "party_name": String,
-        "head_party": UUID<user_id>,
-        "passcode": String,
-        "party_type": ENUM<PARTY_TYPE>,
-        "interested_topic": String,
-        "interested_tag": UUID<tag_id>[],
-        "max_member": int,
-        "schedule_time": "2021-04-09T15:51:41.000Z",
-        "created_at": "2021-04-29T19:18:42.000Z",
-        "archived_at": null,
-        "updated_at": null,
-        "members": [
+    party: {
+        party_id: UUID<party_id>,
+        party_name: String,
+        head_party: UUID<user_id>,
+        passcode: String,
+        party_type: ENUM<PARTY_TYPE>,
+        interested_topic: String,
+        interested_tag: UUID<tag_id>[],
+        max_member: int,
+        schedule_time: 2021-04-09T15:51:41.000Z,
+        created_at: 2021-04-29T19:18:42.000Z,
+        archived_at: null,
+        updated_at: null,
+        members: [
             {
-                "user_id": UUID<user_id>,
-                "username": String,
-                "email": String,
-                "password": String,
-                "first_name_th": String,
-                "last_name_th": String,
-                "first_name_en": String,
-                "last_name_en": String,
-                "tel_no": String,
-                "verify_status": bool,
-                "created_at": "2021-04-24T18:50:18.000Z",
-                "updated_at": "2021-07-29T18:50:18.000Z",
-                "archived_at": "2021-08-29T18:50:18.000Z",
-                "deleted_at": null,
-                "image_url": null
+                user_id: UUID<user_id>,
+                username: String,
+                email: String,
+                password: String,
+                first_name_th: String,
+                last_name_th: String,
+                first_name_en: String,
+                last_name_en: String,
+                tel_no: String,
+                verify_status: bool,
+                created_at: 2021-04-24T18:50:18.000Z,
+                updated_at: 2021-07-29T18:50:18.000Z,
+                archived_at: 2021-08-29T18:50:18.000Z,
+                deleted_at: null,
+                image_url: null
             }
         ]
     }
@@ -342,7 +364,7 @@ Status 500
       interested_topic: String,
       interested_tag: UUID<tag_id>[],
       max_member: int,
-      schedule_time: "2021-04-24T18:50:18.000Z",
+      schedule_time: 2021-04-24T18:50:18.000Z,
     },
 }
 ```
@@ -351,7 +373,7 @@ Status 500
 
 ```
 {
-    "message": "update success"
+    message: update success
 }
 ```
 
@@ -360,24 +382,24 @@ Status 500
 ```
 Status 403
 {
-    "message": "Permission Denied"
+    message: Permission Denied
 }
 Status 400
 {
-    "message": "Party not found"
+    message: Party not found
 }
 {
-    "message": "User not found"
+    message: User not found
 }
 {
-    "message": "Party type invalid"
+    message: Party type invalid
 }
 {
-    "message": "Private party must have passcode"
+    message: Private party must have passcode
 }
 Status 500 
 {
-    "message": "update failed"
+    message: update failed
 }
 ```
 
@@ -406,7 +428,7 @@ Status 500
 
 ```
 {
-    message: "update success"
+    message: update success
 }
 ```
 
@@ -415,21 +437,58 @@ Status 500
 ```
 Status 400
 {
-    message: "Status is invalid"
+    message: Status is invalid
 }
 {
-    message: "User is invalid"
+    message: User is invalid
 }
 {
-    message: "User not found"
+    message: User not found
 }
 {
-    message: "update failed"
+    message: update failed
 }
 Status 500
 {
-    message: "update failed"
+    message: update failed
 }
+
+```
+
+> ### Notes
+
+-
+
+9. Get All Tags
+
+` https://${url}/party/tags`
+
+> ### Method
+
+    GET
+
+> ### Request Body
+
+```
+
+```
+
+> ### Success Response
+
+```
+{
+    tags: [
+        {
+            tag_id: UUID<tag_id>,
+            tag_name: String
+        }
+    ]
+}
+```
+
+> ### Error Response
+
+```
 
 ```
 

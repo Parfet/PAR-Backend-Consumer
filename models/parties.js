@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       Parties.belongsToMany(models.interest_tags, {
         through: models.parties_interest_tags,
         foreignKey: "party_id",
+        as: "interest_tags",
+        constraint: false,
       });
     }
   }
@@ -56,10 +58,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       interested_topic: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      interested_tag: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
         allowNull: false,
       },
       max_member: {

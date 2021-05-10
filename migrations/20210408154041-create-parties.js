@@ -23,10 +23,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      interested_tag: {
-        type: Sequelize.ARRAY(Sequelize.UUID),
-        allowNull: false,
-      },
       max_member: {
         type: Sequelize.INTEGER,
         allowNull: false,

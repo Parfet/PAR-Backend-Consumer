@@ -7,8 +7,16 @@ const userModel = models.users;
 const userPartyModel = models.users_parties;
 const restaurantModel = models.restaurants;
 const ratingUserModel = models.rating_users;
+const interestTagModel = models.interest_tags;
+const partiesInterestTagModel = models.parties_interest_tags;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
+
+const deletePartyById = async ({ party_id }) => partyModel.delete({
+  where: {
+    party_id: party_id,
+  }
+})
 
 const findPartyByRestaurantId = async ({ restaurant_id }) => {
   const data = restaurantModel.findAll({
@@ -23,21 +31,31 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       through: {
         attributes: [],
       },
-      include: {
-        model: userModel,
-        attributes: {
-          exclude: ["password"],
-        },
-        as: "members",
-        through: {
-          attributes: [],
-          where: {
-            status: {
-              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+      include: [
+        {
+          model: userModel,
+          as: "members",
+          attributes: {
+            exclude: ["password"],
+          },
+          through: {
+            attributes: [],
+            where: {
+              status: {
+                [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+              },
             },
           },
         },
-      },
+        {
+          model: interestTagModel,
+          as: "interest_tags",
+          attributes: ["tag_id", "tag_name"],
+          through: {
+            attributes: [],
+          }
+        },
+      ],
     },
   });
   return data;
@@ -48,21 +66,31 @@ const findPartyByPartyId = async ({ party_id }) =>
     where: {
       party_id: party_id,
     },
-    include: {
-      model: userModel,
-      as: "members",
-      attributes: {
-        exclude: ["password"],
-      },
-      through: {
-        attributes: [],
-        where: {
-          status: {
-            [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+    include: [
+      {
+        model: userModel,
+        as: "members",
+        attributes: {
+          exclude: ["password"],
+        },
+        through: {
+          attributes: [],
+          where: {
+            status: {
+              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+            },
           },
         },
       },
-    },
+      {
+        model: interestTagModel,
+        as: "interest_tags",
+        attributes: ["tag_id", "tag_name"],
+        through: {
+          attributes: [],
+        }
+      },
+    ],
   });
 
 const createParty = async ({
@@ -71,7 +99,6 @@ const createParty = async ({
   passcode,
   party_type,
   interested_topic,
-  interested_tag,
   max_member,
   schedule_time,
 }) => {
@@ -82,7 +109,6 @@ const createParty = async ({
     passcode: passcode,
     party_type: party_type,
     interested_topic: interested_topic,
-    interested_tag: interested_tag,
     max_member: max_member,
     member: [],
     schedule_time: schedule_time,
@@ -262,6 +288,8 @@ const handleCheckMemberRequest = async ({ party_id, user_id }) =>
     },
   });
 
+const getInterestTag = async () => interestTagModel.findAll();
+
 module.exports = {
   findPartyByRestaurantId,
   findPartyByPartyId,
@@ -274,4 +302,6 @@ module.exports = {
   requestJoinByUserId,
   handleMemberRequest,
   handleCheckMemberRequest,
+  deletePartyById,
+  getInterestTag,
 };

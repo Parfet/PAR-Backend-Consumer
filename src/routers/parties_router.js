@@ -4,6 +4,8 @@ const partiesController = require("../controllers/parties_controller");
 
 const partiesRouter = express.Router();
 
+partiesRouter.get("/tags", partiesController.getAllTag);
+
 partiesRouter.get(
   "/:restaurant_id",
   partiesController.getAllPartyByRestaurantId
