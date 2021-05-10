@@ -54,8 +54,8 @@ Status 200
             ],
             interest_tags: [
                 {
-                    tag_id: UUID<tag_id>,
-                    tag_name: String,
+                    value: UUID<tag_id>,
+                    label: String,
                 },
             ],
         }
@@ -479,8 +479,8 @@ Status 500
 {
     tags: [
         {
-            tag_id: UUID<tag_id>,
-            tag_name: String
+            value: UUID<tag_id>,
+            label: String
         }
     ]
 }

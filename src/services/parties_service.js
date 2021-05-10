@@ -50,7 +50,7 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
         {
           model: interestTagModel,
           as: "interest_tags",
-          attributes: ["tag_id", "tag_name"],
+          attributes: [["tag_id", "value"], ["tag_name", "label"]],
           through: {
             attributes: [],
           }
@@ -85,7 +85,7 @@ const findPartyByPartyId = async ({ party_id }) =>
       {
         model: interestTagModel,
         as: "interest_tags",
-        attributes: ["tag_id", "tag_name"],
+        attributes: [["tag_id", "value"], "tag_name", "label"],
         through: {
           attributes: [],
         }
@@ -110,7 +110,6 @@ const createParty = async ({
     party_type: party_type,
     interested_topic: interested_topic,
     max_member: max_member,
-    member: [],
     schedule_time: schedule_time,
     created_at: moment().format(),
   });
@@ -288,7 +287,9 @@ const handleCheckMemberRequest = async ({ party_id, user_id }) =>
     },
   });
 
-const getInterestTag = async () => interestTagModel.findAll();
+const getInterestTag = async () => interestTagModel.findAll({
+  attributes: [["tag_id", "value"], ["tag_name", "label"]],
+});
 
 module.exports = {
   findPartyByRestaurantId,
