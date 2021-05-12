@@ -1,65 +1,69 @@
 pipeline {
+
     agent any
+
     stages {
-        stage("Preparing") {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo ' Yarn installation for main '
-            }
-            when {
-                branch 'staging'
-            }
-            steps {
-                echo ' Yarn installation for staging '
-            }
-            when {
-                branch 'develop'
-            }
-            steps {
-                echo ' Yarn installation for develop '
-            }
+        stage("prepare for production") {
             when {
                 branch 'feature/party_management'
             }
             steps {
-                echo ' Yarn installation for party_management '
-                nodejs(nodeJSInstallationName:'nodejs') {
-                    sh 'yarn install'
-                    sh 'yarn add --dev typescript'
-                }
-            }
-        }
-        stage("build") {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo ' Executing command for main'
-            }
-            when {
-                branch 'staging'
-            }
-            steps {
-                echo ' Executing command for staging '
-            }
+
+                echo ' Executing command for production '
+
+                withCredentials([file(credentialsId: 'APIenv' , variable: 'Env')]){
+                    sh 'chmod 700 $WORKSPACE/.env || :'
+                    sh 'rm -rf $WORKSPACE/.env || :'
+                    sh 'cp $Env $WORKSPACE'                    
+                } // End credential step
+
+                sh 'docker-compose down --rmi local || :'
+                sh 'docker-compose up -d --build'
+                sh 'docker ps -a'
+
+            } // End steps
+        } // End stage 
+        stage("prepare for development") {
             when {
                 branch 'develop'
             }
             steps {
-                echo ' Executing command for develop '
-            }
+
+                echo ' Executing command for development '
+
+                withCredentials([file(credentialsId: 'APIenv' , variable: 'Env')]){
+                    sh 'chmod 700 $WORKSPACE/.env || :'
+                    sh 'rm -rf $WORKSPACE/.env || :'
+                    sh 'cp $Env $WORKSPACE'                    
+                } // End credential step
+
+                sh 'docker-compose down --rmi local || :'
+                sh 'docker-compose up -d --build'
+                sh 'docker ps -a'
+                
+            } // End steps
+        } // End stage 
+        stage("prepare for testing") {
             when {
                 branch 'feature/party_management'
             }
             steps {
-                echo ' Executing command for feature/party_management '
-                nodejs(nodeJSInstallationName:'nodejs') {
-                    sh 'pm2 delete ${JOB_NAME} || :'
-                    sh 'pm2 start yarn --name "${JOB_NAME}" -- start'
-                }
-            }
-        }
-    }
-}
+
+                echo ' Executing command for feature testing '
+
+                withCredentials([file(credentialsId: 'APIenv' , variable: 'Env')]){
+                    sh 'chmod 700 $WORKSPACE/.env || :'
+                    sh 'rm -rf $WORKSPACE/.env || :'
+                    sh 'cp $Env $WORKSPACE'                    
+                } // End credential step
+
+                sh 'docker-compose down --rmi local || :'
+                sh 'docker-compose up -d --build'
+                sh 'docker ps -a'
+                
+            } // End steps
+        } // End stage 
+
+    } // End stages
+    
+} // End pipeline
