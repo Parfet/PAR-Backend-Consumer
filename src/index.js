@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use("/auth", authRouter)
-app.use("/user", verifyToken, usersRouter);
+app.use("/user", usersRouter);
 app.use("/party", verifyToken, partiesRouter);
 app.use("/restaurant", verifyToken, restaurantsRouter);
 
