@@ -107,6 +107,9 @@ module.exports = {
       const party = await partyService.getPartyByUserId({
         user_id: req.user,
       });
+      if (party.length <= 0) {
+        return res.status(204).json();
+      }
       return res.status(200).json({
         parties: party,
       });
