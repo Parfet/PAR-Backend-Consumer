@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       UsersParties.belongsTo(models.users, {
         foreignKey: "user_id",
       });
+      UsersParties.belongsTo(models.parties, {
+        foreignKey: "party_id",
+      });
     }
   }
   UsersParties.init(

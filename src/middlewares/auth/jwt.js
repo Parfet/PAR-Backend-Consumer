@@ -39,7 +39,7 @@ const verifyToken = (req, res, next) => {
         message: err.message,
       });
 
-    req.user = user;
+    req.user = user.id;
 
     next();
   });

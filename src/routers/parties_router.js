@@ -5,6 +5,7 @@ const partiesController = require("../controllers/parties_controller");
 const partiesRouter = express.Router();
 
 partiesRouter.get("/tags", partiesController.getAllTag);
+partiesRouter.get("/me", partiesController.getPartyByUserId);
 
 partiesRouter.get(
   "/:restaurant_id",
@@ -24,6 +25,9 @@ partiesRouter.post(
   partiesController.joinPartyByPartyId
 );
 
-partiesRouter.put("/info/:party_id/join", partiesController.handleMemberRequest)
+partiesRouter.put(
+  "/info/:party_id/join",
+  partiesController.handleMemberRequest
+);
 
 module.exports = partiesRouter;

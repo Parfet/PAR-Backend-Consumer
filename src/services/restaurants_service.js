@@ -2,10 +2,16 @@ const restaurantModel = require("../../models/index").restaurants;
 const restaurantAndPartyModel = require("../../models/index")
   .restaurants_parties;
 
-const createParty = async ({ restaurant_id, party_id }) => {
+const createParty = async ({ 
+  restaurant_id, 
+  party_id,
+  transaction,
+}) => {
   const data = await restaurantAndPartyModel.create({
     restaurant_id: restaurant_id,
     party_id: party_id,
+  }, {
+    transaction: transaction
   });
   return data;
 };

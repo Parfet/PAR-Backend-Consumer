@@ -1,3 +1,4 @@
+const { sequelize } = require("../../models/index");
 const models = require("../../models/index");
 const userService = require("../services/users_service");
 const partyService = require("../services/parties_service");
@@ -6,10 +7,117 @@ const ENUM = require("../constants/enum");
 const checkErrorService = require("../utils/check_error");
 
 module.exports = {
-  //
-  // * [POST] create party
-  // TODO: implement error if request invalid
-  // TODO: wait jwt and check head party user id from jwt
+  // ==== [GET] ====
+  /* 
+    @param rstaurant_id
+   */
+  getAllPartyByRestaurantId: async (req, res) => {
+    try {
+      const data = await partyService.findPartyByRestaurantId({
+        restaurant_id: req.params.restaurant_id,
+      });
+      if (data.length === 0) {
+        return res.status(204).json();
+      }
+      return res.status(200).json({
+        parties: data[0].parties,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  /* 
+    @param party_id
+  */
+  getPartyByPartyId: async (req, res) => {
+    try {
+      const data = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (!data) {
+        return res.status(204).send();
+      }
+      return res.status(200).json({
+        party: data[0],
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  checkMemberRequestList: async (req, res) => {
+    try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (!party) {
+        res.status(400).json({ message: "Party not found" });
+      }
+
+      if (party.head_party !== req.user) {
+        res.status(403).json({
+          message: "Permission Denied",
+        });
+      }
+      const data = await partyService.requestJoinList({
+        party_id: req.params.party_id,
+      });
+
+      if (data.length === 0) {
+        return res.status(204).json();
+      }
+      return res.status(200).json({
+        request: data,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  getAllTag: async (_, res) => {
+    try {
+      const data = await partyService.getInterestTag();
+      return res.status(200).json({
+        tags: data,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  getPartyByUserId: async (req, res) => {
+    try {
+      const user = await userService.getUserByUserId({
+        user_id: req.user,
+      });
+      if (!user) {
+        return res.staus(400).json({
+          message: "User not found",
+        });
+      }
+      const party = await partyService.getPartyByUserId({
+        user_id: req.user,
+      });
+      return res.status(200).json({
+        parties: party,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  // ==== [POST] ====
   /* 
   @param restaurant_id
   @body head_party
@@ -22,6 +130,7 @@ module.exports = {
   @body schedule_time
    */
   createParty: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
       const {
         party_type,
@@ -36,9 +145,7 @@ module.exports = {
       if (Object.keys(req.body).length === 0) {
         res.status(400).json({ message: "Invalid Request" });
       } else {
-        // * check is owner is member of system
         const _head_party = await models.users.findByPk(head_party);
-        // * check isValid restaurant
         const restaurant = await restaurantService.findRestaurantByRestaurantId(
           {
             restaurant_id: req.params.restaurant_id,
@@ -98,111 +205,38 @@ module.exports = {
         interested_topic: interested_topic,
         max_member: max_member,
         schedule_time: schedule_time,
+        transaction: transaction,
       });
 
       await restaurantService.createParty({
         restaurant_id: req.params.restaurant_id,
         party_id: party.party_id,
+        transaction: transaction,
       });
 
       await partyService.joinParty({
         user_id: head_party,
         party_id: party.party_id,
         status: ENUM.REQUEST_STATUS.ACCEPT,
+        transaction: transaction,
       });
 
-      interest_tags.forEach(
-        async (e) =>
-          await models.parties_interest_tags.create({
+      for (const interest_tag of interest_tags) {
+        await models.parties_interest_tags.create(
+          {
             party_id: party.party_id,
-            tag_id: e,
-          })
-      );
-
-      for (let i = 0; i < interest_tags.length; i++) {
-        await models.parties_interest_tags.create({
-          party_id: party.party_id,
-          tag_id: interest_tags[i]
-        })
+            tag_id: interest_tag,
+          },
+          { transaction }
+        );
       }
+      await transaction.commit();
 
       return res.status(200).json({
         party_id: party.party_id,
       });
     } catch (e) {
-      return res.status(500).json({
-        message: e.message,
-      });
-    }
-  },
-
-  /* 
-    @param rstaurant_id
-   */
-  getAllPartyByRestaurantId: async (req, res) => {
-    try {
-      const data = await partyService.findPartyByRestaurantId({
-        restaurant_id: req.params.restaurant_id,
-      });
-      if (data.length === 0) {
-        return res.status(204).json();
-      }
-      return res.status(200).json({
-        parties: data[0].parties,
-      });
-    } catch (e) {
-      return res.status(500).json({
-        message: e.message,
-      });
-    }
-  },
-
-  /* 
-    @param party_id
-  */
-  getPartyByPartyId: async (req, res) => {
-    try {
-      const data = await partyService.findPartyByPartyId({
-        party_id: req.params.party_id,
-      });
-      if (!data) {
-        return res.status(204).send();
-      }
-      return res.status(200).json({
-        party: data[0],
-      });
-    } catch (e) {
-      return res.status(500).json({
-        message: e.message,
-      });
-    }
-  },
-
-  checkMemberRequestList: async (req, res) => {
-    try {
-      const party = await partyService.findPartyByPartyId({
-        party_id: req.params.party_id,
-      });
-      if (!party) {
-        res.status(400).json({ message: "Party not found" });
-      }
-      // TODO: wait jwt
-      // if (party.head_party !== req.body.user_id) {
-      //   res.status(403).json({
-      //     message: "Permission Denied",
-      //   });
-      // }
-      const data = await partyService.requestJoinList({
-        party_id: req.params.party_id,
-      });
-
-      if (data.length === 0) {
-        return res.status(204).json();
-      }
-      return res.status(200).json({
-        request: data,
-      });
-    } catch (e) {
+      await transaction.rollback();
       return res.status(500).json({
         message: e.message,
       });
@@ -210,6 +244,7 @@ module.exports = {
   },
 
   joinPartyByPartyId: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
@@ -223,6 +258,7 @@ module.exports = {
       ) {
         res.status(400).json({ message: "Passcode incorrect" });
       }
+
       const everJoin = await partyService.requestJoinByUserId({
         party_id: party[0].party_id,
         user_id: req.body.user_id,
@@ -232,26 +268,31 @@ module.exports = {
           .status(400)
           .json({ message: "You already request to join this party" });
       }
+
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
         user_id: req.body.user_id,
         status: ENUM.REQUEST_STATUS.WATING,
+        transaction: transaction,
       });
       if (data.status === null) {
         return res.status(500).json({
           message: "Cannot join party",
         });
       }
+      await transaction.commit();
       return res.status(200).json({
         message: "Request Success",
       });
     } catch (e) {
+      await transaction.rollback();
       return res.status(500).json({
         message: e.message,
       });
     }
   },
 
+  // ==== [PUT] ====
   archivedParty: async (req, res) => {
     try {
       const party = await partyService.findPartyByPartyId({
@@ -286,26 +327,30 @@ module.exports = {
 
   updatePartyInfo: async (req, res) => {
     try {
-      // TODO: wait jwt check is party owner
       if (req.params.party_id) {
         const party = await partyService.findPartyByPartyId({
           party_id: req.params.party_id,
         });
         if (!party) {
-          res.status(400).json({ message: "Party not found" });
+          return res.status(400).json({ message: "Party not found" });
+        }
+        if (req.user !== party.head_party) {
+          return res.status(403).json({
+            message: "Permission Denied",
+          });
         }
       }
       if (req.body.head_party) {
         const user = await models.users.findByPk(req.body.head_party);
         if (!user) {
-          res.status(400).json({ message: "User not found" });
+          return res.status(400).json({ message: "User not found" });
         }
         const member = await partyService.checkIsMemberParty({
           party_id: req.params.party_id,
           user_id: user.user_id,
         });
         if (member.length === 0) {
-          res
+          return res
             .status(400)
             .json({ message: "Only member can assign to be party owner." });
         }
@@ -314,15 +359,18 @@ module.exports = {
         if (
           !checkErrorService.checkMatchEnum("PARTY_TYPE", req.body.party_type)
         ) {
-          res.status(400).json({ message: "Party type invalid" });
+          return res.status(400).json({ message: "Party type invalid" });
         }
         if (
           req.body.party_type === ENUM.PARTY_TYPE.PRIVATE &&
           !req.body.passcode
         ) {
-          res.status(400).json({ message: "Private party must have passcode" });
+          return res
+            .status(400)
+            .json({ message: "Private party must have passcode" });
         }
       }
+
       const data = await partyService.updatePartyInfo({
         party_id: req.params.party_id,
         party_name: req.body.party_name,
@@ -352,6 +400,7 @@ module.exports = {
   },
 
   handleMemberRequest: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
       if (
         !checkErrorService.checkMatchEnum("REQUEST_STATUS", req.body.status)
@@ -391,25 +440,21 @@ module.exports = {
       });
 
       if (data.includes(1)) {
+        await transaction.commit();
         return res.status(200).json({
           message: "update success",
         });
       } else {
+        await transaction.rollback();
         return res.status(500).json({
           message: "update failed",
         });
       }
     } catch (e) {
+      await transaction.rollback();
       return res.status(500).json({
         message: e.message,
       });
     }
   },
-
-  getAllTag: async (_, res) => {
-    const data = await partyService.getInterestTag();
-    return res.status(200).json({
-      tags: data
-    })
-  }
 };
