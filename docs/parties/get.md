@@ -73,7 +73,7 @@ Status 200
 
 ` https://${url}/party/info/:party_id/join`
 
-> ### Request Body
+> ### Request Param
 
 ```
 
@@ -117,7 +117,7 @@ Status 403
 
 ` https://${url}/party/info/:party_id`
 
-> ### Request Body
+> ### Request Param
 
 ```
 
@@ -177,7 +177,7 @@ Status 403
 
 ` https://${url}/party/tags`
 
-> ### Request Body
+> ### Request Param
 
 ```
 
@@ -192,6 +192,74 @@ Status 403
             value: UUID<tag_id>,
             label: String
         }
+    ]
+}
+```
+
+> ### Error Response
+
+```
+
+```
+
+> ### Notes
+
+-
+
+5. Get All Party By user id
+
+` https://${url}/party/me`
+
+> ### Request Param
+
+```
+
+```
+
+> ### Success Response
+
+```
+Status 204,
+Status 200
+{
+    parties: [
+        {
+            party_id: UUID<party_id>,
+            party_name: String,
+            head_party: UUID<user_id>,
+            passcode: String,
+            party_type: ENUM<PARTY_TYPE>,
+            interested_topic: String,
+            max_member: int,
+            schedule_time: DateTime,
+            created_at: DateTime,
+            archived_at: DateTime,
+            updated_at: DateTime,
+            members: [
+                {
+                    user_id: UUID<user_id>,
+                    username: String,
+                    email: String,
+                    first_name_th: String,
+                    last_name_th: String,
+                    first_name_en: String,
+                    last_name_en: String,
+                    tel_no: String,
+                    verify_status: bool,
+                    created_at: DateTime,
+                    updated_at: DateTime,
+                    archived_at: DateTime,
+                    deleted_at: DateTime,
+                    image_url: String
+                }
+            ],
+            interest_tags: [
+                {
+                    value: UUID<tag_id>,
+                    label: String
+                },
+            ]
+        },
     ]
 }
 ```
