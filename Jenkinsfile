@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage("prepare for production") {
             when {
-                branch 'feature/party_management'
+                branch 'main'
             }
             steps {
 
