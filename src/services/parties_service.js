@@ -315,8 +315,8 @@ const getInterestTag = async () =>
     ],
   });
 
-const getPartyByUserId = async ({ user_id }) =>
-  userPartyModel.findAll({
+const getPartyByUserId = async ({ user_id }) => {
+  const data = await userPartyModel.findAll({
     attributes: [],
     where: {
       user_id: user_id,
@@ -356,7 +356,16 @@ const getPartyByUserId = async ({ user_id }) =>
       ],
     },
   });
+  const partyTempArr = []
+  data.forEach((e) => {
+    partyTempArr.push(e.dataValues.party.dataValues)
+  });
+  for(let i = 0;i < data.length; i++){
+    data[i].dataValues = partyTempArr[i]
+  }
 
+  return data;
+};
 module.exports = {
   findPartyByRestaurantId,
   findPartyByPartyId,
