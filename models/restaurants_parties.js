@@ -1,38 +1,32 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class UserBlacklists extends Model {
+  class RestaurantsParties extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate(_models) {
       // define association here
     }
   }
-  UserBlacklists.init(
+  RestaurantsParties.init(
     {
-      user_id: {
+      restaurant_id: {
         type: DataTypes.UUID,
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
+        allowNull: false,
       },
-      blacklist_user_id: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
+      party_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
       },
     },
     {
       sequelize,
       timestamps: false,
-      modelName: "user_blacklists",
+      modelName: "restaurants_parties",
     }
   );
-  return UserBlacklists;
+  return RestaurantsParties;
 };

@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class UserBlacklists extends Model {
+  class InterestTags extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,30 +9,31 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      InterestTags.belongsToMany(models.parties, {
+        through: models.parties_interest_tags,
+        foreignKey: "tag_id",
+        constraint: false,
+      });
     }
   }
-  UserBlacklists.init(
+  InterestTags.init(
     {
-      user_id: {
+      tag_id: {
         type: DataTypes.UUID,
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-      blacklist_user_id: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
+      tag_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
       },
     },
     {
       sequelize,
       timestamps: false,
-      modelName: "user_blacklists",
+      modelName: "interest_tags",
     }
   );
-  return UserBlacklists;
+  return InterestTags;
 };
