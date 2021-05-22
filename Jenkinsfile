@@ -5,9 +5,7 @@ pipeline {
     stages {
         
         stage("prepare for feature/party_management") {
-            when {
-                branch 'feature/party_management'
-            }
+        
             steps {
 
                 echo ' Executing command for feature/management '
