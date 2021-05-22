@@ -1,10 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-const {
-  Users
-} = require('./users');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Parties extends Model {
     /**
@@ -14,59 +9,84 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Parties.belongsToMany(models.users, {
+        through: models.users_parties,
+        foreignKey: "party_id",
+        as: "members",
+        constraint: false,
+      });
+      Parties.hasMany(models.rating_restaurants, {
+        foreignKey: "party_id",
+      });
+      Parties.hasMany(models.rating_users, {
+        foreignKey: "party_id",
+      });
+      Parties.belongsToMany(models.restaurants, {
+        through: models.restaurants_parties,
+        foreignKey: "party_id",
+      });
+      Parties.belongsToMany(models.interest_tags, {
+        through: models.parties_interest_tags,
+        foreignKey: "party_id",
+        as: "interest_tags",
+        constraint: false,
+      });
     }
-  };
-  Parties.init({
-    party_id: {
-      type: DataType.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    head_party: {
-      type: DataTypes.UUID,
-      references: {
-        model: Users,
-        key: user_id,
+  }
+  Parties.init(
+    {
+      party_id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-      unique: true,
+      party_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      head_party: {
+        type: DataTypes.UUID,
+        references: {
+          table: "users",
+          fields: "user_id",
+        },
+      },
+      passcode: DataTypes.STRING,
+      party_type: {
+        type: DataTypes.ENUM("PRIVATE", "PUBLIC"),
+        allowNull: false,
+      },
+      interested_topic: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      max_member: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      schedule_time: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      archived_at: {
+        type: DataTypes.DATE,
+        defaultValue: null,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        defaultValue: null,
+      },
     },
-    party_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    passcode: DataTypes.STRING,
-    party_type: {
-      type: DataTypes.ENUM('PRIVATE', 'PUBLIC'),
-      allowNull: false,
-    },
-    interested_topic: DataTypes.STRING,
-    max_member: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    schedule_time: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    archived_at: {
-      type: DataTypes.DATE,
-      defaultValue: null,
-    },
-    member: {
-      type: DataTypes.ARRAY(DataTypes.UUID),
-      references: {
-        model: Users,
-        key: user_id,
-      }
-    },
-  }, {
-    sequelize,
-    modelName: 'parties',
-  });
-  Parties.belongsTo(Users);
+    {
+      sequelize,
+      modelName: "parties",
+      timestamps: false,
+      underscored: true,
+    }
+  );
   return Parties;
 };

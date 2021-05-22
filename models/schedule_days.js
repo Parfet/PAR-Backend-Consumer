@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class ScheduleDays extends Model {
     /**
@@ -11,23 +9,27 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      ScheduleDays.belongsTo(models.restaurants, {
+        foreignKey: "restaurant_id",
+      });
     }
-  };
-  ScheduleDays.init({
-    restaurant_id: {
-      type: DataTypes.UUID,
-      // references: {
-      //   model: Restaurant,
-      //   key: restaurant_id,
-      // },
+  }
+  ScheduleDays.init(
+    {
+      restaurant_id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+      },
+      schedule_day: {
+        type: DataTypes.ENUM(["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]),
+        allowNull: false,
+      },
     },
-    schedule_day: {
-      type: DataTypes.ENUM(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']),
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'schedule_days',
-  });
+    {
+      sequelize,
+      timestamps: false,
+      modelName: "schedule_days",
+    }
+  );
   return ScheduleDays;
 };
