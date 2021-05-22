@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("OPEN", "CLOSED"),
         allowNull: false,
       },
+      price: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+      },
       opened_time: {
         type: DataTypes.STRING,
         allowNull: false,
