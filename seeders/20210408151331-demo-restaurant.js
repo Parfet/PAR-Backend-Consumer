@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   return await queryInterface.bulkInsert('restaurants', [
+   return queryInterface.bulkInsert('restaurants', [
      {
       restaurant_id: uuidv4(),
       restaurant_name: 'ติดมัน',
@@ -63,6 +63,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return await queryInterface.bulkDelete('restaurants', null, {})
+    return queryInterface.bulkDelete('restaurants', null, {})
   }
 };
