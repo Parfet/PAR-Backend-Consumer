@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class UsersParties extends Model {
     /**
@@ -11,26 +9,34 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      UsersParties.belongsTo(models.users, {
+        foreignKey: "user_id",
+      });
+      UsersParties.belongsTo(models.parties, {
+        foreignKey: "party_id",
+      });
     }
-  };
-  UsersParties.init({
-    user_id: {
-      type: DataTypes.UUID,
-      // references: {
-      //   model: Users,
-      //   key: user_id,
-      // },
+  }
+  UsersParties.init(
+    {
+      party_id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        unique: false,
+      },
+      user_id: {
+        type: DataTypes.UUID,
+      },
+      status: {
+        type: DataTypes.ENUM(["ACCEPT", "DECLINE", "WAITING"]),
+        allowNull: false,
+      },
     },
-    party_id: {
-      type: DataTypes.UUID,
-      // references: {
-      //   model: Parties,
-      //   key: party_id,
-      // },
+    {
+      sequelize,
+      timestamps: false,
+      modelName: "users_parties",
     }
-  }, {
-    sequelize,
-    modelName: 'users_parties',
-  });
+  );
   return UsersParties;
 };

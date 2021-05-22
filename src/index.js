@@ -1,58 +1,27 @@
+require("dotenv").config();
 const express = require("express");
-const expressWinston = require("express-winston");
-const winston = require("winston");
+const cors = require("cors");
 const app = express();
-const Sequelize = require('sequelize');
-const moment = require('moment-timezone');
 
-const sequelize = new Sequelize('parfet', 'dev', '', {
-    host: 'localhost',
-    dialect: 'postgres',
-    logging: winston.info
-})
+const handleErrors = require("./middlewares/handle_errors");
+const { verifyToken } = require("./middlewares/auth/jwt");
 
-app.use(express.urlencoded({ extended: false}))
-app.use(express.json())
+const usersRouter = require("./routers/users_router");
+const partiesRouter = require("./routers/parties_router");
+const restaurantsRouter = require("./routers/restaurants_router");
+const authRouter = require('./routers/auth_router')
 
-app.use(
-  expressWinston.logger({
-    transports: [new winston.transports.Console()],
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.json()
-    ),
-  })
-);
+app.use(cors());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-app.use("/api", (_req, res, _next) => {
-  res.json({
-    message: "Hi This is API service.",
-  });
+app.use("/auth", authRouter)
+app.use("/user", usersRouter);
+app.use("/party", verifyToken, partiesRouter);
+app.use("/restaurant", verifyToken, restaurantsRouter);
+
+app.use(handleErrors);
+
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Run on http://localhost:${process.env.APP_PORT}`);
 });
-
-app.use("/test", async (_req, res, _next) => {
-    try{
-        const response = await sequelize.authenticate();
-        console.log(`Response: ${response}`)
-        console.log(`Moment: ${moment(moment().toDate()).format()}`);
-        res.json({
-            response: "haha"
-        })
-    }catch (e) {
-        console.log('Failed by', e)
-    }
-})
-
-app.use(expressWinston.errorLogger({
-    transports: [
-        new winston.transports.Console()
-    ],
-    format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.json()
-    )
-}));
-
-app.listen(3000, () => {
-    console.log("Run on http://localhost:3000");
-})

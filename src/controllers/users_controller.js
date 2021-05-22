@@ -1,9 +1,16 @@
-const express = require('express')
+const userService = require("../services/users_service");
 
-export const getUser = async (req, res) => {
-    try{
-        
-    }catch (e) {
-        
+module.exports = {
+  getAllUser: async (_req, res) => {
+    try {
+      const user = await userService.getAllUser();
+      res.json({
+        users: user,
+      });
+    } catch (e) {
+      res.json({
+        message: e,
+      });
     }
-}
+  },
+};

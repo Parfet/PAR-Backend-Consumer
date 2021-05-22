@@ -7,7 +7,7 @@ pipeline {
             
             steps {
 
-                echo ' Executing command for production '
+                echo ' Executing command for staging '
 
                 withCredentials([file(credentialsId: 'APIenv' , variable: 'Env')]){
                     sh 'chmod 700 $WORKSPACE/.env || :'
