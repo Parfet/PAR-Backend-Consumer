@@ -55,11 +55,11 @@ module.exports = {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (!party) {
+      if (!party[0]) {
         res.status(400).json({ message: "Party not found" });
       }
 
-      if (party.head_party !== req.user) {
+      if (party[0].head_party !== req.user) {
         res.status(403).json({
           message: "Permission Denied",
         });
