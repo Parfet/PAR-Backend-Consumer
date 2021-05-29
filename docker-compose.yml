@@ -1,7 +1,7 @@
 version: '3.8'
 services:
  par-api:
-    container_name: parfet-api-consumer
+    container_name: parfet-api-consumer-staging
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,6 +9,6 @@ services:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'
     ports:
-      - '8000:8000'
+      - '8001:8001'
     env_file:
       - .env
