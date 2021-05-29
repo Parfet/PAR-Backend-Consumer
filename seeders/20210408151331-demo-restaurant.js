@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   return await queryInterface.bulkInsert('restaurants', [
+   return queryInterface.bulkInsert('restaurants', [
      {
       restaurant_id: uuidv4(),
       restaurant_name: 'ติดมัน',
@@ -21,6 +21,7 @@ module.exports = {
       tel_no: '0855448812',
       verify_status: false,
       status: 'OPEN',
+      price: 299.0,
       opened_time: '17:00',
       closed_time: '23:30',
       created_at: moment().toDate(),
@@ -33,6 +34,7 @@ module.exports = {
       tel_no: '0927888676',
       verify_status: true,
       status: 'OPEN',
+      price: 199.0,
       opened_time: '18:00',
       closed_time: '22:00',
       created_at: moment().toDate(),
@@ -46,6 +48,7 @@ module.exports = {
       tel_no: '0967203659',
       verify_status: true,
       status: 'CLOSED',
+      price: 219.0,
       opened_time: '17:30',
       closed_time: '23:00',
       created_at: moment().toDate(),
@@ -60,6 +63,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return await queryInterface.bulkDelete('restaurants', null, {})
+    return queryInterface.bulkDelete('restaurants', null, {})
   }
 };

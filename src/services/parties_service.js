@@ -19,8 +19,8 @@ const deletePartyById = async ({ party_id }) =>
     },
   });
 
-const findPartyByRestaurantId = async ({ restaurant_id }) => {
-  const data = restaurantModel.findAll({
+const findPartyByRestaurantId = async ({ restaurant_id }) =>
+  restaurantModel.findAll({
     where: {
       restaurant_id: restaurant_id,
     },
@@ -62,8 +62,6 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       ],
     },
   });
-  return data;
-};
 
 const findPartyByPartyId = async ({ party_id }) =>
   partyModel.findAll({
@@ -109,8 +107,8 @@ const createParty = async ({
   max_member,
   schedule_time,
   transaction,
-}) => {
-  const data = await partyModel.create(
+}) =>
+  partyModel.create(
     {
       party_id: uuidv4(),
       head_party: head_party,
@@ -126,9 +124,6 @@ const createParty = async ({
       transaction: transaction,
     }
   );
-
-  return data;
-};
 
 const requestJoinList = async ({ party_id }) => {
   const data = await userPartyModel.findAll({
@@ -150,9 +145,10 @@ const requestJoinList = async ({ party_id }) => {
   data.map((e, _i) => {
     let rating = [];
     let finalRate = 0;
-    for (let j = 0; j < rate.length; j++) {
-      if (e.user.user_id === rate[j].receive_rate_user_id) {
-        rating.push(rate[j].rating);
+
+    for (let element of rate) {
+      if (e.user.user_id === element.receive_rate_user_id) {
+        rating.push(element.rating);
       }
     }
     rating.forEach((tempRate, _k) => {
@@ -167,8 +163,8 @@ const requestJoinList = async ({ party_id }) => {
   return data;
 };
 
-const requestJoinByUserId = async ({ party_id, user_id }) => {
-  const data = await userPartyModel.findAll({
+const requestJoinByUserId = async ({ party_id, user_id }) =>
+  userPartyModel.findAll({
     attributes: {
       exclude: ["user_id", "party_id", "status"],
     },
@@ -186,10 +182,8 @@ const requestJoinByUserId = async ({ party_id, user_id }) => {
     },
   });
 
-  return data;
-};
-const joinParty = async ({ party_id, user_id, status, transaction }) => {
-  const data = await userPartyModel.create(
+const joinParty = async ({ party_id, user_id, status, transaction }) =>
+  userPartyModel.create(
     {
       user_id: user_id,
       party_id: party_id,
@@ -199,11 +193,9 @@ const joinParty = async ({ party_id, user_id, status, transaction }) => {
       transaction: transaction,
     }
   );
-  return data;
-};
 
-const archiveParty = async ({ party_id }) => {
-  const data = await partyModel.update(
+const archiveParty = async ({ party_id }) =>
+  partyModel.update(
     {
       archived_at: moment(),
       updated_at: moment(),
@@ -214,9 +206,6 @@ const archiveParty = async ({ party_id }) => {
       },
     }
   );
-
-  return data;
-};
 
 const updatePartyInfo = async ({
   party_id,
@@ -229,8 +218,8 @@ const updatePartyInfo = async ({
   max_member,
   schedule_time,
   archived_at,
-}) => {
-  const data = await partyModel.update(
+}) =>
+  partyModel.update(
     {
       party_name: party_name,
       head_party: head_party,
@@ -250,11 +239,8 @@ const updatePartyInfo = async ({
     }
   );
 
-  return data;
-};
-
-const checkIsMemberParty = async ({ party_id, user_id }) => {
-  const data = await partyModel.findAll({
+const checkIsMemberParty = async ({ party_id, user_id }) =>
+  partyModel.findAll({
     where: {
       party_id: party_id,
     },
@@ -275,11 +261,8 @@ const checkIsMemberParty = async ({ party_id, user_id }) => {
     },
   });
 
-  return data;
-};
-
-const handleMemberRequest = async ({ status, user_id, transaction }) => {
-  const data = await userPartyModel.update(
+const handleMemberRequest = async ({ status, user_id, transaction }) =>
+  userPartyModel.update(
     {
       status: status,
     },
@@ -292,9 +275,6 @@ const handleMemberRequest = async ({ status, user_id, transaction }) => {
       transaction: transaction,
     }
   );
-
-  return data;
-};
 
 const handleCheckMemberRequest = async ({ party_id, user_id }) =>
   userPartyModel.findAll({
@@ -356,12 +336,12 @@ const getPartyByUserId = async ({ user_id }) => {
       ],
     },
   });
-  const partyTempArr = []
+  const partyTempArr = [];
   data.forEach((e) => {
-    partyTempArr.push(e.dataValues.party.dataValues)
+    partyTempArr.push(e.dataValues.party.dataValues);
   });
-  for(let i = 0;i < data.length; i++){
-    data[i].dataValues = partyTempArr[i]
+  for (let i = 0; i < data.length; i++) {
+    data[i].dataValues = partyTempArr[i];
   }
 
   return data;

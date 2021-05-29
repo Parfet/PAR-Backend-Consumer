@@ -37,6 +37,10 @@ module.exports = {
         type: Sequelize.ENUM('OPEN', 'CLOSED'),
         allowNull: false,
       },
+      price: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
       opened_time: {
         type: Sequelize.STRING,
         allowNull: false,
