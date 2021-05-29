@@ -143,12 +143,12 @@ module.exports = {
         interest_tags,
         max_member,
         schedule_time,
-        head_party,
       } = req.body;
+      const head_party = req.user
       if (Object.keys(req.body).length === 0) {
         res.status(400).json({ message: "Invalid Request" });
       } else {
-        const _head_party = await models.users.findByPk(head_party);
+        const _head_party = await userService.getUserByUserId({ user_id: head_party });
         const restaurant = await restaurantService.findRestaurantByRestaurantId(
           {
             restaurant_id: req.params.restaurant_id,
@@ -334,10 +334,10 @@ module.exports = {
         const party = await partyService.findPartyByPartyId({
           party_id: req.params.party_id,
         });
-        if (!party) {
+        if (!party[0]) {
           return res.status(400).json({ message: "Party not found" });
         }
-        if (req.user !== party.head_party) {
+        if (req.user !== party[0].head_party) {
           return res.status(403).json({
             message: "Permission Denied",
           });
@@ -374,7 +374,7 @@ module.exports = {
         }
       }
 
-      const data = await partyService.updatePartyInfo({
+      const data = partyService.updatePartyInfo({
         party_id: req.params.party_id,
         party_name: req.body.party_name,
         head_party: req.body.head_party,
@@ -386,7 +386,7 @@ module.exports = {
         schedule_time: req.body.schedule_time,
         archived_at: req.body.archived_at,
       });
-      if (data.includes(1)) {
+      if (data) {
         return res.status(200).json({
           message: "update success",
         });
@@ -437,7 +437,7 @@ module.exports = {
         }
       }
 
-      const data = await partyService.handleMemberRequest({
+      const data = partyService.handleMemberRequest({
         user_id: req.body.user_id,
         status: req.body.status,
       });
