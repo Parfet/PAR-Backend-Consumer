@@ -300,6 +300,7 @@ const getPartyByUserId = async ({ user_id }) => {
     attributes: [],
     where: {
       user_id: user_id,
+      status: ENUM.REQUEST_STATUS.ACCEPT,
     },
     include: {
       model: partyModel,
