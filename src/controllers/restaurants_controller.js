@@ -21,18 +21,29 @@ module.exports = {
           });
         }
       }
+
       const restaurants = await restaurantService.findAllRestaurant({
         query: query,
       });
+
       if (!restaurants) {
-        res.status(204).json({});
+        return res.status(204).json({});
       } else {
-        res.status(200).json({
+        if (req.query.promotions) {
+          return res.status(200).json({
+            restaurants: restaurants.filter((e) => e.promotions.length > 0),
+          });
+        }
+        return res.status(200).json({
           restaurants: restaurants,
         });
       }
     } catch (e) {
-      res.status(500).json({
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
   findRestaurantByRestaurantId: async (req, res) => {
     try {
       const restaurant = await restaurantService.findAllRestaurant({
@@ -45,6 +56,28 @@ module.exports = {
       }
       return res.status(200).json({
         restaurant: restaurant[0],
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+  findPromotionByRestaurantId: async (req, res) => {
+    try {
+      const restaurant = await restaurantService.findAllRestaurant({
+        query: {
+          restaurant_id: req.params.restaurant_id,
+        },
+      });
+      if (restaurant.length === 0) {
+        return res.status(204).json();
+      }
+      if (restaurant[0].promotions.length === 0) {
+        return res.status(204).json();
+      }
+      return res.status(200).json({
+        promotions: restaurant[0].promotions,
       });
     } catch (e) {
       return res.status(500).json({

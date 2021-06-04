@@ -10,8 +10,8 @@ partiesRouter.get("/me", partiesController.getPartyByUserId);
 partiesRouter.get(
   "/:restaurant_id",
   partiesController.getAllPartyByRestaurantId
-);
-partiesRouter.post("/:restaurant_id", partiesController.createParty);
+  );
+  partiesRouter.post("/:restaurant_id", partiesController.createParty);
 partiesRouter.get("/info/:party_id", partiesController.getPartyByPartyId);
 partiesRouter.post("/info/:party_id", partiesController.archivedParty);
 partiesRouter.put("/info/:party_id", partiesController.updatePartyInfo);
