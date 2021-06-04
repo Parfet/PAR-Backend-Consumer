@@ -374,7 +374,7 @@ module.exports = {
         }
       }
 
-      const data = partyService.updatePartyInfo({
+      const data = await partyService.updatePartyInfo({
         party_id: req.params.party_id,
         party_name: req.body.party_name,
         head_party: req.body.head_party,
@@ -437,7 +437,7 @@ module.exports = {
         }
       }
 
-      const data = partyService.handleMemberRequest({
+      const data = await partyService.handleMemberRequest({
         user_id: req.body.user_id,
         status: req.body.status,
       });
