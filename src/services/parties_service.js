@@ -8,7 +8,6 @@ const userPartyModel = models.users_parties;
 const restaurantModel = models.restaurants;
 const ratingUserModel = models.rating_users;
 const interestTagModel = models.interest_tags;
-const partiesInterestTagModel = models.parties_interest_tags;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
 

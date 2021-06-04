@@ -33,6 +33,21 @@ module.exports = {
       }
     } catch (e) {
       res.status(500).json({
+  findRestaurantByRestaurantId: async (req, res) => {
+    try {
+      const restaurant = await restaurantService.findAllRestaurant({
+        query: {
+          restaurant_id: req.params.restaurant_id,
+        },
+      });
+      if (restaurant.length === 0) {
+        return res.status(204).json();
+      }
+      return res.status(200).json({
+        restaurant: restaurant[0],
+      });
+    } catch (e) {
+      return res.status(500).json({
         message: e.message,
       });
     }
