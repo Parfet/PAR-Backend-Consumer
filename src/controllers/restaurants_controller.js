@@ -22,6 +22,12 @@ module.exports = {
         }
       }
 
+      if (req.query.name) {
+        query.restaurant_name = {
+          [Op.like]: `%${req.query.name}%`
+        }
+      }
+
       const restaurants = await restaurantService.findAllRestaurant({
         query: query,
       });
