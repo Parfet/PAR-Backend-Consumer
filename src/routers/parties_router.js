@@ -15,6 +15,8 @@ partiesRouter.get(
 partiesRouter.get("/info/:party_id", partiesController.getPartyByPartyId);
 partiesRouter.post("/info/:party_id", partiesController.archivedParty);
 partiesRouter.put("/info/:party_id", partiesController.updatePartyInfo);
+partiesRouter.delete("/info/:party_id/member", partiesController.removeMember)
+
 
 partiesRouter.get(
   "/info/:party_id/join",

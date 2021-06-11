@@ -498,4 +498,56 @@ module.exports = {
       });
     }
   },
+
+  removeMember: async (req, res) => {
+    try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id
+      })
+      if(party[0].head_party.user_id !== req.user){
+        return res.status(403).json({
+          message: "Permission Denied",
+        });
+      }
+      const memberList = party[0].members.map((e) => e.user_id)
+      const user_id = req.body.user_id
+      if(!user_id) {
+        return res.status(400).json({
+          message: 'required user target'
+        })
+      }
+      if (!party) {
+        return res.status(400).json({
+          message: 'party not found'
+        })
+      }
+      if (party[0].head_party.user_id === user_id) {
+        return res.status(400).json({
+          message: 'party owner can not remove own account from party'
+        })
+      }
+      if (memberList.includes(user_id)) {
+        const response = await partyService.removePartyMember({
+          party_id: req.params.party_id,
+          user_id: user_id
+        })
+        if (response) {
+          return res.status(200).json({
+            message: 'remove member success'
+          })
+        } else {
+          return res.status(500).json({
+            message: 'remove member failed'
+          })
+        }
+      }
+      return res.status(400).json({
+        message: 'only member of this party can be remove'
+      })
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message
+      })
+    }
+  }
 };
