@@ -25,6 +25,8 @@ module.exports = {
       opened_time: '17:00',
       closed_time: '23:30',
       created_at: moment().toDate(),
+      lat: 13.651530113658906, 
+      lon: 100.48592918219947
      },
      {
       restaurant_id: uuidv4(),
@@ -39,6 +41,8 @@ module.exports = {
       closed_time: '22:00',
       created_at: moment().toDate(),
       updated_at: moment(moment().add(1, 'days').toDate()).format(),
+      lat: 13.650713633036302,
+      lon: 100.4887853948179
      },
      {
       restaurant_id: uuidv4(),
@@ -52,6 +56,8 @@ module.exports = {
       opened_time: '17:30',
       closed_time: '23:00',
       created_at: moment().toDate(),
+      lat: 13.65113348875561,
+      lon: 100.49693874739427
      },
    ], {})
   },

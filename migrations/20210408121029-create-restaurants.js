@@ -65,6 +65,14 @@ module.exports = {
       deleted_at: {
         type: Sequelize.DATE,
         defaultValue: null,
+      },
+      lat: {
+        type: Sequelize.FLOAT,
+        allowNull: false
+      },
+      lon: {
+        type: Sequelize.FLOAT,
+        allowNull: false
       }
     });
   },
