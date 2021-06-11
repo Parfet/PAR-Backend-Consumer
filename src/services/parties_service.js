@@ -10,7 +10,7 @@ const ratingUserModel = models.rating_users;
 const interestTagModel = models.interest_tags;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
-const handle = require('../utils/handle_response');
+const handle = require("../utils/handle_response");
 
 const deletePartyById = async ({ party_id }) =>
   partyModel.delete({
@@ -62,7 +62,7 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       ],
     },
   });
-  data.parties = await handle.handleRestaurantPartyResponse(data[0].parties)
+  data.parties = await handle.handleRestaurantPartyResponse(data[0].parties);
   return data;
 };
 
@@ -100,7 +100,7 @@ const findPartyByPartyId = async ({ party_id }) => {
       },
     ],
   });
-  data.parties = await handle.handleRestaurantPartyResponse(data)
+  data.parties = await handle.handleRestaurantPartyResponse(data);
   return data;
 };
 
@@ -353,6 +353,13 @@ const getPartyByUserId = async ({ user_id }) => {
 
   return data;
 };
+
+const removePartyMember = async ({ party_id, user_id }) => userPartyModel.destroy({
+    where: {
+      [Op.and]: [{ user_id: user_id }, { party_id: party_id }],
+    },
+  });
+
 module.exports = {
   findPartyByRestaurantId,
   findPartyByPartyId,
@@ -368,4 +375,5 @@ module.exports = {
   deletePartyById,
   getInterestTag,
   getPartyByUserId,
+  removePartyMember
 };

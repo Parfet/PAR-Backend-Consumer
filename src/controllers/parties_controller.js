@@ -144,11 +144,13 @@ module.exports = {
         max_member,
         schedule_time,
       } = req.body;
-      const head_party = req.user
+      const head_party = req.user;
       if (Object.keys(req.body).length === 0) {
         res.status(400).json({ message: "Invalid Request" });
       } else {
-        const _head_party = await userService.getUserByUserId({ user_id: head_party });
+        const _head_party = await userService.getUserByUserId({
+          user_id: head_party,
+        });
         const restaurant = await restaurantService.findRestaurantByRestaurantId(
           {
             restaurant_id: req.params.restaurant_id,
@@ -264,7 +266,7 @@ module.exports = {
 
       const everJoin = await partyService.requestJoinByUserId({
         party_id: party[0].party_id,
-        user_id: req.body.user_id,
+        user_id: req.user,
       });
       if (everJoin.length > 1) {
         return res
@@ -274,7 +276,7 @@ module.exports = {
 
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
-        user_id: req.body.user_id,
+        user_id: req.user,
         status: ENUM.REQUEST_STATUS.WATING,
         transaction: transaction,
       });
@@ -455,6 +457,42 @@ module.exports = {
       }
     } catch (e) {
       await transaction.rollback();
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  },
+
+  leaveParty: async (req, res) => {
+    try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      const memberList = party[0].members.map((e) => e.user_id);
+      if (party[0].head_party.user_id === req.user) {
+        return res.status(400).json({
+          message: "party owner can not leave party",
+        });
+      }
+      if (memberList.includes(req.user)) {
+        const data = await partyService.removePartyMember({
+          party_id: req.params.party_id,
+          user_id: req.user
+        })
+        if(data) {
+          return res.status(200).json({
+            message: 'leave party success'
+          })
+        } else {
+          return res.status(500).json({
+            message: 'leave party failed'
+          })
+        }
+      }
+      return res.status(400).json({
+        message: "only member of this party can leave party",
+      });
+    } catch (e) {
       return res.status(500).json({
         message: e.message,
       });

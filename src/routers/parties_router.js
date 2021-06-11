@@ -30,4 +30,6 @@ partiesRouter.put(
   partiesController.handleMemberRequest
 );
 
+partiesRouter.delete('/:party_id', partiesController.leaveParty)
+
 module.exports = partiesRouter;
