@@ -88,6 +88,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: null,
       },
+      lat: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0.0,
+      },
+      lon: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0.0,
+      }
     },
     {
       sequelize,

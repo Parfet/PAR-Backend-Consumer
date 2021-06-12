@@ -8,7 +8,8 @@
 
 ```
 status: ENUM<RESTAURANT_AVAILABLE>,
-promotions: true 
+promotions: true,
+name: String
 ```
 
 > ### Success Response

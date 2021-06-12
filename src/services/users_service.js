@@ -8,7 +8,11 @@ const getAllUser = async () =>
     },
   });
 
-const getUserByUserId = async ({ user_id }) => userModel.findByPk(user_id);
+const getUserByUserId = async ({ user_id }) => userModel.findByPk(user_id, {
+  attributes:{
+    exclude: ['password']
+  }
+});
 
 module.exports = {
   getAllUser,
