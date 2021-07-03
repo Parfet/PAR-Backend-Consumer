@@ -56,11 +56,11 @@ module.exports = {
         party_id: req.params.party_id,
       });
       if (!party) {
-        res.status(400).json({ message: "Party not found" });
+        return res.status(400).json({ message: "Party not found" });
       }
 
-      if (party.head_party !== req.user) {
-        res.status(403).json({
+      if (party[0].head_party.user_id !== req.user) {
+        return res.status(403).json({
           message: "Permission Denied",
         });
       }
@@ -156,6 +156,9 @@ module.exports = {
             restaurant_id: req.params.restaurant_id,
           }
         );
+        const interest_tag = await partyService.findInterstTagById({
+          tag_id: interest_tags,
+        });
         // TODO: wait refactor to util method
         if (!_head_party) {
           return res.status(400).json({ message: "Owner party invalid" });
@@ -187,6 +190,11 @@ module.exports = {
           return res
             .status(400)
             .json({ message: "interest tag can not be null" });
+        }
+        if (interest_tag.length < 1) {
+          return res.status(400).json({
+            message: "intestest tag is invalid",
+          });
         }
         if (!max_member) {
           return res.status(400).json({ message: "max maxber cannot be null" });
@@ -477,16 +485,16 @@ module.exports = {
       if (memberList.includes(req.user)) {
         const data = await partyService.removePartyMember({
           party_id: req.params.party_id,
-          user_id: req.user
-        })
-        if(data) {
+          user_id: req.user,
+        });
+        if (data) {
           return res.status(200).json({
-            message: 'leave party success'
-          })
+            message: "leave party success",
+          });
         } else {
           return res.status(500).json({
-            message: 'leave party failed'
-          })
+            message: "leave party failed",
+          });
         }
       }
       return res.status(400).json({
@@ -502,52 +510,52 @@ module.exports = {
   removeMember: async (req, res) => {
     try {
       const party = await partyService.findPartyByPartyId({
-        party_id: req.params.party_id
-      })
-      if(party[0].head_party.user_id !== req.user){
+        party_id: req.params.party_id,
+      });
+      if (party[0].head_party.user_id !== req.user) {
         return res.status(403).json({
           message: "Permission Denied",
         });
       }
-      const memberList = party[0].members.map((e) => e.user_id)
-      const user_id = req.body.user_id
-      if(!user_id) {
+      const memberList = party[0].members.map((e) => e.user_id);
+      const user_id = req.body.user_id;
+      if (!user_id) {
         return res.status(400).json({
-          message: 'required user target'
-        })
+          message: "required user target",
+        });
       }
       if (!party) {
         return res.status(400).json({
-          message: 'party not found'
-        })
+          message: "party not found",
+        });
       }
       if (party[0].head_party.user_id === user_id) {
         return res.status(400).json({
-          message: 'party owner can not remove own account from party'
-        })
+          message: "party owner can not remove own account from party",
+        });
       }
       if (memberList.includes(user_id)) {
         const response = await partyService.removePartyMember({
           party_id: req.params.party_id,
-          user_id: user_id
-        })
+          user_id: user_id,
+        });
         if (response) {
           return res.status(200).json({
-            message: 'remove member success'
-          })
+            message: "remove member success",
+          });
         } else {
           return res.status(500).json({
-            message: 'remove member failed'
-          })
+            message: "remove member failed",
+          });
         }
       }
       return res.status(400).json({
-        message: 'only member of this party can be remove'
-      })
+        message: "only member of this party can be remove",
+      });
     } catch (e) {
       return res.status(500).json({
-        message: e.message
-      })
+        message: e.message,
+      });
     }
-  }
+  },
 };
