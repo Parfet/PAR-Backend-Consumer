@@ -1,0 +1,23 @@
+name: Deploy Parfet-Backend-Consumer Application
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  deploy:
+    runs-on: [ self-hosted, Debian 10 ]
+    steps:
+      - name: Create .env file
+          run: |
+            touch .env
+            echo ${{ secrets.DEV_API_ENV }} >> .env
+            cat .env
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{secrets.SSH_PEM_KEY}}
+          script: |
+           echo "HELLO WORLD!!"
