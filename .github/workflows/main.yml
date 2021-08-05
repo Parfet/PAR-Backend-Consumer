@@ -2,7 +2,7 @@ name: Deploy Parfet-Backend-Consumer Application
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main ]
 
 jobs:
   deploy:
