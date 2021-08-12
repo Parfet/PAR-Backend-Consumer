@@ -12,10 +12,10 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Create .env file
-          run: |
-            touch .env
-            echo ${{ secrets.DEV_API_ENV }} >> .env
-            ls -la
+        run: |
+          touch .env
+          echo ${{ secrets.DEV_API_ENV }} >> .env
+          ls -la
       
   Copy-file:
     runs-on: ubuntu-lastest
