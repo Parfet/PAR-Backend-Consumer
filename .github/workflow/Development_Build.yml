@@ -1,18 +1,44 @@
-name: Deploy Parfet-Backend-Consumer Application
+name: Deploy Parfet-Backend-Consumer Application [Development]
 
 on:
   push:
     branches: [ develop ]
 
 jobs:
-  deploy:
-    runs-on: [ self-hosted, Debian 10 ]
+  Preparing:
+    runs-on: ubuntu-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v1
+
       - name: Create .env file
           run: |
             touch .env
             echo ${{ secrets.DEV_API_ENV }} >> .env
-            cat .env
+            ls -la
+      
+  Copy-file:
+    runs-on: ubuntu-lastest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+
+      - name: SCP Files
+        uses: appleboy/scp-action@v0.0.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: 22
+          key: ${{ secrets.SSH_PEM_KEY }}
+          source: "./.env"
+          target: "~/"
+
+  Deploy:
+    runs-on: ubuntu-lastest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -20,4 +46,10 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{secrets.SSH_PEM_KEY}}
           script: |
-           echo "HELLO WORLD!!"
+           rm -rf PAR-Backend-Consumer || :
+           git clone https://${{secrets.GIT_USERNAME}}:${{secrets.GIT_PASSWORD}}@github.com/Parfet/PAR-Backend-Consumer.git
+           mv .env /PAR-Backend-Consumer
+           cd PAR-Backend-Consumer
+           docker-compose down --rmi local || :
+           docker-compose up -d --build
+           docker ps -a
