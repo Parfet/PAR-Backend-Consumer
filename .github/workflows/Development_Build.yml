@@ -18,7 +18,7 @@ jobs:
           ls -la
       
   Copy-file:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v1
@@ -34,7 +34,7 @@ jobs:
           target: "~/"
 
   Deploy:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v1
