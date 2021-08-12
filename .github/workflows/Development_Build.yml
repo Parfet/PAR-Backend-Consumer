@@ -5,17 +5,6 @@ on:
     branches: [ develop ]
 
 jobs:
-  Preparing:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v1
-
-      - name: Create .env file
-        run: |
-          touch .env
-          echo ${{ secrets.DEV_API_ENV }} >> .env
-          ls -la
 
   Deploy:
     runs-on: ubuntu-latest
