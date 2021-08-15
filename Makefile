@@ -1,14 +1,14 @@
 drop-create:
 	@echo "======== Drop Database ========"
-	yarn sequelize-cli db:drop 
+	yarn sequelize-cli db:drop --env=$(env)
 	@echo "==============================="
 	@echo "======== Create Database ========"
-	yarn sequelize-cli db:create
+	yarn sequelize-cli db:create --env=$(env)
 	@echo "================================="
 
 init:
 	@echo "======== Init Seed ========"
-	yarn sequelize-cli db:seed:all
+	yarn sequelize-cli db:seed:all --env=$(env)
 	@echo "==========================="
 
 generate-model:
@@ -23,9 +23,9 @@ generate-seed:
 
 migrate:
 	@echo "======== MIGRATE ========"
-	yarn sequelize-cli db:migrate
+	yarn sequelize-cli db:migrate --env=$(env)
 
 all: 
-	make drop-create
-	make migrate
-	make init
+	make drop-create env=$(env)
+	make migrate env=$(env)
+	make init env=$(env)

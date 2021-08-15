@@ -301,6 +301,15 @@ const getInterestTag = async () =>
     ],
   });
 
+const findInterstTagById = async ({ tag_id }) =>
+  interestTagModel.findAll({
+    where: {
+      tag_id: {
+        [Op.or]: tag_id,
+      },
+    },
+  });
+
 const getPartyByUserId = async ({ user_id }) => {
   const data = await userPartyModel.findAll({
     attributes: [],
@@ -354,7 +363,8 @@ const getPartyByUserId = async ({ user_id }) => {
   return data;
 };
 
-const removePartyMember = async ({ party_id, user_id }) => userPartyModel.destroy({
+const removePartyMember = async ({ party_id, user_id }) =>
+  userPartyModel.destroy({
     where: {
       [Op.and]: [{ user_id: user_id }, { party_id: party_id }],
     },
@@ -374,6 +384,7 @@ module.exports = {
   handleCheckMemberRequest,
   deletePartyById,
   getInterestTag,
+  findInterstTagById,
   getPartyByUserId,
-  removePartyMember
+  removePartyMember,
 };
