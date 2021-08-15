@@ -1,6 +1,8 @@
 "use strict";
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
+
+const user_id_list = [ uuidv4(),uuidv4(),uuidv4(),uuidv4(),uuidv4(),uuidv4(),];
 module.exports = {
   up: async (queryInterface, _Sequelize) => {
     /**
@@ -14,7 +16,7 @@ module.exports = {
      */
     return queryInterface.bulkInsert("users", [
       {
-        user_id: uuidv4(),
+        user_id: user_id_list[0],
         username: "User1",
         email: "akosel0@merriam-webster.com",
         password: "hola",
@@ -24,12 +26,13 @@ module.exports = {
         last_name_en: "Kosel",
         tel_no: "0842722633",
         verify_status: true,
+        account_type: 'CONSUMER',
         created_at: moment().toDate(),
         updated_at: moment(moment().add(1, "days").toDate()).format(),
         archived_at: moment(moment().add(3, "days").toDate()).format(),
       },
       {
-        user_id: uuidv4(),
+        user_id: user_id_list[1],
         username: "User2",
         email: "cgrahamslaw1@mashable.com",
         password: "qwerty123",
@@ -39,12 +42,13 @@ module.exports = {
         last_name_en: "Grahamslaw",
         tel_no: "0922099528",
         verify_status: true,
+        account_type: 'CONSUMER',
         created_at: moment(moment().subtract(5, "days").toDate()).format(),
         updated_at: moment(moment().add(3, "months").toDate()).format(),
         archived_at: moment(moment().add(4, "months").toDate()).format(),
       },
       {
-        user_id: uuidv4(),
+        user_id: user_id_list[2],
         username: "User3",
         email: "ddooman2@wufoo.com",
         password: "pasword",
@@ -54,26 +58,13 @@ module.exports = {
         last_name_en: "Dooman",
         tel_no: "0682169465",
         verify_status: true,
+        account_type: 'CONSUMER',
         created_at: moment(moment().subtract(7, "months").toDate()).format(),
         updated_at: moment(moment().toDate()).format(),
       },
       {
-        user_id: uuidv4(),
-        username: "User4",
-        email: "ebernardino3@homestead.com",
-        password: "holaworld",
-        first_name_th: "เอ็ทต้า",
-        last_name_th: "เบอร์นาดิโอ",
-        first_name_en: "Etta",
-        last_name_en: "Bernardino",
-        tel_no: "0859405727",
-        verify_status: false,
-        created_at: moment(moment().add(1, "months").toDate()).format(),
-        updated_at: moment(moment().add(2, "months").toDate()).format(),
-      },
-      {
-        user_id: uuidv4(),
-        username: "User5",
+        user_id: user_id_list[3],
+        username: "Restaurant1",
         email: "rettery4@yelp.com",
         password: "helloworld",
         first_name_th: "รุย",
@@ -82,7 +73,38 @@ module.exports = {
         last_name_en: "Ettery",
         tel_no: "0955180193",
         verify_status: true,
+        account_type: 'RESTAURANT',
         created_at: moment(moment().toDate()).format(),
+      },
+      {
+        user_id: user_id_list[4],
+        username: "Restaurant2",
+        email: "ebernardino3@homestead.com",
+        password: "holaworld",
+        first_name_th: "เอ็ทต้า",
+        last_name_th: "เบอร์นาดิโอ",
+        first_name_en: "Etta",
+        last_name_en: "Bernardino",
+        tel_no: "0859405727",
+        verify_status: false,
+        account_type: 'RESTAURANT',
+        created_at: moment(moment().add(1, "months").toDate()).format(),
+        updated_at: moment(moment().add(2, "months").toDate()).format(),
+      },
+      {
+        user_id: user_id_list[5],
+        username: "Restaurant3",
+        email: "seriouderon@homestead.com",
+        password: "holaworld",
+        first_name_th: "เบลเวิร์น",
+        last_name_th: "ลานีซาร์ด",
+        first_name_en: "Belwern",
+        last_name_en: "Lanizard",
+        tel_no: "0859067843",
+        verify_status: false,
+        account_type: 'RESTAURANT',
+        created_at: moment(moment().add(1, "months").toDate()).format(),
+        updated_at: moment(moment().add(2, "months").toDate()).format(),
       },
     ]);
   },
@@ -94,4 +116,5 @@ module.exports = {
    * Example:
    * await queryInterface.bulkDelete('People', null, {});
    */
+  user: user_id_list,
 };

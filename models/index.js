@@ -5,11 +5,11 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const config = {
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DATABASE,
-  host: process.env.DB_HOST,
-  dialect: process.env.DB_DIALECT,
+  username: process.env.DB_USERNAME_PARFET,
+  password: process.env.DB_PASSWORD_PARFET,
+  database: process.env.DATABASE_PARFET,
+  host: process.env.DB_HOST_PARFET,
+  dialect: process.env.DB_DIALECT_PARFET,
 };
 const db = {};
 

@@ -25,4 +25,8 @@ module.exports = {
     MIN: 3,
     MAX: 15,
   },
+  ACCOUNT_TYPE: {
+    CONSUMER: "CONSUMER",
+    RESTAURANT: "RESTAURANT",
+  },
 };

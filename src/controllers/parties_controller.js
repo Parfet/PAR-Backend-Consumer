@@ -146,7 +146,7 @@ module.exports = {
       } = req.body;
       const head_party = req.user;
       if (Object.keys(req.body).length === 0) {
-        res.status(400).json({ message: "Invalid Request" });
+        return res.status(400).json({ message: "Invalid Request" });
       } else {
         const _head_party = await userService.getUserByUserId({
           user_id: head_party,
@@ -348,7 +348,7 @@ module.exports = {
           return res.status(400).json({ message: "Party not found" });
         }
         if (req.user !== party[0].head_party) {
-          return res.status(403).json({
+          return res.status(403).json({ 
             message: "Permission Denied",
           });
         }

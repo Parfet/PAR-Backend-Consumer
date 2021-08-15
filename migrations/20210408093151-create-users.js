@@ -48,6 +48,10 @@ module.exports = {
         defaultValue: false,
         allowNull: false,
       },  
+      account_type: {
+        type: Sequelize.ENUM('CONSUMER', 'RESTAURANT'),
+        allowNull: false,
+      },
       //
       // === [FORMAT] ===
       //Thu Apr 08 2021 17:27:37 GMT+0700

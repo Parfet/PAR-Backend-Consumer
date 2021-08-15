@@ -67,6 +67,9 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         allowNull: false,
       },
+      account_type: {
+        type: DataTypes.ENUM('CONSUMER', 'RESTAURANT')
+      },
       //
       // === [FORMAT] ===
       //Thu Apr 08 2021 17:27:37 GMT+0700

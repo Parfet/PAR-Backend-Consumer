@@ -9,6 +9,11 @@ module.exports = {
         unique: true,
         primaryKey: true
       },
+      restaurant_gen_code: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
       restaurant_name: {
         type: Sequelize.STRING,
         allowNull: false,
