@@ -12,7 +12,7 @@ module.exports = {
         });
       } else {
         return res.status(200).json({
-          is_user_exister: false,
+          is_user_existed: false,
         });
       }
     } catch (err) {
