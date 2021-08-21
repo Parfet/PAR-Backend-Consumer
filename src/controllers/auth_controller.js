@@ -35,7 +35,7 @@ module.exports = {
       const userSnap = await userCollection.listDocuments();
 
       userSnap.forEach((elem) => {
-        if (elem === req.user) {
+        if (elem.id === req.user) {
           return res.status(400).json({
             message: "you have already register.",
           });
