@@ -23,9 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       user_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: DataTypes.UUIDV4,
       },
       rating: {
         type: DataTypes.FLOAT,

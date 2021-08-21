@@ -3,7 +3,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("users_parties", {
       user_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       party_id: {
@@ -14,17 +14,6 @@ module.exports = {
         type: Sequelize.ENUM(["ACCEPT", "DECLINE", "WAITING"]),
         allowNull: false,
       },
-    });
-    await queryInterface.addConstraint("users_parties", {
-      fields: ["user_id"],
-      type: "foreign key",
-      name: "users_parties-user_id",
-      references: {
-        table: "users",
-        field: "user_id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
     });
     await queryInterface.addConstraint("users_parties", {
       fields: ["party_id"],

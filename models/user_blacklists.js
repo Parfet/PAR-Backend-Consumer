@@ -14,18 +14,10 @@ module.exports = (sequelize, DataTypes) => {
   UserBlacklists.init(
     {
       user_id: {
-        type: DataTypes.UUID,
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
+        type: DataTypes.STRING,
       },
       blacklist_user_id: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
-        // references: {
-        //   model: Users,
-        //   key: user_id,
-        // },
+        type: DataTypes.ARRAY(DataTypes.STRING),
       },
     },
     {

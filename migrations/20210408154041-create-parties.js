@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false,
       },
       head_party: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
       },
       passcode: Sequelize.STRING,
       party_type: {
@@ -43,17 +43,6 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: null,
       },
-    });
-    await queryInterface.addConstraint("parties", {
-      fields: ["head_party"],
-      type: 'foreign key',
-      name: 'parties-users-user_id',
-      references: {
-        table: "users",
-        field: "user_id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
     });
   },
   down: async (queryInterface, _Sequelize) => {
