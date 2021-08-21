@@ -19,4 +19,44 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  register: async (req, res) => {
+    try {
+      const {
+        username,
+        email,
+        provider,
+        display_name,
+        first_name,
+        last_name,
+        image_url,
+      } = req.body;
+
+      const userCollection = firestore.collection("User");
+      const userSnap = await userCollection.listDocuments();
+
+      userSnap.forEach((elem) => {
+        if (elem.id === req.user) {
+          return res.status(400).json({
+            message: "you have already register.",
+          });
+        }
+      });
+
+      await userCollection.doc(req.user).set({
+        username: username,
+        email: email,
+        provider: provider,
+        display_name: display_name,
+        first_name: first_name,
+        last_name: last_name,
+        image_url: image_url,
+      });
+
+      return res.status(204).json();
+    } catch (err) {
+      return res.status(500).json({
+        message: err || err.message,
+      });
+    }
+  },
 };

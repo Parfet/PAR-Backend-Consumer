@@ -8,11 +8,16 @@ const authRouter = express.Router();
 authRouter.post("/token", tokenAuthen.requestToken);
 authRouter.post("/refresh", tokenAuthen.refreshToken);
 
-authRouter.post("/sign-in", authController.signInWithFirebase);
 authRouter.get(
   "/check",
   firebaseAuthen.verifyAccessToken,
   authController.checkIsUserExisted
+);
+
+authRouter.post(
+  "/register",
+  firebaseAuthen.verifyAccessToken,
+  authController.register
 );
 
 module.exports = authRouter;
