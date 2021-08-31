@@ -18,7 +18,9 @@ jobs:
           touch aws.pem
           echo ${{ secrets.SSH_PEM_KEY }} >> aws.pem
           sudo chmod 400 aws.pem
+
   Deploy:
+    needs: preparing
     runs-on: ubuntu-latest
     steps:
       - name: checkout
