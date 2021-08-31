@@ -5,14 +5,26 @@ on:
     branches: [ develop ]
 
 jobs:
-
+  preparing:
+    runs-on: ubuntu-lastest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      
+      - name: Create .env file
+        run : |
+          touch .env
+          echo ${{ secrets.DEV_API_ENV }} >> .env
+          touch aws.pem
+          echo ${{ secrets.SSH_PEM_KEY }} >> aws.pem
+          sudo chmod 400 aws.pem
   Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v1
 
-      - name: SSH Remote Commands
+      - name: Cloning repository
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{secrets.SSH_HOST}}
@@ -20,10 +32,20 @@ jobs:
           key: ${{secrets.SSH_PEM_KEY}}
           script: |
            rm -rf PAR-Backend-Consumer || :
-           git clone https://${{secrets.GIT_USERNAME}}:${{secrets.GIT_PASSWORD}}@github.com/Parfet/PAR-Backend-Consumer.git
+           git clone git@github.com:Parfet/PAR-Backend-Consumer.git
+
+      - name: COPY .env 
+        run : |
+          scp -i "aws.pem" .env ${{ secrets.SSH_USERNAME }}@${{secrets.SSH_HOST}}:~/PAR-Backend-Consumer/
+
+      - name: Deploy Application
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{secrets.SSH_PEM_KEY}}
+          script: |
            cd PAR-Backend-Consumer
-           touch .env
-           echo ${{ secrets.DEV_API_ENV }} >> .env
            docker-compose down --rmi local || :
            docker-compose up -d --build
            docker ps -a
