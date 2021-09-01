@@ -11,14 +11,15 @@ jobs:
       - name: checkout
         uses: actions/checkout@v1
 
-      - name: Create .env file
+      - name: Create .env & SSH file
         run : |
           touch .env
           echo ${{ secrets.DEV_API_ENV }} >> .env
           touch aws.pem
           echo "${{ secrets.SSH_PEM_KEY }}" >> aws.pem
           sudo chmod 440 aws.pem
-          ls -la
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
           
       - name: Cloning repository
         uses: appleboy/ssh-action@v0.1.4
