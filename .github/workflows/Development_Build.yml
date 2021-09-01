@@ -17,7 +17,8 @@ jobs:
           echo "${{ secrets.DEV_API_ENV }}" >> .env
           touch aws.pem
           echo "${{ secrets.SSH_PEM_KEY }}" >> aws.pem
-          sudo chmod 400 aws.pem
+          sudo chmod 440 aws.pem
+          ls -la
 
   Deploy:
     needs: preparing
@@ -38,6 +39,7 @@ jobs:
 
       - name: COPY .env 
         run : |
+          ls -la
           scp -i "aws.pem" .env ${{ secrets.SSH_USERNAME }}@${{secrets.SSH_HOST}}:~/PAR-Backend-Consumer/
 
       - name: Deploy Application
