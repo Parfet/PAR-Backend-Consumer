@@ -6,7 +6,6 @@ on:
 
 jobs:
   Deploy:
-    needs: preparing
     runs-on: ubuntu-latest
     steps:
       - name: checkout
