@@ -14,20 +14,23 @@ jobs:
       - name: Create .env & SSH file
         run : |
           touch .env
-          echo "${{ secrets.DEV_API_ENV }}" >> .env
+          echo $ENV_FILE >> .env
           touch aws.pem
-          echo "${{ secrets.SSH_PEM_KEY }}" >> aws.pem
+          echo "${{secrets.SSH_PEM_KEY}}" >> aws.pem
           sudo chmod 400 aws.pem
           mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-          ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          echo "${{secrets.SSH_KNOWN_HOSTS}}" >> ~/.ssh/known_hosts
+          ssh-keyscan ${{secrets.SSH_HOST}} >> ~/.ssh/known_hosts
           ls -la
-          
+        shell : bash
+        env :
+          ENV_FILE : ${{secrets.DEV_API_ENV}}
+
       - name: Cloning repository
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{secrets.SSH_HOST}}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{secrets.SSH_USERNAME}}
           key: ${{secrets.SSH_PEM_KEY}}
           script: |
            rm -rf PAR-Backend-Consumer || :
