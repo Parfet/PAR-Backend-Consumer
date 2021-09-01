@@ -20,6 +20,7 @@ jobs:
           sudo chmod 440 aws.pem
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
           
       - name: Cloning repository
         uses: appleboy/ssh-action@v0.1.4
