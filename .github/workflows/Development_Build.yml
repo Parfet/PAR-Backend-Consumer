@@ -5,12 +5,14 @@ on:
     branches: [ develop ]
 
 jobs:
-  preparing:
+  
+  Deploy:
+    needs: preparing
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v1
-      
+
       - name: Create .env file
         run : |
           touch .env
@@ -19,13 +21,6 @@ jobs:
           echo "${{ secrets.SSH_PEM_KEY }}" >> aws.pem
           sudo chmod 440 aws.pem
           ls -la
-
-  Deploy:
-    needs: preparing
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v1
 
       - name: Cloning repository
         uses: appleboy/ssh-action@v0.1.4
