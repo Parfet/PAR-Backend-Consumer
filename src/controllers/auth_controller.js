@@ -34,14 +34,14 @@ module.exports = {
       const userCollection = firestore.collection("User");
       const userSnap = await userCollection.listDocuments();
 
-      userSnap.forEach((elem) => {
-        if (elem.id === req.user) {
+      for (let user in userSnap) {
+        if (user.id === req.user) {
           return res.status(400).json({
             message: "you have already register.",
           });
         }
-      });
-
+      }
+      
       await userCollection.doc(req.user).set({
         username: username,
         email: email,
@@ -54,6 +54,7 @@ module.exports = {
 
       return res.status(204).json();
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err || err.message,
       });

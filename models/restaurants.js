@@ -26,8 +26,7 @@ module.exports = (sequelize, DataTypes) => {
   Restaurants.init(
     {
       restaurant_id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.STRING,
         unique: true,
         primaryKey: true,
       },
@@ -35,41 +34,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      tel_no: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      verify_status: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false,
-      },
-      status: {
-        type: DataTypes.ENUM("OPEN", "CLOSED"),
-        allowNull: false,
-      },
-      price: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
-      opened_time: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      closed_time: {
-        type: DataTypes.STRING,
-        allowNull: false,
       },
       //
       // === [FORMAT] ===
@@ -79,14 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        defaultValue: null,
-      },
-      deleted_at: {
-        type: DataTypes.DATE,
-        defaultValue: null,
       },
       lat: {
         type: DataTypes.FLOAT,
