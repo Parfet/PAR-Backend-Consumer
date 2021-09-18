@@ -5,25 +5,54 @@ on:
     branches: [ develop ]
 
 jobs:
-
   Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v1
 
-      - name: SSH Remote Commands
+      - name: Set env
+        run: echo "ENV_NAME=$( [ "$GITHUB_REF" == "refs/heads/master" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
+
+      - name: Create .env & SSH file
+        run : |
+          touch .env
+          echo $ENV_FILE >> .env
+          touch aws.pem
+          echo "${{secrets.SSH_PEM_KEY}}" >> aws.pem
+          sudo chmod 400 aws.pem
+          mkdir -p ~/.ssh/
+          echo "${{secrets.SSH_KNOWN_HOSTS}}" >> ~/.ssh/known_hosts
+          ssh-keyscan ${{secrets.SSH_HOST}} >> ~/.ssh/known_hosts
+          ls -la
+        shell : bash
+        env :
+          ENV_FILE : ${{secrets.DEV_API_ENV}}
+
+      - name: Cloning repository
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{secrets.SSH_USERNAME}}
+          key: ${{secrets.SSH_PEM_KEY}}
+          script: |
+           rm -rf PAR-Backend-Consumer || :
+           git clone git@github.com:Parfet/PAR-Backend-Consumer.git
+
+      - name: COPY .env 
+        run : |
+          ls -la
+          scp -i "aws.pem" .env ${{ secrets.SSH_USERNAME }}@${{secrets.SSH_HOST}}:~/PAR-Backend-Consumer/
+
+      - name: Deploy Application
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{secrets.SSH_HOST}}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{secrets.SSH_PEM_KEY}}
           script: |
-           rm -rf PAR-Backend-Consumer || :
-           git clone https://${{secrets.GIT_USERNAME}}:${{secrets.GIT_PASSWORD}}@github.com/Parfet/PAR-Backend-Consumer.git
            cd PAR-Backend-Consumer
-           touch .env
-           echo ${{ secrets.DEV_API_ENV }} >> .env
+           git checkout develop
            docker-compose down --rmi local || :
            docker-compose up -d --build
            docker ps -a
