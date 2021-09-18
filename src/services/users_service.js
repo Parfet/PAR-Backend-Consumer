@@ -9,6 +9,12 @@ const getUserByUserId = async ({ user_id }) => {
   return documentList.data();
 };
 
+const createUser = async ({ user_id }) =>
+  userModel.create({
+    id: user_id,
+  });
+
 module.exports = {
   getUserByUserId,
+  createUser,
 };

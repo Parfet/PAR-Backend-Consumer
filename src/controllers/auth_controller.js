@@ -1,5 +1,6 @@
 const admin = require("../utils/firebase_admin");
 const firestore = admin.firestore();
+const userService = require("../services/users_service");
 
 module.exports = {
   checkIsUserExisted: async (req, res) => {
@@ -51,6 +52,10 @@ module.exports = {
         first_name: first_name,
         last_name: last_name,
         image_url: image_url,
+      });
+
+      await userService.createUser({
+        user_id: req.user,
       });
 
       return res.status(204).json();
