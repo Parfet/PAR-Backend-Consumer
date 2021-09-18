@@ -6,9 +6,10 @@ module.exports = {
     try {
       const documentRef = firestore.collection(`User`).doc(req.user);
       const documentList = await documentRef.get();
+      console.log(documentList);
       if (documentList.data()) {
         return res.status(200).json({
-          is_user_existed: true,
+          user: documentList.data(),
         });
       } else {
         return res.status(200).json({
@@ -41,7 +42,7 @@ module.exports = {
           });
         }
       }
-      
+
       await userCollection.doc(req.user).set({
         username: username,
         email: email,
@@ -54,7 +55,6 @@ module.exports = {
 
       return res.status(204).json();
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err || err.message,
       });

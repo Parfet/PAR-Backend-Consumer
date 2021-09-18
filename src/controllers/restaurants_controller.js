@@ -26,12 +26,6 @@ module.exports = {
         }
       }
 
-      if (req.query.name) {
-        query.restaurant_name = {
-          [Op.like]: `%${req.query.name}%`,
-        };
-      }
-
       const { lat, lng, keyword } = req.query;
       let params = {
         key: process.env.GOOGLE_MAP_API_KEY,
@@ -47,9 +41,13 @@ module.exports = {
 
       let restaurants = response.data.results;
       if (status === RESTAURANT_AVAILABLE.OPEN) {
-        restaurants = restaurants.filter((e) => e.opening_hours.open_now);
+        restaurants = restaurants.filter(
+          (e) => e.opening_hours && e.opening_hours.open_now
+        );
       } else if (status === RESTAURANT_AVAILABLE.CLOSED) {
-        restaurants = restaurants.filter((e) => !e.opening_hours.open_now);
+        restaurants = restaurants.filter(
+          (e) => !e.opening_hours.open_now && e.opening_hours
+        );
       }
       if (restaurants.length > 0) {
         return res.status(200).json({

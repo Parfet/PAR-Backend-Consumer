@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0.0,
       },
-      lon: {
+      lng: {
         type: DataTypes.FLOAT,
         allowNull: false,
         defaultValue: 0.0,

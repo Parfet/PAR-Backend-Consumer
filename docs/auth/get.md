@@ -12,7 +12,18 @@
 
 ```
 {
-    is_user_existed: true || false,
+    is_user_existed: false,
+}
+{
+    user: {
+        "email": STRING
+        "last_name": STRING
+        "provider": STRING
+        "username": STRING
+        "display_name": STRING
+        "first_name": STRING
+        "image_url": STRING
+    }
 }
 ```
 

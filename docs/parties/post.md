@@ -8,7 +8,6 @@
 
 ```
 {
-    head_party: UUID<user_id>,
     party_name: String,
     party_type: enum(PRIVATE, PUBLIC),
     passcode: String length 6,

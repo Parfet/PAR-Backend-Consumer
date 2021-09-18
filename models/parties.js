@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       head_party: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       passcode: DataTypes.STRING,
       party_type: {

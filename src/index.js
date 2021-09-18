@@ -5,6 +5,7 @@ const app = express();
 
 const handleErrors = require("./middlewares/handle_errors");
 const { verifyToken } = require("./middlewares/auth");
+const firebaseAuthen = require("./middlewares/auth/external/firebase_auth");
 
 const usersRouter = require("./routers/users_router");
 const partiesRouter = require("./routers/parties_router");
@@ -17,8 +18,8 @@ app.use(express.json());
 
 app.use("/auth", authRouter);
 app.use("/user", usersRouter);
-app.use("/party", verifyToken, partiesRouter);
-app.use("/restaurant", verifyToken, restaurantsRouter);
+app.use("/party", firebaseAuthen.verifyAccessToken, partiesRouter);
+app.use("/restaurant", firebaseAuthen.verifyAccessToken, restaurantsRouter);
 
 app.use(handleErrors);
 
