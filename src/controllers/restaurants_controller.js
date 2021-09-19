@@ -38,17 +38,16 @@ module.exports = {
         "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
         { params }
       );
-
       let restaurants = response.data.results;
-      if (status === RESTAURANT_AVAILABLE.OPEN) {
-        restaurants = restaurants.filter(
-          (e) => e.opening_hours && e.opening_hours.open_now
-        );
-      } else if (status === RESTAURANT_AVAILABLE.CLOSED) {
-        restaurants = restaurants.filter(
-          (e) => !e.opening_hours.open_now && e.opening_hours
-        );
-      }
+      // if (status === RESTAURANT_AVAILABLE.OPEN) {
+      //   restaurants = restaurants.filter(
+      //     (e) => e.opening_hours && e.opening_hours.open_now
+      //   );
+      // } else if (status === RESTAURANT_AVAILABLE.CLOSED) {
+      //   restaurants = restaurants.filter(
+      //     (e) => !e.opening_hours.open_now && e.opening_hours
+      //   );
+      // }
       if (restaurants.length > 0) {
         return res.status(200).json({
           restaurants: restaurants,
