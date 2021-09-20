@@ -38,9 +38,7 @@ module.exports = {
         "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
         { params }
       );
-      console.log(response.data, 'data')
       let restaurants = response.data.results;
-      console.log(restaurants, "restaurants");
       // if (status === RESTAURANT_AVAILABLE.OPEN) {
       //   restaurants = restaurants.filter(
       //     (e) => e.opening_hours && e.opening_hours.open_now
