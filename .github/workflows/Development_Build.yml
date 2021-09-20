@@ -41,6 +41,7 @@ jobs:
           echo $FIREBASE_ADMIN_TOKEN_URI                   >> .env 
           echo $FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL >> .env 
           echo $FIREBASE_ADMIN_CLIENT_X509_CERT_URL        >> .env 
+          echo $GOOGLE_MAP_API_KEY                         >> .env 
         shell : bash
         env :
           DATABASE_PARFET                             : ${{secrets.DATABASE_PARFET}}
@@ -67,6 +68,7 @@ jobs:
           FIREBASE_ADMIN_TOKEN_URI                    : ${{secrets.FIREBASE_ADMIN_TOKEN_URI}}
           FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL  : ${{secrets.FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL}}
           FIREBASE_ADMIN_CLIENT_X509_CERT_URL         : ${{secrets.FIREBASE_ADMIN_CLIENT_X509_CERT_URL}}
+          GOOGLE_MAP_API_KEY         : ${{secrets.GOOGLE_MAP_API_KEY}}
 
       - name: Create .ssh file
         run : |
