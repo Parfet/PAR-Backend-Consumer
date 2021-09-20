@@ -11,12 +11,10 @@ module.exports = {
       if (documentList.data()) {
         return res.status(200).json({
           is_user_existed: true,
-          user: documentList.data(),
         });
       } else {
         return res.status(200).json({
           is_user_existed: false,
-          user: {},
         });
       }
     } catch (err) {

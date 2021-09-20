@@ -39,6 +39,7 @@ module.exports = {
         { params }
       );
       let restaurants = response.data.results;
+      console.log(restaurants, "restaurants");
       // if (status === RESTAURANT_AVAILABLE.OPEN) {
       //   restaurants = restaurants.filter(
       //     (e) => e.opening_hours && e.opening_hours.open_now

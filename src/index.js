@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use("/auth", authRouter);
-app.use("/user", usersRouter);
+app.use("/user", firebaseAuthen.verifyAccessToken, usersRouter);
 app.use("/party", firebaseAuthen.verifyAccessToken, partiesRouter);
 app.use("/restaurant", firebaseAuthen.verifyAccessToken, restaurantsRouter);
 
