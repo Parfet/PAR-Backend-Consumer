@@ -24,8 +24,36 @@ module.exports = {
         return res.status(204).json();
       }
 
+      const partyList = [];
+
+      for (const party of data[0].parties) {
+        let _userWithDetailList = [];
+        for (const member of party.members) {
+          const _user = await userService.getUserByUserId({
+            user_id: member.user_id,
+          });
+          _userWithDetailList.push(_user);
+        }
+        const partyResponse = {
+          party_id: party.party_id,
+          party_name: party.party_name,
+          head_party: await userService.getUserByUserId({
+            user_id: party.head_party,
+          }),
+          party_type: party.party_type,
+          intersted_topic: party.interested_topic,
+          max_member: party.max_member,
+          schedule_time: party.schedule_time,
+          created_at: party.created_at,
+          updated_at: party.updated_at,
+          members: _userWithDetailList,
+          interest_tags: party.interest_tags,
+        };
+        partyList.push(partyResponse);
+      }
+
       return res.status(200).json({
-        parties: data[0].parties,
+        parties: partyList,
       });
     } catch (e) {
       console.log(e);
@@ -43,13 +71,36 @@ module.exports = {
       const data = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (!data) {
+      const _userWithDetailList = [];
+      for (const item of data[0].members) {
+        const _user = await userService.getUserByUserId({
+          user_id: item.user_id,
+        });
+        _userWithDetailList.push(_user);
+      }
+      const partyResponse = {
+        party_id: data[0].party_id,
+        party_name: data[0].party_name,
+        head_party: await userService.getUserByUserId({
+          user_id: data[0].head_party,
+        }),
+        party_type: data[0].party_type,
+        intersted_topic: data[0].interested_topic,
+        max_member: data[0].max_member,
+        schedule_time: data[0].schedule_time,
+        created_at: data[0].created_at,
+        updated_at: data[0].updated_at,
+        members: _userWithDetailList,
+        interest_tags: data[0].interest_tags,
+      };
+      if (data.length === 0) {
         return res.status(204).send();
       }
       return res.status(200).json({
-        party: data[0],
+        party: partyResponse,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });

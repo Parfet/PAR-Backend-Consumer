@@ -9,9 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      UsersParties.belongsTo(models.parties, {
-        foreignKey: "party_id",
-      });
     }
   }
   UsersParties.init(

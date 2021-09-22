@@ -9,11 +9,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Users.belongsToMany(models.parties, {
+        through: models.users_parties,
+        foreignKey: "user_id",
+        constraints: false,
+      });
     }
   }
   Users.init(
     {
-      id: {
+      user_id: {
         type: DataTypes.STRING,
         primaryKey: true,
       },

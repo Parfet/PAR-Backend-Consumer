@@ -25,7 +25,7 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
   //   where: {
   //     restaurant_id: restaurant_id,
   //   },
-    
+
   // })
   const data = await restaurantModel.findAll({
     where: {
@@ -40,21 +40,18 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
         attributes: [],
       },
       include: [
-        // {
-        //   model: userModel,
-        //   as: "members",
-        //   attributes: {
-        //     exclude: ["password"],
-        //   },
-        //   through: {
-        //     attributes: [],
-        //     where: {
-        //       status: {
-        //         [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
-        //       },
-        //     },
-        //   },
-        // },
+        {
+          model: userModel,
+          as: "members",
+          through: {
+            attributes: [],
+            where: {
+              status: {
+                [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+              },
+            },
+          },
+        },
         {
           model: interestTagModel,
           as: "interest_tags",
@@ -81,21 +78,18 @@ const findPartyByPartyId = async ({ party_id }) =>
     },
     include: [
       // TODO: change to user on firebase auth
-      // {
-      //   model: userModel,
-      //   as: "members",
-      //   attributes: {
-      //     exclude: ["password"],
-      //   },
-      //   through: {
-      //     attributes: [],
-      //     where: {
-      //       status: {
-      //         [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
-      //       },
-      //     },
-      //   },
-      // },
+      {
+        model: userModel,
+        as: "members",
+        through: {
+          attributes: [],
+          where: {
+            status: {
+              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+            },
+          },
+        },
+      },
       {
         model: interestTagModel,
         as: "interest_tags",
@@ -150,7 +144,6 @@ const requestJoinList = async ({ party_id }) => {
     // include: {
     //   model: userModel,
     //   as: "user",
-    //   attributes: ["user_id", "username", "image_url"],
     // },
   });
 
