@@ -14,24 +14,15 @@
 
 ```
 {
-    users: [
-        {
-            user_id: UUID<user_id>,
-            username: String,
-            email: String,
-            first_name_th: String,
-            last_name_th: String,
-            first_name_en: String,
-            last_name_en: String,
-            tel_no: String,
-            verify_status: bool,
-            created_at: DateTime,
-            updated_at: DateTime,
-            archived_at: DateTime,
-            deleted_at: DateTime,
-            image_url: String
-        },
-    ]
+    "user": {
+        "provider": String,
+        "display_name": String,
+        "email": String,
+        "last_name": String,
+        "image_url": String,
+        "first_name": String,
+        "username": String
+    }
 }
 ```
 
