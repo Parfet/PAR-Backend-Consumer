@@ -1,8 +1,8 @@
 # USER API METHOD GET
 
-1. Get All User
+1. Get  User Detail
 
-` https://${url}/user/`
+` https://${url}/user/me`
 
 > ### Request Body
 
