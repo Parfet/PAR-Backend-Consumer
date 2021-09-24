@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         through: models.users_parties,
         foreignKey: "party_id",
         as: "members",
-        constraints: false,
       });
     }
   }

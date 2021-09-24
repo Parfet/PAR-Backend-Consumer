@@ -140,11 +140,6 @@ const requestJoinList = async ({ party_id }) => {
       party_id: party_id,
       status: ENUM.REQUEST_STATUS.WATING,
     },
-    // TODO: change to user on firebase auth
-    // include: {
-    //   model: userModel,
-    //   as: "user",
-    // },
   });
 
   // TODO: rating of user
@@ -329,9 +324,6 @@ const getPartyByUserId = async ({ user_id }) => {
         {
           model: userModel,
           as: "members",
-          attributes: {
-            exclude: ["password"],
-          },
           through: {
             attributes: [],
             where: {

@@ -71,6 +71,9 @@ module.exports = {
       const data = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
+      if (data.length === 0) {
+        return res.status(204).send();
+      }
       const _userWithDetailList = [];
       for (const item of data[0].members) {
         const _user = await userService.getUserByUserId({
@@ -93,9 +96,6 @@ module.exports = {
         members: _userWithDetailList,
         interest_tags: data[0].interest_tags,
       };
-      if (data.length === 0) {
-        return res.status(204).send();
-      }
       return res.status(200).json({
         party: partyResponse,
       });
@@ -128,10 +128,29 @@ module.exports = {
       if (data.length === 0) {
         return res.status(204).json();
       }
+
+      const requestList = [];
+
+      for (const item of data) {
+        const _user = await userService.getUserByUserId({
+          user_id: item.user_id,
+        });
+        let requestItem = {
+          party_id: item.party_id,
+          user_id: item.user_id,
+          display_name: _user.display_name,
+          rating: 0.0,
+          image_url: _user.image_url,
+          status: item.status,
+        };
+        requestList.push(requestItem);
+      }
+
       return res.status(200).json({
-        request: data,
+        request: requestList,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });
@@ -153,24 +172,71 @@ module.exports = {
 
   getPartyByUserId: async (req, res) => {
     try {
-      const user = await userService.getUserByUserId({
+      const partyListRaw = await partyService.getPartyByUserId({
         user_id: req.user,
       });
-      if (!user) {
-        return res.staus(400).json({
-          message: "User not found",
-        });
-      }
-      const party = await partyService.getPartyByUserId({
-        user_id: req.user,
-      });
-      if (party.length <= 0) {
+      if (partyListRaw.length <= 0) {
         return res.status(204).json();
       }
+
+      // return res.status(200).json({
+      //   parties: partyListRaw,
+      // });
+
+      const partyList = [];
+
+      for (const party of partyListRaw) {
+        const memberList = [];
+        for (const member of party.dataValues.members) {
+          const userRaw = await userService.getUserByUserId({
+            user_id: member.user_id,
+          });
+
+          const userFormat = {
+            user_id: member.user_id,
+            provider: userRaw.provider,
+            display_name: userRaw.display_name,
+            email: userRaw.email,
+            image_url: userRaw.image_url,
+            username: userRaw.username,
+          };
+
+          memberList.push(userFormat);
+        }
+        const headPartyRaw = await userService.getUserByUserId({
+          user_id: party.dataValues.head_party,
+        });
+
+        const headPartyFormat = {
+          user_id: party.dataValues.head_party,
+          provider: headPartyRaw.provider,
+          display_name: headPartyRaw.display_name,
+          email: headPartyRaw.email,
+          image_url: headPartyRaw.image_url,
+          username: headPartyRaw.username,
+        };
+        const partyFormat = {
+          party_id: party.party_id,
+          party_name: party.dataValues.party_name,
+          head_party: headPartyFormat,
+          party_type: party.dataValues.party_type,
+          interested_topic: party.dataValues.interested_topic,
+          max_member: party.dataValues.max_member,
+          schedule_time: party.dataValues.schedule_time,
+          created_at: party.dataValues.created_at,
+          updated_at: party.dataValues.updated_at,
+          archived_at: party.dataValues.archived_at,
+          members: memberList,
+          interest_tags: party.dataValues.interest_tags,
+        };
+        partyList.push(partyFormat);
+      }
+
       return res.status(200).json({
-        parties: party,
+        parties: partyList,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });

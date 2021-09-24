@@ -87,10 +87,12 @@ Status 200
 {
     request: [
         {
-            party_id: UUID<party_id>,
-            user_id: UUID<user_id>,
-            status: ENUM<PARTY_STATUS>,
-            rating: float
+            "party_id": UUID<party_id>,
+            "user_id": UUID<user_id>,
+            "display_name": String,
+            "rating": int,
+            "image_url": String,
+            "status": ENUM<>
         }
     ]
 }
@@ -225,59 +227,38 @@ Status 403
 Status 204,
 Status 200
 {
-    parties: [
+    "parties": [
         {
-            party_id: UUID<party_id>,
-            party_name: String,
-            head_party: {
-                user_id: UUID<user_id>,
-                username: String,
-                email: String,
-                first_name_th: String,
-                last_name_th: String,
-                first_name_en: String,
-                last_name_en: String,
-                tel_no: String,
-                verify_status: bool,
-                created_at: DateTime,
-                updated_at: DateTime,
-                archived_at: DateTime,
-                deleted_at: DateTime,
-                image_url: String
+            "party_id": String,
+            "party_name": String,
+            "head_party": {
+                "provider": String,
+                "display_name": String,
+                "email": String,
+                "last_name": String,
+                "image_url": String,
+                "first_name": String,
+                "username": String"
             },
-            passcode: String,
-            party_type: ENUM<PARTY_TYPE>,
-            interested_topic: String,
-            max_member: int,
-            schedule_time: DateTime,
-            created_at: DateTime,
-            archived_at: DateTime,
-            updated_at: DateTime,
-            members: [
+            "party_type": String,
+            "interested_topic": String,
+            "max_member": int,
+            "schedule_time": String,
+            "created_at": datetime,
+            "updated_at": datetime,
+            "archived_at": datetime,
+            "members": [
                 {
-                    user_id: UUID<user_id>,
-                    username: String,
-                    email: String,
-                    first_name_th: String,
-                    last_name_th: String,
-                    first_name_en: String,
-                    last_name_en: String,
-                    tel_no: String,
-                    verify_status: bool,
-                    created_at: DateTime,
-                    updated_at: DateTime,
-                    archived_at: DateTime,
-                    deleted_at: DateTime,
-                    image_url: String
+                    "provider": String,
+                    "display_name": String,
+                    "email": String,
+                    "last_name": String,
+                    "image_url": String,
+                    "first_name": String,
+                    "username": String"
                 }
-            ],
-            interest_tags: [
-                {
-                    value: UUID<tag_id>,
-                    label: String
-                },
             ]
-        },
+        }
     ]
 }
 ```
