@@ -53,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         allowNull: false,
         defaultValue: 0.0,
+      },
+      restaurant_photo_ref: {
+        type: DataTypes.STRING,
+        allowNull: false,
       }
     },
     {

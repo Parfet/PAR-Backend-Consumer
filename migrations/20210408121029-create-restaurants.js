@@ -30,6 +30,10 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
+      restaurant_photo_ref: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     });
   },
   down: async (queryInterface, _Sequelize) => {

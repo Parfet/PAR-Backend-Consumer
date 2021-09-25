@@ -344,6 +344,13 @@ const getPartyByUserId = async ({ user_id }) => {
             attributes: [],
           },
         },
+        {
+          model: restaurantModel,
+          attribute: ["restaurant_name", "restaurant_photo_ref"],
+          through: {
+            attributes: [],
+          },
+        },
       ],
     },
   });

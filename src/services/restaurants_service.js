@@ -22,6 +22,7 @@ const createRestaurant = async ({
   location,
   lat,
   lng,
+  restaurant_photo_ref,
   transaction,
 }) =>
   restaurantModel.create(
@@ -32,6 +33,7 @@ const createRestaurant = async ({
       created_at: moment(),
       lat: lat,
       lng: lng,
+      restaurant_photo_ref: restaurant_photo_ref,
     },
     {
       transaction: transaction,

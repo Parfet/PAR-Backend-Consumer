@@ -32,6 +32,13 @@ module.exports = {
           const _user = await userService.getUserByUserId({
             user_id: member.user_id,
           });
+
+          if (_user === "") {
+            return res.status(500).json({
+              message: "user not found",
+            });
+          }
+
           _userWithDetailList.push(_user);
         }
         const partyResponse = {
@@ -81,12 +88,21 @@ module.exports = {
         });
         _userWithDetailList.push(_user);
       }
+
+      const headPartyRaw = await userService.getUserByUserId({
+        user_id: data[0].head_party,
+      });
+
+      if (headPartyRaw === "") {
+        return res.status(500).json({
+          message: "User not found",
+        });
+      }
+
       const partyResponse = {
         party_id: data[0].party_id,
         party_name: data[0].party_name,
-        head_party: await userService.getUserByUserId({
-          user_id: data[0].head_party,
-        }),
+        head_party: headPartyRaw,
         party_type: data[0].party_type,
         interested_topic: data[0].interested_topic,
         max_member: data[0].max_member,
@@ -135,6 +151,13 @@ module.exports = {
         const _user = await userService.getUserByUserId({
           user_id: item.user_id,
         });
+
+        if (_user === "") {
+          return res.status(500).json({
+            message: "User not found",
+          });
+        }
+
         let requestItem = {
           party_id: item.party_id,
           user_id: item.user_id,
@@ -175,22 +198,38 @@ module.exports = {
       const partyListRaw = await partyService.getPartyByUserId({
         user_id: req.user,
       });
+
       if (partyListRaw.length <= 0) {
         return res.status(204).json();
       }
-
-      // return res.status(200).json({
-      //   parties: partyListRaw,
-      // });
 
       const partyList = [];
 
       for (const party of partyListRaw) {
         const memberList = [];
+
+        const headPartyRaw = await userService.getUserByUserId({
+          user_id: party.dataValues.head_party,
+        });
+
+        if (headPartyRaw === "") {
+          return res.status(500).json({
+            message: "user not found",
+          });
+        }
+
+        const restaurantRaw = party.dataValues.restaurants[0];
+
         for (const member of party.dataValues.members) {
           const userRaw = await userService.getUserByUserId({
             user_id: member.user_id,
           });
+
+          if (userRaw === "") {
+            return res.status(500).json({
+              message: "User not found",
+            });
+          }
 
           const userFormat = {
             user_id: member.user_id,
@@ -203,9 +242,6 @@ module.exports = {
 
           memberList.push(userFormat);
         }
-        const headPartyRaw = await userService.getUserByUserId({
-          user_id: party.dataValues.head_party,
-        });
 
         const headPartyFormat = {
           user_id: party.dataValues.head_party,
@@ -215,6 +251,12 @@ module.exports = {
           image_url: headPartyRaw.image_url,
           username: headPartyRaw.username,
         };
+
+        const restaurantFormat = {
+          restaurant_name: restaurantRaw.restaurant_name,
+          restaurant_photo_ref: restaurantRaw.restaurant_photo_ref,
+        };
+
         const partyFormat = {
           party_id: party.party_id,
           party_name: party.dataValues.party_name,
@@ -228,7 +270,9 @@ module.exports = {
           archived_at: party.dataValues.archived_at,
           members: memberList,
           interest_tags: party.dataValues.interest_tags,
+          restaurant: restaurantFormat,
         };
+
         partyList.push(partyFormat);
       }
 
@@ -270,8 +314,20 @@ module.exports = {
         interest_tags,
         max_member,
         schedule_time,
+        restaurant_photo_ref,
       } = req.body;
       const head_party = req.user;
+
+      const head_party_raw = await userService.getUserByUserId({
+        user_id: head_party,
+      });
+
+      if (head_party_raw === "") {
+        return res.status(500).json({
+          message: "User not found",
+        });
+      }
+
       const _interest_tag = await partyService.findInterstTagById({
         tag_id: interest_tags,
       });
@@ -346,6 +402,7 @@ module.exports = {
           lat: restaurant.geometry.location.lat,
           lng: restaurant.geometry.location.lng,
           location: restaurant.vicinity,
+          restaurant_photo_ref: restaurant_photo_ref,
           transaction: transaction,
         });
       }
@@ -565,19 +622,20 @@ module.exports = {
           message: "User is invalid",
         });
       } else {
-        // const user = await userService.getUserByUserId({
-        //   user_id: req.body.user_id,
-        // });
-        // if (!user) {
-        //   return res.status(400).json({
-        //     message: "User not found",
-        //   });
-        // }
+        const user = await userService.getUserByUserId({
+          user_id: req.body.user_id,
+        });
+
+        if (user === "") {
+          return res.status(500).json({
+            message: "user not found",
+          });
+        }
         const findUserInParty = await partyService.handleCheckMemberRequest({
           party_id: req.params.party_id,
           user_id: req.body.user_id,
         });
-        console.log(findUserInParty);
+
         if (findUserInParty.length > 0) {
           return res.status(400).json({
             message: "cannot manage user that already party member or declined",
@@ -650,13 +708,16 @@ module.exports = {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (party[0].head_party.user_id !== req.user) {
+      if (party[0].head_party !== req.user) {
         return res.status(403).json({
           message: "Permission Denied",
         });
       }
+
       const memberList = party[0].members.map((e) => e.user_id);
       const user_id = req.body.user_id;
+      console.log(memberList, "memberList");
+
       if (!user_id) {
         return res.status(400).json({
           message: "required user target",

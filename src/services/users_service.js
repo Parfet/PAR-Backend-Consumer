@@ -7,8 +7,12 @@ const getUserByUserId = async ({ user_id }) => {
   const documentRef = firestore.collection("User").doc(user_id);
   const documentList = await documentRef.get();
   const data = documentList.data();
-  data.user_id = user_id;
-  return data;
+  if (data) {
+    data.user_id = user_id;
+    return data;
+  } else {
+    return "";
+  }
 };
 
 const createUser = async ({ user_id }) =>
