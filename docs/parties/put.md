@@ -41,9 +41,6 @@ Status 400
     message: Party not found
 }
 {
-    message: User not found
-}
-{
     message: Party type invalid
 }
 {
@@ -52,6 +49,9 @@ Status 400
 Status 500 
 {
     message: update failed
+}
+{
+    message: User not found
 }
 ```
 
@@ -91,14 +91,14 @@ Status 400
     message: User is invalid
 }
 {
-    message: User not found
-}
-{
     message: update failed
 }
 Status 500
 {
     message: update failed
+}
+{
+    message: User not found
 }
 
 ```

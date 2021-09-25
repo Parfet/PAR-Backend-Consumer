@@ -54,7 +54,11 @@ Status 400
 }
 {
     message: schedule time cannot be null
-},
+}
+Status 500
+{
+    message: User not found
+}
 ```
 
 > ### Notes

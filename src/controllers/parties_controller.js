@@ -539,7 +539,7 @@ module.exports = {
       if (req.body.head_party) {
         const user = await models.users.findByPk(req.body.head_party);
         if (!user) {
-          return res.status(400).json({ message: "User not found" });
+          return res.status(500).json({ message: "User not found" });
         }
         const member = await partyService.checkIsMemberParty({
           party_id: req.params.party_id,

@@ -62,7 +62,10 @@ Status 200
 > ### Error Response
 
 ```
-
+Status 500
+{
+    message: "User not found"
+}
 ```
 
 > ### Notes
@@ -108,6 +111,10 @@ Status 400
 Status 403
 {
     message: Permission Denied
+}
+Status 500
+{
+    message: User not found
 }
 ```
 
@@ -171,7 +178,10 @@ Status 403
 > ### Error Response
 
 ```
-
+Status 500
+{
+    message: "User not found"
+}
 ```
 
 > ### Notes
@@ -257,7 +267,17 @@ Status 200
                     "first_name": String,
                     "username": String"
                 }
-            ]
+            ],
+            "interested_tags": [
+                {
+                    value: UUID<tag_id>,
+                    label: String
+                }
+            ],
+            "restaurant": {
+                "restaurant_name": String,
+                "restaurant_photo_ref": String
+            },
         }
     ]
 }
@@ -266,7 +286,10 @@ Status 200
 > ### Error Response
 
 ```
-
+Status 500
+{
+    message: User not found
+}
 ```
 
 > ### Notes
