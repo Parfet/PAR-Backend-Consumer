@@ -33,10 +33,12 @@ module.exports = {
         image_url,
       } = req.body;
 
-      const userRaw = userService.getUserByUserId({
+      const userCollection = firestore.collection("User");
+
+      const userRaw = await userService.getUserByUserId({
         user_id: req.user,
       });
-
+      
       if (userRaw !== "") {
         return res.status(400).json({
           message: "you have already register.",
@@ -59,6 +61,7 @@ module.exports = {
 
       return res.status(204).json();
     } catch (err) {
+      console.log(err);
       return res.status(500).json({
         message: err || err.message,
       });
