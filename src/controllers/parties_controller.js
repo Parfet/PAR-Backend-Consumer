@@ -645,9 +645,10 @@ module.exports = {
 
       const data = await partyService.handleMemberRequest({
         user_id: req.body.user_id,
+        party_id: req.params.party_id,
         status: req.body.status,
       });
-
+      
       if (data.includes(1)) {
         await transaction.commit();
         return res.status(200).json({

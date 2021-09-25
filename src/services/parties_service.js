@@ -265,7 +265,12 @@ const checkIsMemberParty = async ({ party_id, user_id }) =>
     },
   });
 
-const handleMemberRequest = async ({ status, user_id, transaction }) =>
+const handleMemberRequest = async ({
+  status,
+  user_id,
+  party_id,
+  transaction,
+}) =>
   userPartyModel.update(
     {
       status: status,
@@ -273,6 +278,7 @@ const handleMemberRequest = async ({ status, user_id, transaction }) =>
     {
       where: {
         user_id: user_id,
+        party_id: party_id,
       },
     },
     {
