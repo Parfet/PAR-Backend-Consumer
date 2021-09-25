@@ -33,15 +33,14 @@ module.exports = {
         image_url,
       } = req.body;
 
-      const userCollection = firestore.collection("User");
-      const userSnap = await userCollection.listDocuments();
+      const userRaw = userService.getUserByUserId({
+        user_id: req.user,
+      });
 
-      for (let user in userSnap) {
-        if (user.id === req.user) {
-          return res.status(400).json({
-            message: "you have already register.",
-          });
-        }
+      if (userRaw !== "") {
+        return res.status(400).json({
+          message: "you have already register.",
+        });
       }
 
       await userCollection.doc(req.user).set({
