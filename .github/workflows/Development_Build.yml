@@ -105,5 +105,6 @@ jobs:
            cd PAR-Backend-Consumer
            git checkout develop
            docker-compose down --rmi local || :
-           docker-compose up -d --build
+           docker-compose -f docker-compose.dev.yml down --rmi local || :
+           docker-compose -f docker-compose.dev.yml up -d --build
            docker ps -a
