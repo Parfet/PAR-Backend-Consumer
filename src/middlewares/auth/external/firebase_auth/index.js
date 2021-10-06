@@ -8,10 +8,13 @@ module.exports = {
     try {
       const auth_header = req.headers["authorization"];
       const token = auth_header;
+      if (process.env.NODE_ENV !== "test") {
+        const user = await auth.verifyIdToken(token);
 
-      const user = await auth.verifyIdToken(token);
-
-      req.user = user.uid;
+        req.user = user.uid;
+      } else {
+        req.user = req.headers["authorization"];
+      }
 
       next();
     } catch (err) {
