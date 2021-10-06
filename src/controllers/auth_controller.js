@@ -31,14 +31,25 @@ module.exports = {
         first_name,
         last_name,
         image_url,
+        accept_term_of_use,
       } = req.body;
+
+      if (
+        accept_term_of_use === false ||
+        accept_term_of_use === undefined ||
+        accept_term_of_use === null
+      ) {
+        return res.status(400).json({
+          message: "accept my term of use for happy with my system :)",
+        });
+      }
 
       const userCollection = firestore.collection("User");
 
       const userRaw = await userService.getUserByUserId({
         user_id: req.user,
       });
-      
+
       if (userRaw !== "") {
         return res.status(400).json({
           message: "you have already register.",
@@ -53,6 +64,7 @@ module.exports = {
         first_name: first_name,
         last_name: last_name,
         image_url: image_url,
+        accept_term_of_use: accept_term_of_use,
       });
 
       await userService.createUser({

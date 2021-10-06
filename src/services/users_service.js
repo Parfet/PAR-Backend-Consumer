@@ -8,8 +8,16 @@ const getUserByUserId = async ({ user_id }) => {
   const documentList = await documentRef.get();
   const data = documentList.data();
   if (data) {
-    data.user_id = user_id;
-    return data;
+    return {
+      user_id: user_id,
+      provider: data.provider,
+      display_name: data.display_name,
+      email: data.email,
+      last_name: data.last_name,
+      image_url: data.image_url,
+      first_name: data.first_name,
+      username: data.username,
+    };
   } else {
     return "";
   }
