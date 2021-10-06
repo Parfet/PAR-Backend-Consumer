@@ -449,6 +449,7 @@ module.exports = {
       if (party.length === 0) {
         res.status(400).json({ message: "Party not found" });
       }
+      // TODO: check limit party member
       if (
         party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&
         (req.body.passcode === null || req.body.passcode !== party[0].passcode)
@@ -648,7 +649,7 @@ module.exports = {
         party_id: req.params.party_id,
         status: req.body.status,
       });
-      
+
       if (data.includes(1)) {
         await transaction.commit();
         return res.status(200).json({
@@ -669,35 +670,44 @@ module.exports = {
   },
 
   leaveParty: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      const memberList = party[0].members.map((e) => e.user_id);
-      if (party[0].head_party.user_id === req.user) {
+
+      if (party[0].head_party === req.user) {
         return res.status(400).json({
           message: "party owner can not leave party",
         });
       }
+
+      const memberList = party[0].members.map((e) => e.user_id);
+
       if (memberList.includes(req.user)) {
         const data = await partyService.removePartyMember({
           party_id: req.params.party_id,
           user_id: req.user,
+          transaction: transaction,
         });
         if (data) {
+          await transaction.commit();
           return res.status(200).json({
             message: "leave party success",
           });
         } else {
+          await transaction.rollback();
           return res.status(500).json({
             message: "leave party failed",
           });
         }
       }
+      await transaction.rollback();
       return res.status(400).json({
         message: "only member of this party can leave party",
       });
     } catch (e) {
+      await transaction.rollback();
       return res.status(500).json({
         message: e.message,
       });
@@ -705,6 +715,7 @@ module.exports = {
   },
 
   removeMember: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
@@ -717,7 +728,6 @@ module.exports = {
 
       const memberList = party[0].members.map((e) => e.user_id);
       const user_id = req.body.user_id;
-      console.log(memberList, "memberList");
 
       if (!user_id) {
         return res.status(400).json({
@@ -729,7 +739,7 @@ module.exports = {
           message: "party not found",
         });
       }
-      if (party[0].head_party.user_id === user_id) {
+      if (party[0].head_party === user_id) {
         return res.status(400).json({
           message: "party owner can not remove own account from party",
         });
@@ -738,21 +748,26 @@ module.exports = {
         const response = await partyService.removePartyMember({
           party_id: req.params.party_id,
           user_id: user_id,
+          transaction: transaction,
         });
         if (response) {
+          await transaction.commit();
           return res.status(200).json({
             message: "remove member success",
           });
         } else {
+          await transaction.rollback();
           return res.status(500).json({
             message: "remove member failed",
           });
         }
       }
+      await transaction.rollback();
       return res.status(400).json({
         message: "only member of this party can be remove",
       });
     } catch (e) {
+      await transaction.rollback();
       return res.status(500).json({
         message: e.message,
       });

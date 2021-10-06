@@ -10,13 +10,12 @@ partiesRouter.get("/me", partiesController.getPartyByUserId);
 partiesRouter.get(
   "/:restaurant_id",
   partiesController.getAllPartyByRestaurantId
-  );
-  partiesRouter.post("/:restaurant_id", partiesController.createParty);
+);
+partiesRouter.post("/:restaurant_id", partiesController.createParty);
 partiesRouter.get("/info/:party_id", partiesController.getPartyByPartyId);
 partiesRouter.post("/info/:party_id", partiesController.archivedParty);
 partiesRouter.put("/info/:party_id", partiesController.updatePartyInfo);
-partiesRouter.delete("/info/:party_id/member", partiesController.removeMember)
-
+partiesRouter.delete("/info/:party_id/member", partiesController.removeMember);
 
 partiesRouter.get(
   "/info/:party_id/join",
@@ -32,6 +31,6 @@ partiesRouter.put(
   partiesController.handleMemberRequest
 );
 
-partiesRouter.delete('/:party_id', partiesController.leaveParty)
+partiesRouter.delete("/:party_id", partiesController.leaveParty);
 
 module.exports = partiesRouter;

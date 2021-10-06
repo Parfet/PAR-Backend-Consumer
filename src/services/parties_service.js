@@ -371,12 +371,17 @@ const getPartyByUserId = async ({ user_id }) => {
   return data;
 };
 
-const removePartyMember = async ({ party_id, user_id }) =>
-  userPartyModel.destroy({
-    where: {
-      [Op.and]: [{ user_id: user_id }, { party_id: party_id }],
+const removePartyMember = async ({ party_id, user_id, transaction }) =>
+  userPartyModel.destroy(
+    {
+      where: {
+        [Op.and]: [{ user_id: user_id }, { party_id: party_id }],
+      },
     },
-  });
+    {
+      transaction: transaction,
+    }
+  );
 
 module.exports = {
   findPartyByRestaurantId,
