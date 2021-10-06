@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
         as: "interest_tags",
         constraint: false,
       });
+      Parties.belongsToMany(models.users, {
+        through: models.users_parties,
+        foreignKey: "party_id",
+        as: "members",
+      });
     }
   }
   Parties.init(
@@ -40,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       head_party: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       passcode: DataTypes.STRING,
       party_type: {

@@ -8,6 +8,7 @@ const userPartyModel = models.users_parties;
 const restaurantModel = models.restaurants;
 const ratingUserModel = models.rating_users;
 const interestTagModel = models.interest_tags;
+const restaurantsPartiesModel = models.restaurants_parties;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
 const handle = require("../utils/handle_response");
@@ -20,6 +21,12 @@ const deletePartyById = async ({ party_id }) =>
   });
 
 const findPartyByRestaurantId = async ({ restaurant_id }) => {
+  // const data = await restaurantsPartiesModel.findAll({
+  //   where: {
+  //     restaurant_id: restaurant_id,
+  //   },
+
+  // })
   const data = await restaurantModel.findAll({
     where: {
       restaurant_id: restaurant_id,
@@ -36,9 +43,6 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
         {
           model: userModel,
           as: "members",
-          attributes: {
-            exclude: ["password"],
-          },
           through: {
             attributes: [],
             where: {
@@ -62,22 +66,21 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       ],
     },
   });
-  data.parties = await handle.handleRestaurantPartyResponse(data[0].parties);
+  // console.log(data)
+  // data.parties = await handle.handleRestaurantPartyResponse(data[0].parties);
   return data;
 };
 
-const findPartyByPartyId = async ({ party_id }) => {
-  const data = await partyModel.findAll({
+const findPartyByPartyId = async ({ party_id }) =>
+  partyModel.findAll({
     where: {
       party_id: party_id,
     },
     include: [
+      // TODO: change to user on firebase auth
       {
         model: userModel,
         as: "members",
-        attributes: {
-          exclude: ["password"],
-        },
         through: {
           attributes: [],
           where: {
@@ -100,9 +103,6 @@ const findPartyByPartyId = async ({ party_id }) => {
       },
     ],
   });
-  data.parties = await handle.handleRestaurantPartyResponse(data);
-  return data;
-};
 
 const createParty = async ({
   head_party,
@@ -134,45 +134,42 @@ const createParty = async ({
 const requestJoinList = async ({ party_id }) => {
   const data = await userPartyModel.findAll({
     attributes: {
-      exclude: ["user_id", "party_id", "status"],
+      include: ["user_id", "party_id", "status"],
     },
     where: {
       party_id: party_id,
       status: ENUM.REQUEST_STATUS.WATING,
     },
-    include: {
-      model: userModel,
-      as: "user",
-      attributes: ["user_id", "username", "image_url"],
-    },
   });
+
+  // TODO: rating of user
   const rate = await ratingUserModel.findAll();
 
-  data.map((e, _i) => {
-    let rating = [];
-    let finalRate = 0;
+  // data.map((e, _i) => {
+  //   let rating = [];
+  //   let finalRate = 0;
 
-    for (let element of rate) {
-      if (e.user.user_id === element.receive_rate_user_id) {
-        rating.push(element.rating);
-      }
-    }
-    rating.forEach((tempRate, _k) => {
-      finalRate = parseFloat(finalRate) + parseFloat(tempRate);
-    });
-    e.user.dataValues.rating = parseFloat(finalRate / rating.length).toFixed(2);
-  });
+  //   for (let element of rate) {
+  //     if (e.user.user_id === element.receive_rate_user_id) {
+  //       rating.push(element.rating);
+  //     }
+  //   }
+  //   rating.forEach((tempRate, _k) => {
+  //     finalRate = parseFloat(finalRate) + parseFloat(tempRate);
+  //   });
+  //   e.user.dataValues.rating = parseFloat(finalRate / rating.length).toFixed(2);
+  // });
 
-  data.map((e, _) => {
-    e.dataValues = e.dataValues.user.dataValues;
-  });
+  // data.map((e, _) => {
+  //   e.dataValues = e.dataValues.user.dataValues;
+  // });
   return data;
 };
 
 const requestJoinByUserId = async ({ party_id, user_id }) =>
   userPartyModel.findAll({
     attributes: {
-      exclude: ["user_id", "party_id", "status"],
+      include: ["user_id", "party_id", "status"],
     },
     where: {
       party_id: party_id,
@@ -181,11 +178,12 @@ const requestJoinByUserId = async ({ party_id, user_id }) =>
         [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WATING],
       },
     },
-    include: {
-      model: userModel,
-      as: "user",
-      attributes: ["user_id"],
-    },
+    // TODO: change to user in firebase auth
+    // include: {
+    //   model: userModel,
+    //   as: "user",
+    //   attributes: ["user_id"],
+    // },
   });
 
 const joinParty = async ({ party_id, user_id, status, transaction }) =>
@@ -267,7 +265,12 @@ const checkIsMemberParty = async ({ party_id, user_id }) =>
     },
   });
 
-const handleMemberRequest = async ({ status, user_id, transaction }) =>
+const handleMemberRequest = async ({
+  status,
+  user_id,
+  party_id,
+  transaction,
+}) =>
   userPartyModel.update(
     {
       status: status,
@@ -275,6 +278,7 @@ const handleMemberRequest = async ({ status, user_id, transaction }) =>
     {
       where: {
         user_id: user_id,
+        party_id: party_id,
       },
     },
     {
@@ -326,9 +330,6 @@ const getPartyByUserId = async ({ user_id }) => {
         {
           model: userModel,
           as: "members",
-          attributes: {
-            exclude: ["password"],
-          },
           through: {
             attributes: [],
             where: {
@@ -345,6 +346,13 @@ const getPartyByUserId = async ({ user_id }) => {
             ["tag_id", "value"],
             ["tag_name", "label"],
           ],
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: restaurantModel,
+          attribute: ["restaurant_name", "restaurant_photo_ref"],
           through: {
             attributes: [],
           },

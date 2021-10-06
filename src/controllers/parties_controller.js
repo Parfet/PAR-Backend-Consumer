@@ -1,10 +1,14 @@
+require("dotenv").config();
 const { sequelize } = require("../../models/index");
+const axios = require("axios");
+
 const models = require("../../models/index");
 const userService = require("../services/users_service");
 const partyService = require("../services/parties_service");
 const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
 const checkErrorService = require("../utils/check_error");
+const admin = require("../utils/firebase_admin");
 
 module.exports = {
   // ==== [GET] ====
@@ -19,10 +23,47 @@ module.exports = {
       if (data.length === 0) {
         return res.status(204).json();
       }
+
+      const partyList = [];
+
+      for (const party of data[0].parties) {
+        let _userWithDetailList = [];
+        for (const member of party.members) {
+          const _user = await userService.getUserByUserId({
+            user_id: member.user_id,
+          });
+
+          if (_user === "") {
+            return res.status(500).json({
+              message: "user not found",
+            });
+          }
+
+          _userWithDetailList.push(_user);
+        }
+        const partyResponse = {
+          party_id: party.party_id,
+          party_name: party.party_name,
+          head_party: await userService.getUserByUserId({
+            user_id: party.head_party,
+          }),
+          party_type: party.party_type,
+          interested_topic: party.interested_topic,
+          max_member: party.max_member,
+          schedule_time: party.schedule_time,
+          created_at: party.created_at,
+          updated_at: party.updated_at,
+          members: _userWithDetailList,
+          interest_tags: party.interest_tags,
+        };
+        partyList.push(partyResponse);
+      }
+
       return res.status(200).json({
-        parties: data[0].parties,
+        parties: partyList,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });
@@ -37,13 +78,45 @@ module.exports = {
       const data = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (!data) {
+      if (data.length === 0) {
         return res.status(204).send();
       }
+      const _userWithDetailList = [];
+      for (const item of data[0].members) {
+        const _user = await userService.getUserByUserId({
+          user_id: item.user_id,
+        });
+        _userWithDetailList.push(_user);
+      }
+
+      const headPartyRaw = await userService.getUserByUserId({
+        user_id: data[0].head_party,
+      });
+
+      if (headPartyRaw === "") {
+        return res.status(500).json({
+          message: "User not found",
+        });
+      }
+
+      const partyResponse = {
+        party_id: data[0].party_id,
+        party_name: data[0].party_name,
+        head_party: headPartyRaw,
+        party_type: data[0].party_type,
+        interested_topic: data[0].interested_topic,
+        max_member: data[0].max_member,
+        schedule_time: data[0].schedule_time,
+        created_at: data[0].created_at,
+        updated_at: data[0].updated_at,
+        members: _userWithDetailList,
+        interest_tags: data[0].interest_tags,
+      };
       return res.status(200).json({
-        party: data[0],
+        party: partyResponse,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });
@@ -59,7 +132,7 @@ module.exports = {
         return res.status(400).json({ message: "Party not found" });
       }
 
-      if (party[0].head_party.user_id !== req.user) {
+      if (party[0].head_party !== req.user) {
         return res.status(403).json({
           message: "Permission Denied",
         });
@@ -71,10 +144,36 @@ module.exports = {
       if (data.length === 0) {
         return res.status(204).json();
       }
+
+      const requestList = [];
+
+      for (const item of data) {
+        const _user = await userService.getUserByUserId({
+          user_id: item.user_id,
+        });
+
+        if (_user === "") {
+          return res.status(500).json({
+            message: "User not found",
+          });
+        }
+
+        let requestItem = {
+          party_id: item.party_id,
+          user_id: item.user_id,
+          display_name: _user.display_name,
+          rating: 0.0,
+          image_url: _user.image_url,
+          status: item.status,
+        };
+        requestList.push(requestItem);
+      }
+
       return res.status(200).json({
-        request: data,
+        request: requestList,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });
@@ -96,24 +195,92 @@ module.exports = {
 
   getPartyByUserId: async (req, res) => {
     try {
-      const user = await userService.getUserByUserId({
+      const partyListRaw = await partyService.getPartyByUserId({
         user_id: req.user,
       });
-      if (!user) {
-        return res.staus(400).json({
-          message: "User not found",
-        });
-      }
-      const party = await partyService.getPartyByUserId({
-        user_id: req.user,
-      });
-      if (party.length <= 0) {
+
+      if (partyListRaw.length <= 0) {
         return res.status(204).json();
       }
+
+      const partyList = [];
+
+      for (const party of partyListRaw) {
+        const memberList = [];
+
+        const headPartyRaw = await userService.getUserByUserId({
+          user_id: party.dataValues.head_party,
+        });
+
+        if (headPartyRaw === "") {
+          return res.status(500).json({
+            message: "user not found",
+          });
+        }
+
+        const restaurantRaw = party.dataValues.restaurants[0];
+
+        for (const member of party.dataValues.members) {
+          const userRaw = await userService.getUserByUserId({
+            user_id: member.user_id,
+          });
+
+          if (userRaw === "") {
+            return res.status(500).json({
+              message: "User not found",
+            });
+          }
+
+          const userFormat = {
+            user_id: member.user_id,
+            provider: userRaw.provider,
+            display_name: userRaw.display_name,
+            email: userRaw.email,
+            image_url: userRaw.image_url,
+            username: userRaw.username,
+          };
+
+          memberList.push(userFormat);
+        }
+
+        const headPartyFormat = {
+          user_id: party.dataValues.head_party,
+          provider: headPartyRaw.provider,
+          display_name: headPartyRaw.display_name,
+          email: headPartyRaw.email,
+          image_url: headPartyRaw.image_url,
+          username: headPartyRaw.username,
+        };
+
+        const restaurantFormat = {
+          restaurant_name: restaurantRaw.restaurant_name,
+          restaurant_photo_ref: restaurantRaw.restaurant_photo_ref,
+        };
+
+        const partyFormat = {
+          party_id: party.party_id,
+          party_name: party.dataValues.party_name,
+          head_party: headPartyFormat,
+          party_type: party.dataValues.party_type,
+          interested_topic: party.dataValues.interested_topic,
+          max_member: party.dataValues.max_member,
+          schedule_time: party.dataValues.schedule_time,
+          created_at: party.dataValues.created_at,
+          updated_at: party.dataValues.updated_at,
+          archived_at: party.dataValues.archived_at,
+          members: memberList,
+          interest_tags: party.dataValues.interest_tags,
+          restaurant: restaurantFormat,
+        };
+
+        partyList.push(partyFormat);
+      }
+
       return res.status(200).json({
-        parties: party,
+        parties: partyList,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message,
       });
@@ -135,6 +302,10 @@ module.exports = {
   createParty: async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
+      if (Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: "Invalid Request" });
+      }
+
       const {
         party_type,
         party_name,
@@ -143,73 +314,74 @@ module.exports = {
         interest_tags,
         max_member,
         schedule_time,
+        restaurant_photo_ref,
       } = req.body;
       const head_party = req.user;
-      if (Object.keys(req.body).length === 0) {
-        return res.status(400).json({ message: "Invalid Request" });
-      } else {
-        const _head_party = await userService.getUserByUserId({
-          user_id: head_party,
+
+      const head_party_raw = await userService.getUserByUserId({
+        user_id: head_party,
+      });
+
+      if (head_party_raw === "") {
+        return res.status(500).json({
+          message: "User not found",
         });
-        const restaurant = await restaurantService.findRestaurantByRestaurantId(
-          {
-            restaurant_id: req.params.restaurant_id,
-          }
-        );
-        const interest_tag = await partyService.findInterstTagById({
-          tag_id: interest_tags,
-        });
-        // TODO: wait refactor to util method
-        if (!_head_party) {
-          return res.status(400).json({ message: "Owner party invalid" });
-        }
-        if (!restaurant) {
-          return res.status(400).json({ message: "Restaurant not found" });
-        }
-        if (!party_type) {
-          return res.status(400).json({ message: "party type cannot be null" });
-        } else if (
-          !checkErrorService.checkMatchEnum("PARTY_TYPE", party_type)
-        ) {
-          return res.status(400).json({ message: "party type is invalid" });
-        }
-        if (!party_name) {
-          return res.status(400).json({ message: "party name cannot be null" });
-        }
-        if (party_type === ENUM.PARTY_TYPE.PRIVATE && !passcode) {
-          return res.status(400).json({
-            message: "if party type is private passcode can not be null",
-          });
-        }
-        if (!interested_topic) {
-          return res
-            .status(400)
-            .json({ message: "interest topic can not be null" });
-        }
-        if (!interest_tags) {
-          return res
-            .status(400)
-            .json({ message: "interest tag can not be null" });
-        }
-        if (interest_tag.length < 1) {
-          return res.status(400).json({
-            message: "intestest tag is invalid",
-          });
-        }
-        if (!max_member) {
-          return res.status(400).json({ message: "max maxber cannot be null" });
-        } else if (max_member < 1) {
-          return res
-            .status(400)
-            .json({ message: "max member must be more than 0" });
-        }
-        if (!schedule_time) {
-          return res
-            .status(400)
-            .json({ message: "schedule time cannot be null" });
-        }
       }
 
+      const _interest_tag = await partyService.findInterstTagById({
+        tag_id: interest_tags,
+      });
+
+      if (!party_type) {
+        return res.status(400).json({ message: "party type cannot be null" });
+      } else if (!checkErrorService.checkMatchEnum("PARTY_TYPE", party_type)) {
+        return res.status(400).json({ message: "party type is invalid" });
+      }
+      if (!party_name) {
+        return res.status(400).json({ message: "party name cannot be null" });
+      }
+      if (party_type === ENUM.PARTY_TYPE.PRIVATE && !passcode) {
+        return res.status(400).json({
+          message: "if party type is private passcode can not be null",
+        });
+      }
+      if (!interested_topic) {
+        return res
+          .status(400)
+          .json({ message: "interest topic can not be null" });
+      }
+      if (!interest_tags) {
+        return res
+          .status(400)
+          .json({ message: "interest tag can not be null" });
+      }
+      if (_interest_tag.length < 1) {
+        return res.status(400).json({
+          message: "intestest tag is invalid",
+        });
+      }
+      if (!max_member) {
+        return res.status(400).json({ message: "max maxber cannot be null" });
+      } else if (max_member < 1) {
+        return res
+          .status(400)
+          .json({ message: "max member must be more than 0" });
+      }
+      if (!schedule_time) {
+        return res
+          .status(400)
+          .json({ message: "schedule time cannot be null" });
+      }
+      const params = {
+        key: process.env.GOOGLE_MAP_API_KEY,
+        place_id: req.params.restaurant_id,
+      };
+      const restaurant = (
+        await axios.get(
+          "https://maps.googleapis.com/maps/api/place/details/json",
+          { params }
+        )
+      ).data.result;
       const party = await partyService.createParty({
         head_party: head_party,
         party_name: party_name,
@@ -220,20 +392,31 @@ module.exports = {
         schedule_time: schedule_time,
         transaction: transaction,
       });
-
+      const _restaurant = await restaurantService.findRestaurantByRestaurantId({
+        restaurant_id: req.params.restaurant_id,
+      });
+      if (!_restaurant) {
+        await restaurantService.createRestaurant({
+          restaurant_id: restaurant.place_id,
+          restaurant_name: restaurant.name,
+          lat: restaurant.geometry.location.lat,
+          lng: restaurant.geometry.location.lng,
+          location: restaurant.vicinity,
+          restaurant_photo_ref: restaurant_photo_ref,
+          transaction: transaction,
+        });
+      }
       await restaurantService.createParty({
         restaurant_id: req.params.restaurant_id,
         party_id: party.party_id,
         transaction: transaction,
       });
-
       await partyService.joinParty({
         user_id: head_party,
         party_id: party.party_id,
         status: ENUM.REQUEST_STATUS.ACCEPT,
         transaction: transaction,
       });
-
       for (const interest_tag of interest_tags) {
         await models.parties_interest_tags.create(
           {
@@ -249,6 +432,7 @@ module.exports = {
         party_id: party.party_id,
       });
     } catch (e) {
+      console.log(e);
       await transaction.rollback();
       return res.status(500).json({
         message: e.message,
@@ -271,17 +455,15 @@ module.exports = {
       ) {
         res.status(400).json({ message: "Passcode incorrect" });
       }
-
       const everJoin = await partyService.requestJoinByUserId({
         party_id: party[0].party_id,
         user_id: req.user,
       });
-      if (everJoin.length > 1) {
+      if (everJoin.length > 0) {
         return res
           .status(400)
           .json({ message: "You already request to join this party" });
       }
-
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
         user_id: req.user,
@@ -298,6 +480,7 @@ module.exports = {
         message: "Request Success",
       });
     } catch (e) {
+      console.log(e);
       await transaction.rollback();
       return res.status(500).json({
         message: e.message,
@@ -348,7 +531,7 @@ module.exports = {
           return res.status(400).json({ message: "Party not found" });
         }
         if (req.user !== party[0].head_party) {
-          return res.status(403).json({ 
+          return res.status(403).json({
             message: "Permission Denied",
           });
         }
@@ -356,7 +539,7 @@ module.exports = {
       if (req.body.head_party) {
         const user = await models.users.findByPk(req.body.head_party);
         if (!user) {
-          return res.status(400).json({ message: "User not found" });
+          return res.status(500).json({ message: "User not found" });
         }
         const member = await partyService.checkIsMemberParty({
           party_id: req.params.party_id,
@@ -415,6 +598,17 @@ module.exports = {
   handleMemberRequest: async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (!party) {
+        return res.status(400).json({ message: "Party not found" });
+      }
+      if (party[0].head_party !== req.user) {
+        return res.status(403).json({
+          message: "Permission Denied",
+        });
+      }
       if (
         !checkErrorService.checkMatchEnum("REQUEST_STATUS", req.body.status)
       ) {
@@ -431,27 +625,30 @@ module.exports = {
         const user = await userService.getUserByUserId({
           user_id: req.body.user_id,
         });
-        if (!user) {
-          return res.status(400).json({
-            message: "User not found",
+
+        if (user === "") {
+          return res.status(500).json({
+            message: "user not found",
           });
         }
         const findUserInParty = await partyService.handleCheckMemberRequest({
           party_id: req.params.party_id,
           user_id: req.body.user_id,
         });
+
         if (findUserInParty.length > 0) {
           return res.status(400).json({
-            message: "update failed",
+            message: "cannot manage user that already party member or declined",
           });
         }
       }
 
       const data = await partyService.handleMemberRequest({
         user_id: req.body.user_id,
+        party_id: req.params.party_id,
         status: req.body.status,
       });
-
+      
       if (data.includes(1)) {
         await transaction.commit();
         return res.status(200).json({
@@ -512,13 +709,16 @@ module.exports = {
       const party = await partyService.findPartyByPartyId({
         party_id: req.params.party_id,
       });
-      if (party[0].head_party.user_id !== req.user) {
+      if (party[0].head_party !== req.user) {
         return res.status(403).json({
           message: "Permission Denied",
         });
       }
+
       const memberList = party[0].members.map((e) => e.user_id);
       const user_id = req.body.user_id;
+      console.log(memberList, "memberList");
+
       if (!user_id) {
         return res.status(400).json({
           message: "required user target",
