@@ -105,6 +105,7 @@ Status 400
     first_name: STRING,
     last_name: STRING,
     image_url: STRING<URL>,
+    accept_term_of_use: boolean
 }
 ```
 
@@ -120,6 +121,9 @@ Status 204
 Status 400
 {
     message: "you have already register"
+}
+{
+    message: "accept my term of use for happy with my system :)"
 }
 Status 500
 {
