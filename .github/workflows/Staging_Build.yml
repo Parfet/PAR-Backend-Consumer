@@ -1,0 +1,112 @@
+name: Deploy Parfet-Backend-Consumer Application [Staging]
+
+on: 
+  push:
+    branches: [ Staging ]
+  pull_request:
+    branches: [ Staging ]
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+
+      - name: Set env
+        run: echo "ENV_NAME=$( [ "$GITHUB_REF" == "refs/heads/master" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
+
+      - name: Create .env file
+        run : |
+          touch .env
+          echo $DATABASE_PARFET                            >> .env 
+          echo $DB_USERNAME_PARFET                         >> .env 
+          echo $DB_PASSWORD_PARFET                         >> .env 
+          echo $DB_HOST_PARFET                             >> .env 
+          echo $DB_DIALECT_PARFET                          >> .env 
+          echo $DB_PORT_PARFET                             >> .env 
+          echo $NODE_ENV                                   >> .env 
+          echo $APP_PORT                                   >> .env 
+          echo $FIREBASE_API_KEY                           >> .env 
+          echo $FIREBASE_AUTH_DOMAIN                       >> .env 
+          echo $FIREBASE_PROJECT_ID                        >> .env 
+          echo $FIREBASE_STORAGE_BUCKET                    >> .env 
+          echo $FIREBASE_MESSAGING_SENDER_ID               >> .env 
+          echo $FIREBASE_APP_IP                            >> .env 
+          echo $FIREBASE_ADMIN_TYPE                        >> .env 
+          echo $FIREBASE_ADMIN_PROJECT_ID                  >> .env 
+          echo $FIREBASE_ADMIN_PRIVATE_KEY_ID              >> .env 
+          echo $FIREBASE_ADMIN_PRIVATE_KEY                 >> .env 
+          echo $FIREBASE_ADMIN_CLIENT_EMAIL                >> .env 
+          echo $FIREBASE_ADMIN_CLIENT_ID                   >> .env 
+          echo $FIREBASE_ADMIN_AUTH_URI                    >> .env 
+          echo $FIREBASE_ADMIN_TOKEN_URI                   >> .env 
+          echo $FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL >> .env 
+          echo $FIREBASE_ADMIN_CLIENT_X509_CERT_URL        >> .env 
+          echo $GOOGLE_MAP_API_KEY                         >> .env 
+        shell : bash
+        env :
+          DATABASE_PARFET                             : ${{secrets.DATABASE_PARFET}}
+          DB_USERNAME_PARFET                          : ${{secrets.DB_USERNAME_PARFET}}
+          DB_PASSWORD_PARFET                          : ${{secrets.DB_PASSWORD_PARFET}}
+          DB_HOST_PARFET                              : ${{secrets.DB_HOST_PARFET}}
+          DB_DIALECT_PARFET                           : ${{secrets.DB_DIALECT_PARFET}}
+          DB_PORT_PARFET                              : ${{secrets.DB_PORT_PARFET}}
+          NODE_ENV                                    : ${{secrets.NODE_ENV}}
+          APP_PORT                                    : ${{secrets.APP_PORT}}
+          FIREBASE_API_KEY                            : ${{secrets.FIREBASE_API_KEY}}
+          FIREBASE_AUTH_DOMAIN                        : ${{secrets.FIREBASE_AUTH_DOMAIN}}
+          FIREBASE_PROJECT_ID                         : ${{secrets.FIREBASE_PROJECT_ID}}
+          FIREBASE_STORAGE_BUCKET                     : ${{secrets.FIREBASE_STORAGE_BUCKET}}
+          FIREBASE_MESSAGING_SENDER_ID                : ${{secrets.FIREBASE_MESSAGING_SENDER_ID}}
+          FIREBASE_APP_IP                             : ${{secrets.FIREBASE_APP_IP}}
+          FIREBASE_ADMIN_TYPE                         : ${{secrets.FIREBASE_ADMIN_TYPE}}
+          FIREBASE_ADMIN_PROJECT_ID                   : ${{secrets.FIREBASE_ADMIN_PROJECT_ID}}
+          FIREBASE_ADMIN_PRIVATE_KEY_ID               : ${{secrets.FIREBASE_ADMIN_PRIVATE_KEY_ID}}
+          FIREBASE_ADMIN_PRIVATE_KEY                  : ${{secrets.FIREBASE_ADMIN_PRIVATE_KEY}}
+          FIREBASE_ADMIN_CLIENT_EMAIL                 : ${{secrets.FIREBASE_ADMIN_CLIENT_EMAIL}}
+          FIREBASE_ADMIN_CLIENT_ID                    : ${{secrets.FIREBASE_ADMIN_CLIENT_ID}}
+          FIREBASE_ADMIN_AUTH_URI                     : ${{secrets.FIREBASE_ADMIN_AUTH_URI}}
+          FIREBASE_ADMIN_TOKEN_URI                    : ${{secrets.FIREBASE_ADMIN_TOKEN_URI}}
+          FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL  : ${{secrets.FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL}}
+          FIREBASE_ADMIN_CLIENT_X509_CERT_URL         : ${{secrets.FIREBASE_ADMIN_CLIENT_X509_CERT_URL}}
+          GOOGLE_MAP_API_KEY                          : ${{secrets.GOOGLE_MAP_API_KEY}}
+
+      - name: Create .ssh file
+        run : |
+          touch aws.pem
+          echo "${{secrets.SSH_PEM_KEY}}" >> aws.pem
+          sudo chmod 400 aws.pem
+          mkdir -p ~/.ssh/
+          echo "${{secrets.SSH_KNOWN_HOSTS}}" >> ~/.ssh/known_hosts
+          ssh-keyscan ${{secrets.SSH_HOST}} >> ~/.ssh/known_hosts
+          ls -la
+
+      - name: Cloning repository
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{secrets.SSH_USERNAME}}
+          key: ${{secrets.SSH_PEM_KEY}}
+          script: |
+           rm -rf PAR-Backend-Consumer || :
+           git clone git@github.com:Parfet/PAR-Backend-Consumer.git
+
+      - name: COPY .env 
+        run : |
+          ls -la
+          scp -i "aws.pem" .env ${{ secrets.SSH_USERNAME }}@${{secrets.SSH_HOST}}:~/PAR-Backend-Consumer/
+
+      - name: Deploy Application
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{secrets.SSH_PEM_KEY}}
+          script: |
+           cd PAR-Backend-Consumer
+           git checkout staging
+           docker images prune -af || :
+           docker-compose -f docker-compose.staging.yml down --rmi local || :
+           docker-compose -f docker-compose.staging.yml up -d --build
+           docker ps -a
