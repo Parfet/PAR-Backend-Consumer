@@ -9,9 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      UsersParties.belongsTo(models.users, {
-        foreignKey: "user_id",
-      });
       UsersParties.belongsTo(models.parties, {
         foreignKey: "party_id",
       });
@@ -25,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       user_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
       },
       status: {
         type: DataTypes.ENUM(["ACCEPT", "DECLINE", "WAITING"]),
@@ -34,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      underscored: true,
       timestamps: false,
       modelName: "users_parties",
     }

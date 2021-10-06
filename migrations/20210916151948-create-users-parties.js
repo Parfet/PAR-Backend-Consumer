@@ -3,12 +3,13 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("users_parties", {
       user_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       party_id: {
         type: Sequelize.UUID,
         allowNull: false,
+        unique: false,
       },
       status: {
         type: Sequelize.ENUM(["ACCEPT", "DECLINE", "WAITING"]),

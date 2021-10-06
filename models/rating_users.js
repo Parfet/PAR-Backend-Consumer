@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      RatingUsers.belongsTo(models.users, {
-        foreignKey: "give_rate_user_id",
-        as: 'rate'
-      });
     }
   }
   RatingUsers.init(
@@ -23,20 +19,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       give_rate_user_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
         allowNull: false,
-        referencs: {
-          table: "users",
-          fields: "user_id",
-        },
       },
       receive_rate_user_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
         allowNull: false,
-        referencs: {
-          table: "users",
-          fields: "user_id",
-        },
       },
       rating: {
         type: DataTypes.FLOAT,

@@ -9,12 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Parties.belongsToMany(models.users, {
-        through: models.users_parties,
-        foreignKey: "party_id",
-        as: "members",
-        constraint: false,
-      });
       Parties.hasMany(models.rating_restaurants, {
         foreignKey: "party_id",
       });
@@ -31,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
         as: "interest_tags",
         constraint: false,
       });
+      Parties.belongsToMany(models.users, {
+        through: models.users_parties,
+        foreignKey: "party_id",
+        as: "members",
+      });
     }
   }
   Parties.init(
@@ -45,11 +44,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       head_party: {
-        type: DataTypes.UUID,
-        references: {
-          table: "users",
-          fields: "user_id",
-        },
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       passcode: DataTypes.STRING,
       party_type: {

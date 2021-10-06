@@ -6,10 +6,10 @@ module.exports = {
         type: Sequelize.UUID,
       },
       give_rate_user_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
       },
       receive_rate_user_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
       },
       rating: {
         type: Sequelize.FLOAT,
@@ -25,28 +25,6 @@ module.exports = {
       references: {
         table: "parties",
         field: "party_id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
-    });
-    await queryInterface.addConstraint("rating_users", {
-      fields: ["give_rate_user_id"],
-      type: "foreign key",
-      name: "rating_users-users-give-user_id",
-      references: {
-        table: "users",
-        field: "user_id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
-    });
-    await queryInterface.addConstraint("rating_users", {
-      fields: ["receive_rate_user_id"],
-      type: "foreign key",
-      name: "rating_users-users-receive-user_id",
-      references: {
-        table: "users",
-        field: "user_id",
       },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",

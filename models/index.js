@@ -4,13 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
-const config = {
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DATABASE,
-  host: process.env.DB_HOST,
-  dialect: process.env.DB_DIALECT,
-};
+const config = require("../config/config")[process.env.NODE_ENV];
 const db = {};
 
 let sequelize = new Sequelize(

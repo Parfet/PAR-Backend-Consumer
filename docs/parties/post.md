@@ -8,7 +8,6 @@
 
 ```
 {
-    head_party: UUID<user_id>,
     party_name: String,
     party_type: enum(PRIVATE, PUBLIC),
     passcode: String length 6,
@@ -55,7 +54,11 @@ Status 400
 }
 {
     message: schedule time cannot be null
-},
+}
+Status 500
+{
+    message: User not found
+}
 ```
 
 > ### Notes

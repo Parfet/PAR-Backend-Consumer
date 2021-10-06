@@ -82,3 +82,51 @@ Status 400
 > ### Notes
 
 -
+
+3. Register by Firebase Authentication
+
+` https://${url}/auth/register`
+
+> ### HEADER
+```
+{
+    Authorization: JWT Token,
+}
+```
+
+> ### Request Body
+
+```
+{
+    username: STRING,
+    email: STRING,
+    provider: STRING,
+    display_name: STRING,
+    first_name: STRING,
+    last_name: STRING,
+    image_url: STRING<URL>,
+}
+```
+
+> ### Success Response
+
+```
+Status 204
+```
+
+> ### Error Response
+
+```
+Status 400
+{
+    message: "you have already register"
+}
+Status 500
+{
+    message: ${err_message}
+}
+```
+
+> ### Notes
+
+-

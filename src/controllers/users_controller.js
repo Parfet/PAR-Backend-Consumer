@@ -1,14 +1,17 @@
 const userService = require("../services/users_service");
 
 module.exports = {
-  getAllUser: async (_req, res) => {
+  getUserByUserId: async (req, res) => {
     try {
-      const user = await userService.getAllUser();
-      res.json({
-        users: user,
+      const user = await userService.getUserByUserId({
+        user_id: req.user,
+      });
+
+      return res.json({
+        user: user,
       });
     } catch (e) {
-      res.json({
+      return res.status(500).json({
         message: e,
       });
     }

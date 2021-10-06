@@ -8,9 +8,8 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       user_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: Sequelize.UUIDV4,
       },
       rating: {
         type: Sequelize.FLOAT,
@@ -28,17 +27,6 @@ module.exports = {
       references: {
         table: "parties",
         field: "party_id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
-    });
-    await queryInterface.addConstraint("rating_restaurants", {
-      fields: ["user_id"],
-      type: "foreign key",
-      name: "rating_restaurants-users-user_id",
-      references: {
-        table: "users",
-        field: "user_id",
       },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",
