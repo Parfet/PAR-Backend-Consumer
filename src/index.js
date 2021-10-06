@@ -23,6 +23,14 @@ app.use("/restaurant", firebaseAuthen.verifyAccessToken, restaurantsRouter);
 
 app.use(handleErrors);
 
-app.listen(process.env.APP_PORT, () => {
-  console.log(`Run on http://localhost:${process.env.APP_PORT}`);
-});
+if (process.env.NODE_ENV === "test") {
+  app.listen(process.env.TEST_APP_PORT, () => {
+    console.log(`Run on http://localhost:${process.env.TEST_APP_PORT}`);
+  });
+} else {
+  app.listen(process.env.DEV_APP_PORT, () => {
+    console.log(`Run on http://localhost:${process.env.DEV_APP_PORT}`);
+  });
+}
+
+module.exports = app;

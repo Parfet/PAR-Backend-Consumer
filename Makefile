@@ -7,6 +7,10 @@ drop-create:
 	@echo "================================="
 
 init:
+	@echo
+	yarn sequelize-cli db:seed --seed=$(name).js
+
+init-all:
 	@echo "======== Init Seed ========"
 	yarn sequelize-cli db:seed:all --env=$(env)
 	@echo "==========================="
@@ -28,4 +32,9 @@ migrate:
 all: 
 	make drop-create env=$(env)
 	make migrate env=$(env)
-	make init env=$(env)
+	make init name=20210424092040-demo-interest_tag
+
+test_init:
+	make drop-create env=test
+	make migrate env=test
+	make init-all env=test
