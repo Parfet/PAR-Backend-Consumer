@@ -385,6 +385,15 @@ const waitingRequestJoinByUserId = async ({ user_id }) => {
       attributes: {
         exclude: ["archived_at", "updated_at", "passcode", "party_type"],
       },
+      include: [
+        {
+          model: restaurantModel,
+        },
+        {
+          model: interestTagModel,
+          as: "interest_tags"
+        },
+      ],
     },
   });
   return data.map(({ dataValues: request }) => {
@@ -403,6 +412,26 @@ const removePartyMember = async ({ party_id, user_id, transaction }) =>
       transaction: transaction,
     }
   );
+
+const getPartyHistoryByUser = async ({ user_id }) => {
+  const data = await userPartyModel.findAll({
+    where: {
+      user_id: user_id,
+      status: ENUM.REQUEST_STATUS.ACCEPT,
+    },
+    include: {
+      model: partyModel,
+      where: {
+        archived_at: {
+          [Op.ne]: null,
+        },
+      },
+      attributes: {
+        exclude: ["updated_at", "passcode"],
+      },
+    },
+  });
+};
 
 module.exports = {
   findPartyByRestaurantId,

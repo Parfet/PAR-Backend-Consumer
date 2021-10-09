@@ -779,18 +779,29 @@ module.exports = {
       const data = await partyService.waitingRequestJoinByUserId({
         user_id: req.user,
       });
+
       if (data.length === 0) {
         return res.status(204).json();
       }
+
       const waitingRequestList = [];
+
       for (const request of data) {
         const { party } = request;
-        
+
+        if (party.restaurants.length < 1) {
+          return res.status(500).json({
+            message: "restaurant not found",
+          });
+        }
+
+        const restaurant = party.restaurants[0];
+
         const head_party = await userService.getUserByUserId({
           user_id: party.head_party,
         });
 
-        let requestNewFormat = {
+        const requestNewFormat = {
           party_id: request.party_id,
           party_name: party.party_name,
           head_party: {
@@ -802,6 +813,9 @@ module.exports = {
           interested_topic: party.interested_topic,
           schedule_time: party.schedule_time,
           status: request.status,
+          restaurant_name: restaurant.restaurant_name,
+          restaurant_photo_ref: restaurant.restaurant_photo_ref,
+          interest_tags: party.interest_tags,
         };
 
         waitingRequestList.push(requestNewFormat);

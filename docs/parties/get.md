@@ -324,7 +324,15 @@ Status 200
             },
             "interested_topic": String,
             "schedule_time": datetime with timezone,
-            "status": String
+            "status": String,
+             "restaurant_name": String,
+            "restaurant_photo_ref": String,
+            "interest_tags": [
+                {
+                    "value": UUID<tag_id>,
+                    "label": String
+                }
+            ]
         }
     ]
 }
@@ -333,7 +341,10 @@ Status 200
 > ### Error Response
 
 ```
-
+Status 500
+{
+    message: restaurant not found
+}
 ```
 
 > ### Notes
