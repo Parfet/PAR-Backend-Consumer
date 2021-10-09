@@ -295,3 +295,47 @@ Status 500
 > ### Notes
 
 -
+
+ุ. Get party request list by user
+
+` https://${url}/party/me`
+
+> ### Request Param
+
+```
+
+```
+
+> ### Success Response
+
+```
+Status 204,
+Status 200
+{
+    "request_list": [
+        {
+            "party_id": String,
+            "party_name": String,
+            "head_party": {
+                "provider": String,
+                "display_name": String,
+                "image_url": String,
+                "username": String,
+            },
+            "interested_topic": String,
+            "schedule_time": datetime with timezone,
+            "status": String
+        }
+    ]
+}
+```
+
+> ### Error Response
+
+```
+
+```
+
+> ### Notes
+
+-
