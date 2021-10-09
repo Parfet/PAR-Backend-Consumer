@@ -391,7 +391,7 @@ const waitingRequestJoinByUserId = async ({ user_id }) => {
         },
         {
           model: interestTagModel,
-          as: "interest_tags"
+          as: "interest_tags",
         },
       ],
     },
@@ -429,7 +429,19 @@ const getPartyHistoryByUser = async ({ user_id }) => {
       attributes: {
         exclude: ["updated_at", "passcode"],
       },
+      include: [
+        {
+          model: restaurantModel,
+        },
+        {
+          model: interestTagModel,
+          as: "interest_tags",
+        },
+      ],
     },
+  });
+  return data.map(({ dataValues: request }) => {
+    return request;
   });
 };
 
@@ -451,4 +463,5 @@ module.exports = {
   getPartyByUserId,
   removePartyMember,
   waitingRequestJoinByUserId,
+  getPartyHistoryByUser,
 };

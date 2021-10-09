@@ -829,4 +829,68 @@ module.exports = {
       return res.status(500).json({ message: err });
     }
   },
+
+  getHistoryPartyJoined: async (req, res) => {
+    try {
+      const data = await partyService.getPartyHistoryByUser({
+        user_id: req.user,
+      });
+
+      if (data.length === 0) {
+        return res.status(204).json();
+      }
+
+      const historyList = [];
+
+      for (const item of data) {
+        const { party } = item;
+        if (party.restaurants.length < 1) {
+          return res.status(500).json({
+            message: "restaurant not found",
+          });
+        }
+
+        const restaurant = party.restaurants[0];
+
+        const head_party = await userService.getUserByUserId({
+          user_id: party.head_party,
+        });
+
+        if (head_party === "") {
+          return res.status(500).json({
+            message: "user not found",
+          });
+        }
+
+        const historyNewFormat = {
+          party_id: party.party_id,
+          party_name: party.party_name,
+          head_party: {
+            provider: head_party.provider,
+            display_name: head_party.display_name,
+            image_url: head_party.image_url,
+            username: head_party.username,
+          },
+          interested_topic: party.interested_topic,
+          schedule_time: party.schedule_time,
+          archived_at: party.archived_at,
+          status: item.status,
+          restaurant_name: restaurant.restaurant_name,
+          restaurant_photo_ref: restaurant.restaurant_photo_ref,
+          interest_tags: party.interest_tags,
+        };
+
+        historyList.push(historyNewFormat);
+      }
+
+      return res.status(200).json({
+        history: historyList,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: err,
+      });
+    }
+  },
 };

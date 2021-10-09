@@ -7,6 +7,7 @@ const partiesRouter = express.Router();
 partiesRouter.get("/tags", partiesController.getAllTag);
 partiesRouter.get("/me", partiesController.getPartyByUserId);
 partiesRouter.get("/request/me", partiesController.getPartyRequestByUserId);
+partiesRouter.get("/history/me", partiesController.getHistoryPartyJoined);
 
 partiesRouter.get(
   "/:restaurant_id",
