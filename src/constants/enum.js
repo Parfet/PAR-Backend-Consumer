@@ -18,7 +18,7 @@ module.exports = {
   },
   REQUEST_STATUS: {
     ACCEPT: "ACCEPT",
-    WATING: "WAITING",
+    WAITING: "WAITING",
     DECLINE: "DECLINE",
   },
   MAXIMUM_MEMBER: {

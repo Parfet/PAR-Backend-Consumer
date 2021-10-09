@@ -371,6 +371,27 @@ const getPartyByUserId = async ({ user_id }) => {
   return data;
 };
 
+const waitingRequestJoinByUserId = async ({ user_id }) => {
+  const data = await userPartyModel.findAll({
+    where: {
+      user_id: user_id,
+      status: ENUM.REQUEST_STATUS.WAITING,
+    },
+    include: {
+      model: partyModel,
+      where: {
+        archived_at: null,
+      },
+      attributes: {
+        exclude: ["archived_at", "updated_at", "passcode", "party_type"],
+      },
+    },
+  });
+  return data.map(({ dataValues: request }) => {
+    return request;
+  });
+};
+
 const removePartyMember = async ({ party_id, user_id, transaction }) =>
   userPartyModel.destroy(
     {
@@ -400,4 +421,5 @@ module.exports = {
   findInterstTagById,
   getPartyByUserId,
   removePartyMember,
+  waitingRequestJoinByUserId,
 };

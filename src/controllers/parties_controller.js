@@ -773,4 +773,46 @@ module.exports = {
       });
     }
   },
+
+  getPartyRequestByUserId: async (req, res) => {
+    try {
+      const data = await partyService.waitingRequestJoinByUserId({
+        user_id: req.user,
+      });
+      if (data.length === 0) {
+        return res.status(204).json();
+      }
+      const waitingRequestList = [];
+      for (const request of data) {
+        const { party } = request;
+        
+        const head_party = await userService.getUserByUserId({
+          user_id: party.head_party,
+        });
+
+        let requestNewFormat = {
+          party_id: request.party_id,
+          party_name: party.party_name,
+          head_party: {
+            provider: head_party.provider,
+            display_name: head_party.display_name,
+            image_url: head_party.image_url,
+            username: head_party.username,
+          },
+          interested_topic: party.interested_topic,
+          schedule_time: party.schedule_time,
+          status: request.status,
+        };
+
+        waitingRequestList.push(requestNewFormat);
+      }
+
+      return res.status(200).json({
+        request_list: waitingRequestList,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: err });
+    }
+  },
 };
