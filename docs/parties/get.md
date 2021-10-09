@@ -296,9 +296,9 @@ Status 500
 
 -
 
-ุ. Get party request list by user
+ุ6. Get party request list by user
 
-` https://${url}/party/me`
+` https://${url}/party/request/me`
 
 > ### Request Param
 
@@ -344,6 +344,68 @@ Status 200
 Status 500
 {
     message: restaurant not found
+}
+{
+    message: user not found
+}
+```
+
+> ### Notes
+
+-
+
+ุ6. Get party request list by user
+
+` https://${url}/party/history/me`
+
+> ### Request Param
+
+```
+
+```
+
+> ### Success Response
+
+```
+Status 204,
+Status 200
+{
+    "history": [
+        {
+            "party_id": String,
+            "party_name": String,
+            "head_party": {
+                "provider": String,
+                "display_name": String,
+                "image_url": String,
+                "username": String,
+            },
+            "interested_topic": String,
+            "schedule_time": datetime with timezone,
+            "archived_at": datetime with timezone,
+            "status": String,
+            "restaurant_name": String,
+            "restaurant_photo_ref": String,
+            "interest_tags": [
+                {
+                    "value": UUID<tag_id>,
+                    "label": String
+                }
+            ]
+        }
+    ]
+}
+```
+
+> ### Error Response
+
+```
+Status 500
+{
+    message: restaurant not found
+}
+{
+    message: user not found
 }
 ```
 
