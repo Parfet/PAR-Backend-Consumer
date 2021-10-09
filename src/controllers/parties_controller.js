@@ -801,6 +801,12 @@ module.exports = {
           user_id: party.head_party,
         });
 
+        if (head_party === "") {
+          return res.status(500).json({
+            message: "user not found",
+          });
+        }
+
         const requestNewFormat = {
           party_id: request.party_id,
           party_name: party.party_name,
