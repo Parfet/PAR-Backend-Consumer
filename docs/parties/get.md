@@ -325,8 +325,10 @@ Status 200
             "interested_topic": String,
             "schedule_time": datetime with timezone,
             "status": String,
-             "restaurant_name": String,
-            "restaurant_photo_ref": String,
+            "restaurant" {
+                "restaurant_name": String,
+                "restaurant_photo_ref": String,
+            },
             "interest_tags": [
                 {
                     "value": UUID<tag_id>,
@@ -384,8 +386,10 @@ Status 200
             "schedule_time": datetime with timezone,
             "archived_at": datetime with timezone,
             "status": String,
-            "restaurant_name": String,
-            "restaurant_photo_ref": String,
+            "restaurant" {
+                "restaurant_name": String,
+                "restaurant_photo_ref": String,
+            },
             "interest_tags": [
                 {
                     "value": UUID<tag_id>,

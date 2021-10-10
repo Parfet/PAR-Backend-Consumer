@@ -819,8 +819,10 @@ module.exports = {
           interested_topic: party.interested_topic,
           schedule_time: party.schedule_time,
           status: request.status,
-          restaurant_name: restaurant.restaurant_name,
-          restaurant_photo_ref: restaurant.restaurant_photo_ref,
+          restaurant: {
+            restaurant_name: restaurant.restaurant_name,
+            restaurant_photo_ref: restaurant.restaurant_photo_ref,
+          },
           interest_tags: party.interest_tags,
         };
 
@@ -881,8 +883,10 @@ module.exports = {
           schedule_time: party.schedule_time,
           archived_at: party.archived_at,
           status: item.status,
-          restaurant_name: restaurant.restaurant_name,
-          restaurant_photo_ref: restaurant.restaurant_photo_ref,
+          restaurant: {
+            restaurant_name: restaurant.restaurant_name,
+            restaurant_photo_ref: restaurant.restaurant_photo_ref,
+          },
           interest_tags: party.interest_tags,
         };
 
