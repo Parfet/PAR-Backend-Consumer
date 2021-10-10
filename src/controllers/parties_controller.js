@@ -468,7 +468,7 @@ module.exports = {
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
         user_id: req.user,
-        status: ENUM.REQUEST_STATUS.WATING,
+        status: ENUM.REQUEST_STATUS.WAITING,
         transaction: transaction,
       });
       if (data.status === null) {

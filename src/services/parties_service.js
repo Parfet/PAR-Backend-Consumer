@@ -138,7 +138,7 @@ const requestJoinList = async ({ party_id }) => {
     },
     where: {
       party_id: party_id,
-      status: ENUM.REQUEST_STATUS.WATING,
+      status: ENUM.REQUEST_STATUS.WAITING,
     },
   });
 
@@ -175,7 +175,7 @@ const requestJoinByUserId = async ({ party_id, user_id }) =>
       party_id: party_id,
       user_id: user_id,
       status: {
-        [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WATING],
+        [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WAITING],
       },
     },
     // TODO: change to user in firebase auth
