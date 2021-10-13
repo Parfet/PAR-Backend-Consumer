@@ -10,24 +10,25 @@ module.exports = {
   // @params: keyword
   findAllRestaurant: async (req, res) => {
     try {
-      let status = "";
-      if (req.query.status) {
-        if (
-          checkErrorService.checkMatchEnum(
-            "RESTAURANT_AVAILABLE",
-            req.query.status
-          )
-        ) {
-          status = req.query.status;
-        } else {
-          return res.status(400).json({
-            message: "Invalid Status",
-          });
-        }
-      }
+      // TODO: wait implment filter
+      // let status = "";
+      // if (req.query.status) {
+      //   if (
+      //     checkErrorService.checkMatchEnum(
+      //       "RESTAURANT_AVAILABLE",
+      //       req.query.status
+      //     )
+      //   ) {
+      //     status = req.query.status;
+      //   } else {
+      //     return res.status(400).json({
+      //       message: "Invalid Status",
+      //     });
+      //   }
+      // }
 
       const { lat, lng, keyword } = req.query;
-      let params = {
+      const params = {
         key: process.env.GOOGLE_MAP_API_KEY,
         location: `${lat},${lng}`,
         radius: 1500,
@@ -39,6 +40,21 @@ module.exports = {
         { params }
       );
       let restaurants = response.data.results;
+      for (const restaurant of restaurants) {
+        const _params = {
+          key: process.env.GOOGLE_MAP_API_KEY,
+          place_id: restaurant.place_id,
+          fields: "url",
+        };
+        let _response = await axios.get(
+          "https://maps.googleapis.com/maps/api/place/details/json",
+          {
+            params: _params,
+          }
+        );
+        restaurant.map_url = _response.data.result.url;
+      }
+      // TODO: imeplement restaurant filter
       // if (status === RESTAURANT_AVAILABLE.OPEN) {
       //   restaurants = restaurants.filter(
       //     (e) => e.opening_hours && e.opening_hours.open_now
