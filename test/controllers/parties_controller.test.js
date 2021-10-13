@@ -18,4 +18,17 @@ describe("PARTY SERVICE", async () => {
       });
     });
   });
+  describe("POST", async () => {
+    describe("/", async () => {
+      it("Create party with empty body", async () => {
+        const { status, body } = await request(app)
+          .post("/party/ytFiKULEibnFdKODLPIu")
+          .send({});
+        expect(status).to.equal(400);
+        expect(body).to.be.have.key("message");
+        expect(body.message).to.equal("Invalid Request");
+      });
+    });
+  });
+  
 });
