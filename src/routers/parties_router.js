@@ -8,12 +8,14 @@ partiesRouter.get("/tags", partiesController.getAllTag);
 partiesRouter.get("/me", partiesController.getPartyByUserId);
 partiesRouter.get("/request/me", partiesController.getPartyRequestByUserId);
 partiesRouter.get("/history/me", partiesController.getHistoryPartyJoined);
+partiesRouter.post("/quick-join", partiesController.quickJoin);
 
 partiesRouter.get(
   "/:restaurant_id",
   partiesController.getAllPartyByRestaurantId
 );
 partiesRouter.post("/:restaurant_id", partiesController.createParty);
+
 partiesRouter.get("/info/:party_id", partiesController.getPartyByPartyId);
 partiesRouter.post("/info/:party_id", partiesController.archivedParty);
 partiesRouter.put("/info/:party_id", partiesController.updatePartyInfo);

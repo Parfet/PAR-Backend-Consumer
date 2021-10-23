@@ -21,12 +21,6 @@ const deletePartyById = async ({ party_id }) =>
   });
 
 const findPartyByRestaurantId = async ({ restaurant_id }) => {
-  // const data = await restaurantsPartiesModel.findAll({
-  //   where: {
-  //     restaurant_id: restaurant_id,
-  //   },
-
-  // })
   const data = await restaurantModel.findAll({
     where: {
       restaurant_id: restaurant_id,
@@ -66,9 +60,56 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
       ],
     },
   });
-  // console.log(data)
-  // data.parties = await handle.handleRestaurantPartyResponse(data[0].parties);
-  return data;
+  return data.map(({ dataValues: restaurant }) => restaurant);
+};
+
+const quickJoinFindPartyByRestaurantId = async ({ restaurant_id }) => {
+  const data = await restaurantModel.findAll({
+    where: {
+      restaurant_id: restaurant_id,
+    },
+    include: {
+      model: partyModel,
+      where: {
+        archived_at: null,
+      },
+      through: {
+        attributes: [],
+      },
+      include: [
+        {
+          model: userModel,
+          as: "members",
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: interestTagModel,
+          as: "interest_tags",
+          attributes: [
+            ["tag_id", "value"],
+            ["tag_name", "label"],
+          ],
+          through: {
+            attributes: [],
+          },
+        },
+      ],
+    },
+  });
+  return data.map(({ dataValues: restaurant }) => restaurant);
+};
+
+const getMemberListByPartyId = async ({ party_id }) => {
+  const data = await userPartyModel.findAll({
+    where: {
+      party_id: party_id,
+      status: ENUM.REQUEST_STATUS.ACCEPT,
+    },
+    attributes: ['user_id']
+  });
+  return data.map(({ dataValues: request }) => request);
 };
 
 const findPartyByPartyId = async ({ party_id }) =>
@@ -464,4 +505,6 @@ module.exports = {
   removePartyMember,
   waitingRequestJoinByUserId,
   getPartyHistoryByUser,
+  quickJoinFindPartyByRestaurantId,
+  getMemberListByPartyId,
 };

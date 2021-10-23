@@ -40,20 +40,21 @@ const createRestaurant = async ({
     }
   );
 
-const findAllRestaurant = async ({ query }) =>
-  restaurantModel.findAll({
-    where: query,
-    include: {
-      model: promotionModel,
-      as: "promotions",
-      through: {
-        attributes: [],
-      },
-    },
+const findAllRestaurant = async () => {
+  const data = await restaurantModel.findAll();
+  return data.map(({ dataValues: restaurant }) => {
+    return restaurant;
   });
+};
 
-const findRestaurantByRestaurantId = async ({ restaurant_id }) =>
-  restaurantModel.findByPk(restaurant_id);
+const findRestaurantByRestaurantId = async ({ restaurant_id }) => {
+  const data = await restaurantModel.findByPk(`${restaurant_id}`);
+  if (data !== null) {
+    return data.dataValues;
+  } else {
+    return "";
+  }
+};
 
 module.exports = {
   createParty,

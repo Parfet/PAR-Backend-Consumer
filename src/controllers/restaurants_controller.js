@@ -1,6 +1,6 @@
 require("dotenv").config();
 const restaurantService = require("../services/restaurants_service");
-const checkErrorService = require("../utils/check_error");
+const checkErrorService = require("../utils/helper");
 const { RESTAURANT_AVAILABLE } = require("../constants/enum");
 const { Op } = require("sequelize");
 const axios = require("axios");
@@ -77,40 +77,31 @@ module.exports = {
       });
     }
   },
-  findRestaurantByRestaurantId: async (req, res) => {
+  findRestaurantByName: async (req, res) => {
     try {
-      const restaurant = await restaurantService.findAllRestaurant({
-        query: {
-          restaurant_id: req.params.restaurant_id,
-        },
-      });
-      if (restaurant.length === 0) {
-        return res.status(204).json();
+      if (!req.params.restaurant_name) {
+        return res.status(400).json({
+          message: "restaurant name invalid",
+        });
       }
-      return res.status(200).json({
-        restaurant: restaurant[0],
-      });
+      return res.status(204).json();
     } catch (e) {
+      console.log("error: ", e);
       return res.status(500).json({
-        message: e.message,
+        message: e,
       });
     }
   },
-  findPromotionByRestaurantId: async (req, res) => {
+  findRestaurantByRestaurantId: async (req, res) => {
     try {
-      const restaurant = await restaurantService.findAllRestaurant({
-        query: {
-          restaurant_id: req.params.restaurant_id,
-        },
+      const restaurant = await restaurantService.findRestaurantByRestaurantId({
+        restaurant_id: req.params.restaurant_id,
       });
-      if (restaurant.length === 0) {
-        return res.status(204).json();
-      }
-      if (restaurant[0].promotions.length === 0) {
+      if (restaurant === "") {
         return res.status(204).json();
       }
       return res.status(200).json({
-        promotions: restaurant[0].promotions,
+        restaurant: restaurant,
       });
     } catch (e) {
       return res.status(500).json({

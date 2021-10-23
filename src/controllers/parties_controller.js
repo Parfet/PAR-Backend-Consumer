@@ -7,7 +7,7 @@ const userService = require("../services/users_service");
 const partyService = require("../services/parties_service");
 const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
-const checkErrorService = require("../utils/check_error");
+const checkErrorService = require("../utils/helper");
 const admin = require("../utils/firebase_admin");
 
 module.exports = {
@@ -901,6 +901,67 @@ module.exports = {
       return res.status(500).json({
         message: err,
       });
+    }
+  },
+
+  quickJoin: async (req, res) => {
+    const transaction = await sequelize.transaction();
+    try {
+      const restaurant_list = await restaurantService.findAllRestaurant();
+      for (const restaurant of restaurant_list) {
+        const party_list = await partyService.quickJoinFindPartyByRestaurantId(
+          restaurant
+        );
+        for (const party of party_list[0].parties) {
+          const request_list = party.members.map((e) => e.user_id);
+          if (
+            !request_list.includes(req.user) &&
+            party.max_member > party.members.length
+          ) {
+            const member_list = await partyService.getMemberListByPartyId({
+              party_id: party.party_id,
+            });
+            const head_party = await userService.getUserByUserId({
+              user_id: party.head_party,
+            });
+            delete head_party.user_id;
+            await partyService.joinParty({
+              user_id: req.user,
+              party_id: party.party_id,
+              status: ENUM.REQUEST_STATUS.WAITING,
+              transaction: transaction,
+            });
+            const member_list_with_data = [];
+            for (const user of member_list) {
+              const user_data = await userService.getUserByUserId(user);
+              if (user_data !== "") {
+                delete user_data.user_id;
+                member_list_with_data.push(user_data);
+              }
+            }
+            await transaction.commit();
+            return res.status(200).json({
+              party_id: party.party_id,
+              party_name: party.party_name,
+              head_party: head_party,
+              party_type: party.party_type,
+              interested_topic: party.interested_topic,
+              max_member: party.max_member,
+              schedule_time: party.schedule_time,
+              created_at: party.created_at,
+              updated_at: party.updated_at,
+              members: member_list_with_data,
+              interest_tags: party.interest_tags,
+            });
+          }
+        }
+      }
+      await transaction.rollback();
+      return res.status(204).json();
+    } catch (err) {
+      await transaction.rollback();
+      console.log(err);
+      return res.status(500).json({ message: err });
     }
   },
 };
