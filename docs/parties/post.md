@@ -148,3 +148,71 @@ Status 500
 > ### Notes
 
 -
+
+4. Archived Party
+
+` https://${url}/party/quick-join`
+
+> ### Request Body
+
+```
+
+```
+
+> ### Success Response
+
+```
+Status 204,
+Status 200
+{
+    {
+        party_id: UUID<party_id>,
+        party_name: String,
+        head_party: {
+            "provider": String,
+            "display_name": String,
+            "email": String,
+            "last_name": String,
+            "image_url": String,
+            "first_name": String,
+            "username": String
+        },
+        party_type: ENUM<PARTY_TYPE>,
+        interested_topic: String,
+        max_member: int,
+        schedule_time: 2021-04-09T15:51:41.000Z,
+        created_at: 2021-04-17T11:47:17.000Z,
+        updated_at: 2021-04-17T11:47:17.000Z,
+        members: [
+            {
+                "provider": String,
+                "display_name": String,
+                "email": String,
+                "last_name": String,
+                "image_url": String,
+                "first_name": String,
+                "username": String
+            }
+        ],
+        interest_tags: [
+            {
+                value: UUID<tag_id>,
+                label: String,
+            },
+        ],
+    }
+}
+```
+
+> ### Error Response
+
+```
+Status 500
+{
+    message: string
+}
+```
+
+> ### Notes
+
+-
