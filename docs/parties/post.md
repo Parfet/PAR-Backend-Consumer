@@ -165,41 +165,33 @@ Status 500
 Status 204,
 Status 200
 {
-    {
-        party_id: UUID<party_id>,
-        party_name: String,
-        head_party: {
-            "provider": String,
-            "display_name": String,
-            "email": String,
-            "last_name": String,
-            "image_url": String,
-            "first_name": String,
-            "username": String
+    "party_id": UUID<PARTY>,
+    "party_name": String,
+    "head_party": {
+        "provider": String,
+        "display_name": String,
+        "email": String,
+        "last_name": String,
+        "image_url": String,
+        "first_name": String,
+        "username": String"
+    },
+    "party_type": String,
+    "interested_topic": String,
+    "max_member": int,
+    "schedule_time": String,
+    "created_at": String,
+    "updated_at": null,
+    "member_amount": int,
+    "interest_tags": [
+        {
+            "value": String,
+            "label": String"
         },
-        party_type: ENUM<PARTY_TYPE>,
-        interested_topic: String,
-        max_member: int,
-        schedule_time: 2021-04-09T15:51:41.000Z,
-        created_at: 2021-04-17T11:47:17.000Z,
-        updated_at: 2021-04-17T11:47:17.000Z,
-        members: [
-            {
-                "provider": String,
-                "display_name": String,
-                "email": String,
-                "last_name": String,
-                "image_url": String,
-                "first_name": String,
-                "username": String
-            }
-        ],
-        interest_tags: [
-            {
-                value: UUID<tag_id>,
-                label: String,
-            },
-        ],
+    ],
+    "restaurant": {
+        "restaurant_name": String
+        "restaurant_photo_ref": String
     }
 }
 ```
@@ -207,6 +199,10 @@ Status 200
 > ### Error Response
 
 ```
+Status 400
+{
+    message: 'bad request'
+}
 Status 500
 {
     message: string

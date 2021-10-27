@@ -7,7 +7,7 @@ const userService = require("../services/users_service");
 const partyService = require("../services/parties_service");
 const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
-const checkErrorService = require("../utils/helper");
+const helper = require("../utils/helper");
 const admin = require("../utils/firebase_admin");
 
 module.exports = {
@@ -334,7 +334,7 @@ module.exports = {
 
       if (!party_type) {
         return res.status(400).json({ message: "party type cannot be null" });
-      } else if (!checkErrorService.checkMatchEnum("PARTY_TYPE", party_type)) {
+      } else if (!helper.checkMatchEnum("PARTY_TYPE", party_type)) {
         return res.status(400).json({ message: "party type is invalid" });
       }
       if (!party_name) {
@@ -553,9 +553,7 @@ module.exports = {
         }
       }
       if (req.body.party_type) {
-        if (
-          !checkErrorService.checkMatchEnum("PARTY_TYPE", req.body.party_type)
-        ) {
+        if (!helper.checkMatchEnum("PARTY_TYPE", req.body.party_type)) {
           return res.status(400).json({ message: "Party type invalid" });
         }
         if (
@@ -610,9 +608,7 @@ module.exports = {
           message: "Permission Denied",
         });
       }
-      if (
-        !checkErrorService.checkMatchEnum("REQUEST_STATUS", req.body.status)
-      ) {
+      if (!helper.checkMatchEnum("REQUEST_STATUS", req.body.status)) {
         return res.status(400).json({
           message: "Status is invalid",
         });
@@ -907,11 +903,45 @@ module.exports = {
   quickJoin: async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
+      if (!req.body || !req.body.lat || !req.body.lng) {
+        return res.status(400).json({
+          message: "bad request",
+        });
+      }
       const restaurant_list = await restaurantService.findAllRestaurant();
+      const { lat, lng } = req.body;
+      const position_list = [];
+      const restaurant_map_position = {};
+      const restaurant_sort_list = [];
+
       for (const restaurant of restaurant_list) {
-        const party_list = await partyService.quickJoinFindPartyByRestaurantId(
-          restaurant
+        const _lat_diff = lat - restaurant.lat;
+        const _lng_diff = lng - restaurant.lng;
+        let _diff = _lat_diff / _lng_diff;
+        if (_diff < 0) {
+          _diff *= -1;
+        }
+        position_list.push(_diff);
+        restaurant_map_position[restaurant.restaurant_id] = _diff;
+      }
+
+      position_list.sort();
+
+      for (const position of position_list) {
+        const _restaurant = helper.getKeyByValue(
+          restaurant_map_position,
+          position
         );
+        restaurant_sort_list.push(_restaurant);
+      }
+
+      for (const restaurant of restaurant_sort_list) {
+        const party_list = await partyService.quickJoinFindPartyByRestaurantId({
+          restaurant_id: restaurant,
+        });
+        if (party_list.length === 0) {
+          continue;
+        }
         for (const party of party_list[0].parties) {
           const request_list = party.members.map((e) => e.user_id);
           if (
@@ -925,12 +955,6 @@ module.exports = {
               user_id: party.head_party,
             });
             delete head_party.user_id;
-            await partyService.joinParty({
-              user_id: req.user,
-              party_id: party.party_id,
-              status: ENUM.REQUEST_STATUS.WAITING,
-              transaction: transaction,
-            });
             const member_list_with_data = [];
             for (const user of member_list) {
               const user_data = await userService.getUserByUserId(user);
@@ -939,6 +963,9 @@ module.exports = {
                 member_list_with_data.push(user_data);
               }
             }
+            const _restaurant = restaurant_list.find(
+              (e) => e.restaurant_id === restaurant
+            );
             await transaction.commit();
             return res.status(200).json({
               party_id: party.party_id,
@@ -950,8 +977,12 @@ module.exports = {
               schedule_time: party.schedule_time,
               created_at: party.created_at,
               updated_at: party.updated_at,
-              members: member_list_with_data,
+              member_amount: member_list_with_data.length,
               interest_tags: party.interest_tags,
+              restaurant: {
+                restaurant_name: _restaurant.restaurant_name,
+                restaurant_photo_ref: _restaurant.restaurant_photo_ref,
+              },
             });
           }
         }

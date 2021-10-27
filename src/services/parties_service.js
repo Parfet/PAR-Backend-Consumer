@@ -72,6 +72,7 @@ const quickJoinFindPartyByRestaurantId = async ({ restaurant_id }) => {
       model: partyModel,
       where: {
         archived_at: null,
+        party_type: ENUM.PARTY_TYPE.PUBLIC,
       },
       through: {
         attributes: [],
@@ -107,7 +108,7 @@ const getMemberListByPartyId = async ({ party_id }) => {
       party_id: party_id,
       status: ENUM.REQUEST_STATUS.ACCEPT,
     },
-    attributes: ['user_id']
+    attributes: ["user_id"],
   });
   return data.map(({ dataValues: request }) => request);
 };
