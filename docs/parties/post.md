@@ -149,7 +149,7 @@ Status 500
 
 -
 
-4. Archived Party
+4. Quick Join
 
 ` https://${url}/party/quick-join`
 
