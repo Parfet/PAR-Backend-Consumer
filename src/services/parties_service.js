@@ -8,7 +8,6 @@ const userPartyModel = models.users_parties;
 const restaurantModel = models.restaurants;
 const ratingUserModel = models.rating_users;
 const interestTagModel = models.interest_tags;
-const restaurantsPartiesModel = models.restaurants_parties;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
 const handle = require("../utils/handle_response");
@@ -486,6 +485,7 @@ const getPartyHistoryByUser = async ({ user_id }) => {
     return request;
   });
 };
+
 
 module.exports = {
   findPartyByRestaurantId,

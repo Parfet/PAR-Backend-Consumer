@@ -449,6 +449,12 @@ module.exports = {
       if (party.length === 0) {
         res.status(400).json({ message: "Party not found" });
       }
+
+      if (party[0].members.length >= party[0].max_member) {
+        return res.status(400).json({
+          message: "Party Member Limit",
+        });
+      }
       // TODO: check limit party member
       if (
         party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&

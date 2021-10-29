@@ -102,6 +102,9 @@ Status 400
 {
     message: You already request to join this party
 }
+{
+    message: Party Member Limit
+}
 Status 500
 {
     message: Cannot join party
