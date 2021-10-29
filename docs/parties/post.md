@@ -215,3 +215,38 @@ Status 500
 > ### Notes
 
 -
+
+5. Check Status
+
+` https://${url}/party/check`
+
+> ### Request Body
+
+```
+{
+    party_id: UUID<Party>
+}
+```
+
+> ### Success Response
+
+```
+Status 204,
+Status 200
+{
+    status: "ACCEPT" || "DECLINE" || "WAITING"
+}
+```
+
+> ### Error Response
+
+```
+Status 500
+{
+    message: string
+}
+```
+
+> ### Notes
+
+-

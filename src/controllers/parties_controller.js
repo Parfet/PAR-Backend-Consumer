@@ -1001,4 +1001,24 @@ module.exports = {
       return res.status(500).json({ message: err });
     }
   },
+
+  checkStatus: async (req, res) => {
+    try {
+      const data = await partyService.checkStatusByPartyIdAndUserId({
+        party_id: req.body.party_id,
+        user_id: req.user,
+      });
+      if (data.length === 0) {
+        return res.status(204).json();
+      }
+      return res.status(200).json({
+        status: data[0].status,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: err,
+      });
+    }
+  },
 };

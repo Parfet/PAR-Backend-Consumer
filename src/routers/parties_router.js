@@ -9,6 +9,7 @@ partiesRouter.get("/me", partiesController.getPartyByUserId);
 partiesRouter.get("/request/me", partiesController.getPartyRequestByUserId);
 partiesRouter.get("/history/me", partiesController.getHistoryPartyJoined);
 partiesRouter.post("/quick-join", partiesController.quickJoin);
+partiesRouter.post("/check", partiesController.checkStatus);
 
 partiesRouter.get(
   "/:restaurant_id",

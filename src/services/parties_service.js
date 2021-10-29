@@ -486,6 +486,13 @@ const getPartyHistoryByUser = async ({ user_id }) => {
   });
 };
 
+const checkStatusByPartyIdAndUserId = ({ party_id, user_id }) =>
+  userPartyModel.findAll({
+    where: {
+      party_id: party_id,
+      user_id: user_id,
+    },
+  });
 
 module.exports = {
   findPartyByRestaurantId,
@@ -508,4 +515,5 @@ module.exports = {
   getPartyHistoryByUser,
   quickJoinFindPartyByRestaurantId,
   getMemberListByPartyId,
+  checkStatusByPartyIdAndUserId,
 };
