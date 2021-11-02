@@ -159,7 +159,10 @@ Status 500
 > ### Request Body
 
 ```
-
+{
+    lat: float,
+    lng: float,
+}
 ```
 
 > ### Success Response
