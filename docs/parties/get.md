@@ -54,6 +54,7 @@ Status 200
                     label: String,
                 },
             ],
+            open_chat_link: String
         }
     ]
 }
@@ -171,6 +172,7 @@ Status 500
                 label: String,
             },
         ],
+        open_chat_link: String
     }
 }
 ```
@@ -278,6 +280,7 @@ Status 200
                 "restaurant_name": String,
                 "restaurant_photo_ref": String
             },
+            open_chat_link: String
         }
     ]
 }
@@ -395,7 +398,8 @@ Status 200
                     "value": UUID<tag_id>,
                     "label": String
                 }
-            ]
+            ],
+            open_chat_link: String
         }
     ]
 }
