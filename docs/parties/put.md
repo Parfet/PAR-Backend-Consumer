@@ -17,6 +17,7 @@
       interested_tag: UUID<tag_id>[],
       max_member: int,
       schedule_time: 2021-04-24T18:50:18.000Z,
+      open_chat_link: Sting<URL>
     },
 }
 ```
@@ -45,6 +46,9 @@ Status 400
 }
 {
     message: Private party must have passcode
+}
+{
+    message: invalid link
 }
 Status 500 
 {
