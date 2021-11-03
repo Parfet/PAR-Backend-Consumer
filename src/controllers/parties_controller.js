@@ -53,6 +53,7 @@ module.exports = {
           schedule_time: party.schedule_time,
           created_at: party.created_at,
           updated_at: party.updated_at,
+          open_chat_link: party.open_chat_link,
           members: _userWithDetailList,
           interest_tags: party.interest_tags,
         };
@@ -111,6 +112,7 @@ module.exports = {
         updated_at: data[0].updated_at,
         members: _userWithDetailList,
         interest_tags: data[0].interest_tags,
+        open_chat_link: data[0].open_chat_link,
       };
       return res.status(200).json({
         party: partyResponse,
@@ -271,6 +273,7 @@ module.exports = {
           members: memberList,
           interest_tags: party.dataValues.interest_tags,
           restaurant: restaurantFormat,
+          open_chat_link: party.dataValues.open_chat_link,
         };
 
         partyList.push(partyFormat);
@@ -905,6 +908,7 @@ module.exports = {
             restaurant_photo_ref: restaurant.restaurant_photo_ref,
           },
           interest_tags: party.interest_tags,
+          open_chat_link: party.open_chat_link,
         };
 
         historyList.push(historyNewFormat);
