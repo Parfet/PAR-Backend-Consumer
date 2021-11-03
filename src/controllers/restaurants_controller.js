@@ -28,20 +28,39 @@ module.exports = {
       // }
 
       const { lat, lng, keyword } = req.query;
-      const params = {
-        key: process.env.GOOGLE_MAP_API_KEY,
-        location: `${lat},${lng}`,
-        radius: 1500,
-        type: "restaurant",
-        keyword: keyword,
-      };
-      let response = await axios.get(
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
-        { params }
-      );
+
+      let response;
+      if (lat && lng) {
+        const params = {
+          key: process.env.GOOGLE_MAP_API_KEY,
+          location: `${lat},${lng}`,
+          radius: 1500,
+          type: "restaurant",
+          keyword: keyword,
+        };
+        response = await axios.get(
+          "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+          { params }
+        );
+      } else {
+        const params = {
+          key: process.env.GOOGLE_MAP_API_KEY,
+          query: keyword,
+        };
+        response = await axios.get(
+          "https://maps.googleapis.com/maps/api/place/textsearch/json",
+          { params }
+        );
+      }
+      if (!response) {
+        return res.status(500).json({
+          message: "external server error",
+        });
+      }
+
       let restaurants = response.data.results;
       for (const restaurant of restaurants) {
-        const _params = {
+        const params = {
           key: process.env.GOOGLE_MAP_API_KEY,
           place_id: restaurant.place_id,
           fields: "url",
@@ -49,7 +68,7 @@ module.exports = {
         let _response = await axios.get(
           "https://maps.googleapis.com/maps/api/place/details/json",
           {
-            params: _params,
+            params,
           }
         );
         restaurant.map_url = _response.data.result.url;
@@ -73,7 +92,7 @@ module.exports = {
       }
     } catch (e) {
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
