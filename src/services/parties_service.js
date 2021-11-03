@@ -153,6 +153,7 @@ const createParty = async ({
   interested_topic,
   max_member,
   schedule_time,
+  open_chat_link,
   transaction,
 }) =>
   partyModel.create(
@@ -166,6 +167,7 @@ const createParty = async ({
       max_member: max_member,
       schedule_time: schedule_time,
       created_at: moment().format(),
+      open_chat_link: open_chat_link,
     },
     {
       transaction: transaction,

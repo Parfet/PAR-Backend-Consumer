@@ -14,7 +14,9 @@
     interested_topic: String,
     interest_tags: [ UUID<interest_tag_id> ],
     max_member: int,
-    schedule_time: DateTime
+    open_chat_link: String<URL>,
+    schedule_time: DateTime,
+    restaurant_photo_ref: String,
 }
 ```
 
@@ -54,6 +56,9 @@ Status 400
 }
 {
     message: schedule time cannot be null
+}
+{
+    message: link invalid
 }
 Status 500
 {

@@ -298,6 +298,8 @@ module.exports = {
   @body interested_tag
   @body max_member
   @body schedule_time
+  @body restaurant_photo_ref
+  @body open_chat_link
    */
   createParty: async (req, res) => {
     const transaction = await sequelize.transaction();
@@ -317,6 +319,7 @@ module.exports = {
         restaurant_photo_ref,
       } = req.body;
       const head_party = req.user;
+      const open_chat_link = helper.urlify(req.body.open_chat_link);
 
       const head_party_raw = await userService.getUserByUserId({
         user_id: head_party,
@@ -372,16 +375,21 @@ module.exports = {
           .status(400)
           .json({ message: "schedule time cannot be null" });
       }
+      if (
+        open_chat_link === null ||
+        open_chat_link.length > 1 ||
+        open_chat_link === []
+      ) {
+        return res.status(400).json({
+          message: "link invalid",
+        });
+      }
+
       const params = {
         key: process.env.GOOGLE_MAP_API_KEY,
         place_id: req.params.restaurant_id,
       };
-      const restaurant = (
-        await axios.get(
-          "https://maps.googleapis.com/maps/api/place/details/json",
-          { params }
-        )
-      ).data.result;
+
       const party = await partyService.createParty({
         head_party: head_party,
         party_name: party_name,
@@ -390,12 +398,19 @@ module.exports = {
         interested_topic: interested_topic,
         max_member: max_member,
         schedule_time: schedule_time,
+        open_chat_link: open_chat_link[0],
         transaction: transaction,
       });
       const _restaurant = await restaurantService.findRestaurantByRestaurantId({
         restaurant_id: req.params.restaurant_id,
       });
       if (!_restaurant) {
+        const restaurant = (
+          await axios.get(
+            "https://maps.googleapis.com/maps/api/place/details/json",
+            { params }
+          )
+        ).data.result;
         await restaurantService.createRestaurant({
           restaurant_id: restaurant.place_id,
           restaurant_name: restaurant.name,
