@@ -76,6 +76,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: null,
       },
+      open_chat_link: {
+        type: DataTypes.STRING,
+        defaultValue: "",
+      },
     },
     {
       sequelize,

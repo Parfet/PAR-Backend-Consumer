@@ -43,6 +43,10 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: null,
       },
+      open_chat_link: {
+        type: Sequelize.STRING,
+        defaultValue: "",
+      },
     });
   },
   down: async (queryInterface, _Sequelize) => {
