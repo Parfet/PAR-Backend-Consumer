@@ -265,6 +265,7 @@ const updatePartyInfo = async ({
   max_member,
   schedule_time,
   archived_at,
+  open_chat_link,
 }) =>
   partyModel.update(
     {
@@ -278,6 +279,7 @@ const updatePartyInfo = async ({
       schedule_time: schedule_time,
       archived_at: archived_at,
       updated_at: moment(),
+      open_chat_link: open_chat_link,
     },
     {
       where: {

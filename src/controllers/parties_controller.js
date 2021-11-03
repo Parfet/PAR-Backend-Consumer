@@ -590,6 +590,12 @@ module.exports = {
         }
       }
 
+      if (!req.body.open_chat_link) {
+        return res.status(400).json({
+          message: "link invalid",
+        });
+      }
+
       const data = await partyService.updatePartyInfo({
         party_id: req.params.party_id,
         party_name: req.body.party_name,
@@ -600,8 +606,9 @@ module.exports = {
         interested_tag: req.body.interested_tag,
         max_member: req.body.max_member,
         schedule_time: req.body.schedule_time,
-        archived_at: req.body.archived_at,
+        open_chat_link: req.body.open_chat_link,
       });
+
       if (data) {
         return res.status(200).json({
           message: "update success",
