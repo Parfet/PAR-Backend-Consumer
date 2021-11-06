@@ -29,8 +29,13 @@ const getUserByUserId = async ({ user_id }) => {
   }
 };
 
-const createUser = async ({ user_id }) =>
-  userModel.create({
+const updateUserInfoByUserId = async ({ user_id, display_name }) => {
+  const documentRef = firestore.collection("User").doc(user_id);
+  await documentRef.update({
+    display_name: display_name,
+  });
+};
+
 const createInterestedTagMatchWithUserId = async ({
   user_id,
   interested_tag,
@@ -41,9 +46,27 @@ const createInterestedTagMatchWithUserId = async ({
   });
 };
 
+const updateInterestedTagByUserId = async ({ user_id, interested_tag }) => {
+  await deleteInterestTagByUserId({ user_id: user_id });
+  await createInterestedTagMatchWithUserId({
+    user_id: user_id,
+    interested_tag: interested_tag,
   });
+};
+
+const deleteInterestTagByUserId = async ({ user_id }) => {
+  await userInterestTagModel.destroy({
+    where: {
+      user_id: user_id,
+    },
+  });
+};
 
 module.exports = {
   getUserByUserId,
   createUser,
+  updateUserInfoByUserId,
+  createInterestedTagMatchWithUserId,
+  updateInterestedTagByUserId,
+  deleteInterestTagByUserId,
 };
