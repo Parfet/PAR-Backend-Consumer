@@ -7,10 +7,31 @@ module.exports = {
         user_id: req.user,
       });
 
-      return res.json({
-        user: user,
+      const _interest_tag_data = await userService.getInterestedTagByUserId({
+        user_id: req.user,
       });
+
+      if (
+        _interest_tag_data !== [] &&
+        _interest_tag_data[0].interest_tags !== []
+      ) {
+        return res.status(200).json({
+          user: user,
+          interested_tag: _interest_tag_data
+            .map(({ dataValues: user_data }) => user_data)[0]
+            .interest_tags.map(({ dataValues: tag }) => {
+              delete tag["users_interest_tags"];
+              return tag;
+            }),
+        });
+      } else {
+        return res.json({
+          user: user,
+          interested_tag: [],
+        });
+      }
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e,
       });

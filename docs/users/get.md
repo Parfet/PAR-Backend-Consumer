@@ -23,7 +23,13 @@
         "image_url": String,
         "first_name": String,
         "username": String,
-    }
+    },
+    "interested_tag": [
+        {
+            "tag_id": String,
+            "tag_name": String
+        }
+    ]
 }
 ```
 
