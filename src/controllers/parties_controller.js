@@ -147,10 +147,14 @@ module.exports = {
         return res.status(204).json();
       }
 
-      const requestList = [];
+      const request_list = [];
 
       for (const item of data) {
         const _user = await userService.getUserByUserId({
+          user_id: item.user_id,
+        });
+
+        const _interested_tag = await userService.getInterestedTagByUserId({
           user_id: item.user_id,
         });
 
@@ -160,7 +164,7 @@ module.exports = {
           });
         }
 
-        let requestItem = {
+        let request_item = {
           party_id: item.party_id,
           user_id: item.user_id,
           display_name: _user.display_name,
@@ -168,11 +172,22 @@ module.exports = {
           image_url: _user.image_url,
           status: item.status,
         };
-        requestList.push(requestItem);
+
+        if (_interested_tag !== []) {
+          request_item["interested_tag"] = _interested_tag[0].interest_tags.map(
+            ({ dataValues: tag }) => {
+              delete tag["users_interest_tags"];
+              return tag;
+            }
+          );
+        } else {
+          request_item["interested_tag"] = [];
+        }
+        request_list.push(request_item);
       }
 
       return res.status(200).json({
-        request: requestList,
+        request: request_list,
       });
     } catch (e) {
       console.log(e);

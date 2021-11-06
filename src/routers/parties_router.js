@@ -30,7 +30,6 @@ partiesRouter.post(
   "/info/:party_id/join",
   partiesController.joinPartyByPartyId
 );
-
 partiesRouter.put(
   "/info/:party_id/join",
   partiesController.handleMemberRequest

@@ -96,7 +96,13 @@ Status 200
             "display_name": String,
             "rating": int,
             "image_url": String,
-            "status": ENUM<>
+            "status": ENUM<REQUEST_STATUS>,
+            "interested_tag": [
+                {
+                    "tag_id": String,
+                    "tag_name": String
+                }
+            ]
         }
     ]
 }

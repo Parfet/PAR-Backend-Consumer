@@ -1,6 +1,7 @@
 const models = require("../../models/index");
 const userModel = models.users;
 const userInterestTagModel = models.users_interest_tags;
+const interestTagModel = models.interest_tags;
 const admin = require("../utils/firebase_admin");
 const firestore = admin.firestore();
 
@@ -28,6 +29,22 @@ const getUserByUserId = async ({ user_id }) => {
     return "";
   }
 };
+
+const getInterestedTagByUserId = async ({ user_id }) =>
+  userModel.findAll({
+    attributes: {
+      exclude: ["user_id"],
+    },
+    where: {
+      user_id: user_id,
+    },
+    include: {
+      model: interestTagModel,
+      attributes: {
+        exclude: ['users_interest_tags']
+      },
+    },
+  });
 
 const updateUserInfoByUserId = async ({ user_id, display_name }) => {
   const documentRef = firestore.collection("User").doc(user_id);
@@ -64,6 +81,7 @@ const deleteInterestTagByUserId = async ({ user_id }) => {
 
 module.exports = {
   getUserByUserId,
+  getInterestedTagByUserId,
   createUser,
   updateUserInfoByUserId,
   createInterestedTagMatchWithUserId,
