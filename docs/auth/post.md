@@ -106,6 +106,7 @@ Status 400
     last_name: STRING,
     image_url: STRING<URL>,
     accept_term_of_use: boolean
+    interested_tag: <INTEREST_TAG:UUID>[] [optional]
 }
 ```
 

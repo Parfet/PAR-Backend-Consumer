@@ -32,6 +32,7 @@ module.exports = {
         last_name,
         image_url,
         accept_term_of_use,
+        interested_tag,
       } = req.body;
 
       if (
@@ -70,6 +71,15 @@ module.exports = {
       await userService.createUser({
         user_id: req.user,
       });
+
+      if (interested_tag != null && interested_tag !== []) {
+        for (const tag of interested_tag) {
+          await userService.createInterestedTagMatchWithUserId({
+            user_id: req.user,
+            interested_tag: tag,
+          });
+        }
+      }
 
       return res.status(204).json();
     } catch (err) {

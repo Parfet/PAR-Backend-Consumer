@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "tag_id",
         constraint: false,
       });
+      InterestTags.belongsToMany(models.users, {
+        through: models.users_interest_tags,
+        foreignKey: "tag_id",
+        constraint: false,
+      });
     }
   }
   InterestTags.init(
