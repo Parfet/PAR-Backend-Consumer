@@ -76,7 +76,7 @@ module.exports = {
   */
   getPartyByPartyId: async (req, res) => {
     try {
-      const data = await partyService.findPartyByPartyId({
+      const data = await partyService.findPartyAndRestaurantInfoByPartyId({
         party_id: req.params.party_id,
       });
       if (data.length === 0) {
@@ -113,6 +113,10 @@ module.exports = {
         members: _userWithDetailList,
         interest_tags: data[0].interest_tags,
         open_chat_link: data[0].open_chat_link,
+        restaurant: {
+          restaurant_name: data[0].restaurants[0].restaurant_name,
+          restaurant_photo_ref: data[0].restaurants[0].restaurant_photo_ref,
+        },
       };
       return res.status(200).json({
         party: partyResponse,

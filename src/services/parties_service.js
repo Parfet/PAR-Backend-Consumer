@@ -145,6 +145,41 @@ const findPartyByPartyId = async ({ party_id }) =>
     ],
   });
 
+const findPartyAndRestaurantInfoByPartyId = async ({ party_id }) =>
+  partyModel.findAll({
+    where: {
+      party_id: party_id,
+    },
+    include: [
+      {
+        model: userModel,
+        as: "members",
+        through: {
+          attributes: [],
+          where: {
+            status: {
+              [Op.eq]: ENUM.REQUEST_STATUS.ACCEPT,
+            },
+          },
+        },
+      },
+      {
+        model: interestTagModel,
+        as: "interest_tags",
+        attributes: [
+          ["tag_id", "value"],
+          ["tag_name", "label"],
+        ],
+        through: {
+          attributes: [],
+        },
+      },
+      {
+        model: restaurantModel,
+      },
+    ],
+  });
+
 const createParty = async ({
   head_party,
   party_name,
@@ -501,6 +536,7 @@ const checkStatusByPartyIdAndUserId = ({ party_id, user_id }) =>
 module.exports = {
   findPartyByRestaurantId,
   findPartyByPartyId,
+  findPartyAndRestaurantInfoByPartyId,
   createParty,
   joinParty,
   requestJoinList,
