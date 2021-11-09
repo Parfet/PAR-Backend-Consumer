@@ -41,7 +41,7 @@ const getInterestedTagByUserId = async ({ user_id }) =>
     include: {
       model: interestTagModel,
       attributes: {
-        exclude: ['users_interest_tags']
+        exclude: ["users_interest_tags"],
       },
     },
   });
@@ -79,6 +79,13 @@ const deleteInterestTagByUserId = async ({ user_id }) => {
   });
 };
 
+const checkIsExistFromCollection = async ({ field, value }) => {
+  const docRef = firestore.collectionGroup("User");
+
+  const collection = await docRef.where(field, "==", value).get();
+  return collection.size > 0;
+};
+
 module.exports = {
   getUserByUserId,
   getInterestedTagByUserId,
@@ -87,4 +94,5 @@ module.exports = {
   createInterestedTagMatchWithUserId,
   updateInterestedTagByUserId,
   deleteInterestTagByUserId,
+  checkIsExistFromCollection,
 };

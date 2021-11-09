@@ -126,9 +126,15 @@ Status 400
 {
     message: "accept my term of use for happy with my system :)"
 }
+{
+    message: "username already use"
+}
+{
+    message: "display name already use"
+}
 Status 500
 {
-    message: ${err_message}
+    message: String
 }
 ```
 

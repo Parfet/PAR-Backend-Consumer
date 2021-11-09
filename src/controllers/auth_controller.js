@@ -57,6 +57,29 @@ module.exports = {
         });
       }
 
+      const is_username_exist = await userService.checkIsExistFromCollection({
+        field: "username",
+        value: username,
+      });
+
+      if (is_username_exist) {
+        return res.status(400).json({
+          message: "username already use",
+        });
+      }
+
+      const is_display_name_exist =
+        await userService.checkIsExistFromCollection({
+          field: "display_name",
+          value: display_name,
+        });
+
+      if (is_display_name_exist) {
+        return res.status(400).json({
+          message: "display name already use",
+        });
+      }
+
       await userCollection.doc(req.user).set({
         username: username,
         email: email,
