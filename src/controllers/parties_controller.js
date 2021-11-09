@@ -341,7 +341,7 @@ module.exports = {
         restaurant_photo_ref,
       } = req.body;
       const head_party = req.user;
-      const open_chat_link = helper.urlify(req.body.open_chat_link);
+      const open_chat_link = helper.urlify(req.body.open_chat_link || "");
 
       const head_party_raw = await userService.getUserByUserId({
         user_id: head_party,
@@ -411,7 +411,6 @@ module.exports = {
         key: process.env.GOOGLE_MAP_API_KEY,
         place_id: req.params.restaurant_id,
       };
-
       const party = await partyService.createParty({
         head_party: head_party,
         party_name: party_name,
@@ -420,7 +419,8 @@ module.exports = {
         interested_topic: interested_topic,
         max_member: max_member,
         schedule_time: schedule_time,
-        open_chat_link: open_chat_link[0],
+        open_chat_link:
+          open_chat_link[0] !== undefined ? open_chat_link[0].trim() : "",
         transaction: transaction,
       });
       const _restaurant = await restaurantService.findRestaurantByRestaurantId({

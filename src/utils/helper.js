@@ -8,7 +8,12 @@ module.exports = {
     return Object.keys(object).find((key) => object[key] === value);
   },
   urlify: (text) => {
-    var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
-    return text.match(urlRegex);
-},
+    const urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+    const _url = text.match(urlRegex);
+    if (_url != null) {
+      return _url;
+    } else {
+      return "";
+    }
+  },
 };
