@@ -178,7 +178,11 @@ Status 500
                 label: String,
             },
         ],
-        open_chat_link: String
+        open_chat_link: String,
+        restaurant: {
+            restaurant_name: String,
+            restaurant_photo_ref: String,
+        }
     }
 }
 ```
