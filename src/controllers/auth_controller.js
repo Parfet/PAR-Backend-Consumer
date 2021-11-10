@@ -58,6 +58,7 @@ module.exports = {
       }
 
       const is_username_exist = await userService.checkIsExistFromCollection({
+        user_id: req.user,
         field: "username",
         value: username,
       });
@@ -70,6 +71,7 @@ module.exports = {
 
       const is_display_name_exist =
         await userService.checkIsExistFromCollection({
+          user_id: req.user,
           field: "display_name",
           value: display_name,
         });

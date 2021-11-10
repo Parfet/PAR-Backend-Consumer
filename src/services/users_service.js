@@ -79,10 +79,14 @@ const deleteInterestTagByUserId = async ({ user_id }) => {
   });
 };
 
-const checkIsExistFromCollection = async ({ field, value }) => {
+const checkIsExistFromCollection = async ({ user_id, field, value }) => {
   const docRef = firestore.collectionGroup("User");
 
   const collection = await docRef.where(field, "==", value).get();
+  const user_id_list = collection.docs.map((e) => e.id);
+  if (user_id_list.length === 1 && user_id_list.includes(user_id)) {
+    return false;
+  }
   return collection.size > 0;
 };
 
