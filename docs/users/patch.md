@@ -22,6 +22,10 @@ Status 200
 > ### Error Response
 
 ```
+Status 400
+{
+    message: "display name already use"
+}
 Status 500
 {
     message: string

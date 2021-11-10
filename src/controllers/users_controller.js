@@ -42,10 +42,22 @@ module.exports = {
       const { display_name, interested_tag } = req.body;
 
       if (display_name != null && display_name !== "") {
-        await userService.updateUserInfoByUserId({
-          user_id: req.user,
-          display_name: display_name,
-        });
+        const is_display_name_exist =
+          await userService.checkIsExistFromCollection({
+            user_id: req.user,
+            field: "display_name",
+            value: display_name,
+          });
+        if (!is_display_name_exist) {
+          await userService.updateUserInfoByUserId({
+            user_id: req.user,
+            display_name: display_name,
+          });
+        } else {
+          return res.status(400).json({
+            message: "display name already use",
+          });
+        }
       }
       if (interested_tag != null && interested_tag !== []) {
         if (!Array.isArray(interested_tag)) {
