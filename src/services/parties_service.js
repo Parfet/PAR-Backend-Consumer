@@ -10,7 +10,6 @@ const ratingUserModel = models.rating_users;
 const interestTagModel = models.interest_tags;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
-const handle = require("../utils/handle_response");
 
 const deletePartyById = async ({ party_id }) =>
   partyModel.delete({

@@ -25,7 +25,7 @@ module.exports = {
             }),
         });
       } else {
-        return res.json({
+        return res.status(200).json({
           user: user,
           interested_tag: [],
         });
@@ -33,7 +33,7 @@ module.exports = {
     } catch (e) {
       console.log(e);
       return res.status(500).json({
-        message: e,
+        message: e.message || e,
       });
     }
   },
@@ -74,6 +74,7 @@ module.exports = {
       }
       return res.status(200).json();
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message || e,
       });

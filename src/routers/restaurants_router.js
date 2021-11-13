@@ -10,4 +10,5 @@ restaurantsRouter.get(
   "/:restaurant_id/info",
   restaurantsController.findRestaurantByRestaurantId
 );
+
 module.exports = restaurantsRouter;

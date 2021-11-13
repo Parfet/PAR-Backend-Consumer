@@ -10,23 +10,6 @@ module.exports = {
   // @params: keyword
   findAllRestaurant: async (req, res) => {
     try {
-      // TODO: wait implment filter
-      // let status = "";
-      // if (req.query.status) {
-      //   if (
-      //     checkErrorService.checkMatchEnum(
-      //       "RESTAURANT_AVAILABLE",
-      //       req.query.status
-      //     )
-      //   ) {
-      //     status = req.query.status;
-      //   } else {
-      //     return res.status(400).json({
-      //       message: "Invalid Status",
-      //     });
-      //   }
-      // }
-
       const { lat, lng, keyword } = req.query;
 
       let response;
@@ -91,6 +74,7 @@ module.exports = {
         return res.status(204).json();
       }
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
         message: e.message || e,
       });
@@ -105,9 +89,9 @@ module.exports = {
       }
       return res.status(204).json();
     } catch (e) {
-      console.log("error: ", e);
+      console.log(e);
       return res.status(500).json({
-        message: e,
+        message: e.message || e,
       });
     }
   },
@@ -123,8 +107,9 @@ module.exports = {
         restaurant: restaurant,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },

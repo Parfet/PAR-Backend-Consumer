@@ -5,10 +5,10 @@ const userService = require("../services/users_service");
 module.exports = {
   checkIsUserExisted: async (req, res) => {
     try {
-      const documentRef = firestore.collection(`User`).doc(req.user);
-      const documentList = await documentRef.get();
-      console.log(documentList);
-      if (documentList.data()) {
+      const document_ref = firestore.collection(`User`).doc(req.user);
+      const document_list = await document_ref.get();
+
+      if (document_list.data()) {
         return res.status(200).json({
           is_user_existed: true,
         });
@@ -45,13 +45,13 @@ module.exports = {
         });
       }
 
-      const userCollection = firestore.collection("User");
+      const user_collection = firestore.collection("User");
 
-      const userRaw = await userService.getUserByUserId({
+      const user_raw_data = await userService.getUserByUserId({
         user_id: req.user,
       });
 
-      if (userRaw !== "") {
+      if (user_raw_data !== "") {
         return res.status(400).json({
           message: "you have already register.",
         });
@@ -82,7 +82,7 @@ module.exports = {
         });
       }
 
-      await userCollection.doc(req.user).set({
+      await user_collection.doc(req.user).set({
         username: username,
         email: email,
         provider: provider,

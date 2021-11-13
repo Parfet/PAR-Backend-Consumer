@@ -8,7 +8,6 @@ const partyService = require("../services/parties_service");
 const restaurantService = require("../services/restaurants_service");
 const ENUM = require("../constants/enum");
 const helper = require("../utils/helper");
-const admin = require("../utils/firebase_admin");
 
 module.exports = {
   // ==== [GET] ====
@@ -24,7 +23,7 @@ module.exports = {
         return res.status(204).json();
       }
 
-      const partyList = [];
+      const party_list = [];
 
       for (const party of data[0].parties) {
         let _userWithDetailList = [];
@@ -57,16 +56,16 @@ module.exports = {
           members: _userWithDetailList,
           interest_tags: party.interest_tags,
         };
-        partyList.push(partyResponse);
+        party_list.push(partyResponse);
       }
 
       return res.status(200).json({
-        parties: partyList,
+        parties: party_list,
       });
     } catch (e) {
       console.log(e);
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -82,35 +81,35 @@ module.exports = {
       if (data.length === 0) {
         return res.status(204).send();
       }
-      const _userWithDetailList = [];
+      const _user_with_detail_list = [];
       for (const item of data[0].members) {
         const _user = await userService.getUserByUserId({
           user_id: item.user_id,
         });
-        _userWithDetailList.push(_user);
+        _user_with_detail_list.push(_user);
       }
 
-      const headPartyRaw = await userService.getUserByUserId({
+      const head_party_raw_data = await userService.getUserByUserId({
         user_id: data[0].head_party,
       });
 
-      if (headPartyRaw === "") {
+      if (head_party_raw_data === "") {
         return res.status(500).json({
           message: "User not found",
         });
       }
 
-      const partyResponse = {
+      const party_response = {
         party_id: data[0].party_id,
         party_name: data[0].party_name,
-        head_party: headPartyRaw,
+        head_party: head_party_raw_data,
         party_type: data[0].party_type,
         interested_topic: data[0].interested_topic,
         max_member: data[0].max_member,
         schedule_time: data[0].schedule_time,
         created_at: data[0].created_at,
         updated_at: data[0].updated_at,
-        members: _userWithDetailList,
+        members: _user_with_detail_list,
         interest_tags: data[0].interest_tags,
         open_chat_link: data[0].open_chat_link,
         restaurant: {
@@ -119,12 +118,12 @@ module.exports = {
         },
       };
       return res.status(200).json({
-        party: partyResponse,
+        party: party_response,
       });
     } catch (e) {
       console.log(e);
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -209,79 +208,79 @@ module.exports = {
       });
     } catch (e) {
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
 
   getPartyByUserId: async (req, res) => {
     try {
-      const partyListRaw = await partyService.getPartyByUserId({
+      const party_raw_data_list = await partyService.getPartyByUserId({
         user_id: req.user,
       });
 
-      if (partyListRaw.length <= 0) {
+      if (party_raw_data_list.length <= 0) {
         return res.status(204).json();
       }
 
-      const partyList = [];
+      const party_list = [];
 
-      for (const party of partyListRaw) {
+      for (const party of party_raw_data_list) {
         const memberList = [];
 
-        const headPartyRaw = await userService.getUserByUserId({
+        const head_party_raw_data = await userService.getUserByUserId({
           user_id: party.dataValues.head_party,
         });
 
-        if (headPartyRaw === "") {
+        if (head_party_raw_data === "") {
           return res.status(500).json({
             message: "user not found",
           });
         }
 
-        const restaurantRaw = party.dataValues.restaurants[0];
+        const restaurant_raw_data = party.dataValues.restaurants[0];
 
         for (const member of party.dataValues.members) {
-          const userRaw = await userService.getUserByUserId({
+          const user_raw_data = await userService.getUserByUserId({
             user_id: member.user_id,
           });
 
-          if (userRaw === "") {
+          if (user_raw_data === "") {
             return res.status(500).json({
               message: "User not found",
             });
           }
 
-          const userFormat = {
+          const user_format_data = {
             user_id: member.user_id,
-            provider: userRaw.provider,
-            display_name: userRaw.display_name,
-            email: userRaw.email,
-            image_url: userRaw.image_url,
-            username: userRaw.username,
+            provider: user_raw_data.provider,
+            display_name: user_raw_data.display_name,
+            email: user_raw_data.email,
+            image_url: user_raw_data.image_url,
+            username: user_raw_data.username,
           };
 
-          memberList.push(userFormat);
+          memberList.push(user_format_data);
         }
 
-        const headPartyFormat = {
+        const head_party_format_data = {
           user_id: party.dataValues.head_party,
-          provider: headPartyRaw.provider,
-          display_name: headPartyRaw.display_name,
-          email: headPartyRaw.email,
-          image_url: headPartyRaw.image_url,
-          username: headPartyRaw.username,
+          provider: head_party_raw_data.provider,
+          display_name: head_party_raw_data.display_name,
+          email: head_party_raw_data.email,
+          image_url: head_party_raw_data.image_url,
+          username: head_party_raw_data.username,
         };
 
-        const restaurantFormat = {
-          restaurant_name: restaurantRaw.restaurant_name,
-          restaurant_photo_ref: restaurantRaw.restaurant_photo_ref,
+        const restaurant_format_data = {
+          restaurant_name: restaurant_raw_data.restaurant_name,
+          restaurant_photo_ref: restaurant_raw_data.restaurant_photo_ref,
         };
 
-        const partyFormat = {
+        const party_format_data = {
           party_id: party.party_id,
           party_name: party.dataValues.party_name,
-          head_party: headPartyFormat,
+          head_party: head_party_format_data,
           party_type: party.dataValues.party_type,
           interested_topic: party.dataValues.interested_topic,
           max_member: party.dataValues.max_member,
@@ -291,20 +290,20 @@ module.exports = {
           archived_at: party.dataValues.archived_at,
           members: memberList,
           interest_tags: party.dataValues.interest_tags,
-          restaurant: restaurantFormat,
+          restaurant: restaurant_format_data,
           open_chat_link: party.dataValues.open_chat_link,
         };
 
-        partyList.push(partyFormat);
+        party_list.push(party_format_data);
       }
 
       return res.status(200).json({
-        parties: partyList,
+        parties: party_list,
       });
     } catch (e) {
       console.log(e);
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -343,11 +342,11 @@ module.exports = {
       const head_party = req.user;
       const open_chat_link = helper.urlify(req.body.open_chat_link || "");
 
-      const head_party_raw = await userService.getUserByUserId({
+      const head_party_raw_data = await userService.getUserByUserId({
         user_id: head_party,
       });
 
-      if (head_party_raw === "") {
+      if (head_party_raw_data === "") {
         return res.status(500).json({
           message: "User not found",
         });
@@ -358,12 +357,18 @@ module.exports = {
       });
 
       if (!party_type) {
-        return res.status(400).json({ message: "party type cannot be null" });
+        return res.status(400).json({
+          message: "party type cannot be null",
+        });
       } else if (!helper.checkMatchEnum("PARTY_TYPE", party_type)) {
-        return res.status(400).json({ message: "party type is invalid" });
+        return res.status(400).json({
+          message: "party type is invalid",
+        });
       }
       if (!party_name) {
-        return res.status(400).json({ message: "party name cannot be null" });
+        return res.status(400).json({
+          message: "party name cannot be null",
+        });
       }
       if (party_type === ENUM.PARTY_TYPE.PRIVATE && !passcode) {
         return res.status(400).json({
@@ -371,9 +376,9 @@ module.exports = {
         });
       }
       if (!interested_topic) {
-        return res
-          .status(400)
-          .json({ message: "interest topic can not be null" });
+        return res.status(400).json({
+          message: "interest topic can not be null",
+        });
       }
       if (!interest_tags) {
         return res
@@ -499,11 +504,11 @@ module.exports = {
       ) {
         res.status(400).json({ message: "Passcode incorrect" });
       }
-      const everJoin = await partyService.requestJoinByUserId({
+      const ever_join = await partyService.requestJoinByUserId({
         party_id: party[0].party_id,
         user_id: req.user,
       });
-      if (everJoin.length > 0) {
+      if (ever_join.length > 0) {
         return res
           .status(400)
           .json({ message: "You already request to join this party" });
@@ -527,7 +532,7 @@ module.exports = {
       console.log(e);
       await transaction.rollback();
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -559,8 +564,9 @@ module.exports = {
         });
       }
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -583,16 +589,18 @@ module.exports = {
       if (req.body.head_party) {
         const user = await models.users.findByPk(req.body.head_party);
         if (!user) {
-          return res.status(500).json({ message: "User not found" });
+          return res.status(500).json({
+            message: "User not found",
+          });
         }
         const member = await partyService.checkIsMemberParty({
           party_id: req.params.party_id,
           user_id: user.user_id,
         });
         if (member.length === 0) {
-          return res
-            .status(400)
-            .json({ message: "Only member can assign to be party owner." });
+          return res.status(400).json({
+            message: "Only member can assign to be party owner.",
+          });
         }
       }
       if (req.body.party_type) {
@@ -603,9 +611,9 @@ module.exports = {
           req.body.party_type === ENUM.PARTY_TYPE.PRIVATE &&
           !req.body.passcode
         ) {
-          return res
-            .status(400)
-            .json({ message: "Private party must have passcode" });
+          return res.status(400).json({
+            message: "Private party must have passcode",
+          });
         }
       }
 
@@ -638,8 +646,9 @@ module.exports = {
         });
       }
     } catch (e) {
+      console.log(e);
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -651,7 +660,9 @@ module.exports = {
         party_id: req.params.party_id,
       });
       if (!party) {
-        return res.status(400).json({ message: "Party not found" });
+        return res.status(400).json({
+          message: "Party not found",
+        });
       }
       if (party[0].head_party !== req.user) {
         return res.status(403).json({
@@ -678,12 +689,12 @@ module.exports = {
             message: "user not found",
           });
         }
-        const findUserInParty = await partyService.handleCheckMemberRequest({
+        const find_user_in_party = await partyService.handleCheckMemberRequest({
           party_id: req.params.party_id,
           user_id: req.body.user_id,
         });
 
-        if (findUserInParty.length > 0) {
+        if (find_user_in_party.length > 0) {
           return res.status(400).json({
             message: "cannot manage user that already party member or declined",
           });
@@ -708,9 +719,10 @@ module.exports = {
         });
       }
     } catch (e) {
+      console.log(e);
       await transaction.rollback();
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -728,9 +740,9 @@ module.exports = {
         });
       }
 
-      const memberList = party[0].members.map((e) => e.user_id);
+      const member_list = party[0].members.map((e) => e.user_id);
 
-      if (memberList.includes(req.user)) {
+      if (member_list.includes(req.user)) {
         const data = await partyService.removePartyMember({
           party_id: req.params.party_id,
           user_id: req.user,
@@ -753,9 +765,10 @@ module.exports = {
         message: "only member of this party can leave party",
       });
     } catch (e) {
+      console.log(e);
       await transaction.rollback();
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -772,7 +785,7 @@ module.exports = {
         });
       }
 
-      const memberList = party[0].members.map((e) => e.user_id);
+      const member_list = party[0].members.map((e) => e.user_id);
       const user_id = req.body.user_id;
 
       if (!user_id) {
@@ -790,7 +803,7 @@ module.exports = {
           message: "party owner can not remove own account from party",
         });
       }
-      if (memberList.includes(user_id)) {
+      if (member_list.includes(user_id)) {
         const response = await partyService.removePartyMember({
           party_id: req.params.party_id,
           user_id: user_id,
@@ -813,9 +826,10 @@ module.exports = {
         message: "only member of this party can be remove",
       });
     } catch (e) {
+      console.log(e);
       await transaction.rollback();
       return res.status(500).json({
-        message: e.message,
+        message: e.message || e,
       });
     }
   },
@@ -830,7 +844,7 @@ module.exports = {
         return res.status(204).json();
       }
 
-      const waitingRequestList = [];
+      const waiting_request_list = [];
 
       for (const request of data) {
         const { party } = request;
@@ -853,7 +867,7 @@ module.exports = {
           });
         }
 
-        const requestNewFormat = {
+        const request_format_data = {
           party_id: request.party_id,
           party_name: party.party_name,
           head_party: {
@@ -872,15 +886,17 @@ module.exports = {
           interest_tags: party.interest_tags,
         };
 
-        waitingRequestList.push(requestNewFormat);
+        waiting_request_list.push(request_format_data);
       }
 
       return res.status(200).json({
-        request_list: waitingRequestList,
+        request_list: waiting_request_list,
       });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ message: err });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        message: e.message || e,
+      });
     }
   },
 
@@ -894,7 +910,7 @@ module.exports = {
         return res.status(204).json();
       }
 
-      const historyList = [];
+      const history_format_data_list = [];
 
       for (const item of data) {
         const { party } = item;
@@ -916,7 +932,7 @@ module.exports = {
           });
         }
 
-        const historyNewFormat = {
+        const history_format_data = {
           party_id: party.party_id,
           party_name: party.party_name,
           head_party: {
@@ -937,16 +953,16 @@ module.exports = {
           open_chat_link: party.open_chat_link,
         };
 
-        historyList.push(historyNewFormat);
+        history_format_data_list.push(history_format_data);
       }
 
       return res.status(200).json({
-        history: historyList,
+        history: history_format_data_list,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
-        message: err,
+        message: e.message || e,
       });
     }
   },
@@ -1040,10 +1056,12 @@ module.exports = {
       }
       await transaction.rollback();
       return res.status(204).json();
-    } catch (err) {
+    } catch (e) {
       await transaction.rollback();
-      console.log(err);
-      return res.status(500).json({ message: err });
+      console.log(e);
+      return res.status(500).json({
+        message: e.message || e,
+      });
     }
   },
 
@@ -1059,10 +1077,10 @@ module.exports = {
       return res.status(200).json({
         status: data[0].status,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
-        message: err,
+        message: e.message || e,
       });
     }
   },

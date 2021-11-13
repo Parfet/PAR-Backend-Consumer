@@ -3,7 +3,6 @@ const moment = require("moment");
 const models = require("../../models/index");
 const restaurantModel = models.restaurants;
 const restaurantAndPartyModel = models.restaurants_parties;
-const promotionModel = models.promotions;
 
 const createParty = async ({ restaurant_id, party_id, transaction }) =>
   restaurantAndPartyModel.create(
