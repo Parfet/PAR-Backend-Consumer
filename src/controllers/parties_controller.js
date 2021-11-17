@@ -340,7 +340,12 @@ module.exports = {
         restaurant_photo_ref,
       } = req.body;
       const head_party = req.user;
-      const open_chat_link = helper.urlify(req.body.open_chat_link || "");
+
+      let open_chat_link = "";
+
+      if (req.body.open_chat_link !== "") {
+        open_chat_link = helper.urlify(req.body.open_chat_link);
+      }
 
       const head_party_raw_data = await userService.getUserByUserId({
         user_id: head_party,
