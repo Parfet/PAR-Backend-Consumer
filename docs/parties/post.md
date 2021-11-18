@@ -34,35 +34,35 @@ Status 200
 ```
 Status 400
 {
-    message: Invalid Request
+    message: "Invalid Request"
 }
 {
-    message: Owner party invalid,
+    message: "Owner party invalid",
 }
 {
-    message: party type cannot be null,
+    message: "party type cannot be null",
 }
 {
-    message: party name cannot be null,
+    message: "party name cannot be null",
 }
 {
-    message: interest topic can not be null
+    message: "interest topic can not be null",
 },
 {
-    message: interest tag can not be null
+    message: "interest tag can not be null",
 },
 {
-    message: max maxber cannot be null,
+    message: "max maxber cannot be null",
 }
 {
-    message: schedule time cannot be null
+    message: "schedule time cannot be null"
 }
 {
-    message: link invalid
+    message: "link invalid"
 }
 Status 500
 {
-    message: User not found
+    message: "User not found"
 }
 ```
 
@@ -96,23 +96,23 @@ Status 500
 ```
 Status 400
 {
-    message: User not found
+    message: "User not found"
 }
 {
-    message: Party not found
+    message: "Party not found"
 }
 {
-    message: Passcode incorrect
+    message: "Passcode incorrect"
 }
 {
-    message: You already request to join this party
+    message: "You already request to join this party"
 }
 {
     message: Party Member Limit
 }
 Status 500
 {
-    message: Cannot join party
+    message: "Cannot join party"
 }
 ```
 
@@ -136,7 +136,7 @@ Status 500
 
 ```
 {
-    message: archive success
+    message: "archive success"
 }
 ```
 
@@ -145,11 +145,11 @@ Status 500
 ```
 Status 403
 {
-    message: Permission Denied
+    message: "Permission Denied"
 }
 Status 500
 {
-    message: archive failed
+    message: "archive failed"
 }
 ```
 
@@ -212,11 +212,11 @@ Status 200
 ```
 Status 400
 {
-    message: 'bad request'
+    message: "bad request"
 }
 Status 500
 {
-    message: string
+    message: String
 }
 ```
 
@@ -242,7 +242,7 @@ Status 500
 Status 204,
 Status 200
 {
-    status: "ACCEPT" || "DECLINE" || "WAITING"
+    status: ENUM<REQUEST_STATUS>
 }
 ```
 
@@ -251,7 +251,7 @@ Status 200
 ```
 Status 500
 {
-    message: string
+    message: String
 }
 ```
 

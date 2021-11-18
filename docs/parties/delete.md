@@ -12,7 +12,7 @@
 ```
 status 200
 {
-    message: 'leave party success'
+    message: "leave party success"
 }
 ```
 
@@ -21,17 +21,17 @@ status 200
 ```
 status 400
 {
-    message: 'party owner can not leave party'
+    message: "party owner can not leave party"
 }
 {
-    message: 'only member of this party can leave party'
+    message: "only member of this party can leave party"
 }
 status 500
 {
-    message: 'leave party failed'
+    message: "leave party failed"
 }
 {
-    message: error message
+    message: ${error_message}
 }
 ```
 
@@ -53,7 +53,7 @@ status 500
 ```
 status 200
 {
-    message: 'remove member success'
+    message: "remove member success"
 }
 ```
 
@@ -62,27 +62,27 @@ status 200
 ```
 status 400
 {
-    message: 'required user target'
+    message: "required user target"
 }
 {
-    message: 'party not found'
+    message: "party not found"
 }
 {
-    message: 'party owner can not remove own account from party'
+    message: "party owner can not remove own account from party"
 }
 {
-    message: 'only member of this party can be remove'
+    message: "only member of this party can be remove"
 }
 status 403
 {
-    message: 'Permission Denied'
+    message: "Permission Denied"
 }
 status 500
 {
-    message: 'remove member failed'
+    message: "remove member failed"
 }
 {
-    message: error message
+    message:  ${error_message}
 }
 ```
 

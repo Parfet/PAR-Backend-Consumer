@@ -76,7 +76,7 @@ Status 200
 ```
 Status 500
 {
-    message: string
+    message: String
 }
 ```
 

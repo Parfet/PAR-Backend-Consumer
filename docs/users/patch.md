@@ -28,7 +28,7 @@ Status 400
 }
 Status 500
 {
-    message: string
+    message: String
 }
 ```
 

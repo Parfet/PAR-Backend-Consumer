@@ -113,15 +113,15 @@ Status 200
 ```
 Status 400
 {
-    message: Party not found
+    message: "Party not found"
 }
 Status 403
 {
-    message: Permission Denied
+    message: "Permission Denied"
 }
 Status 500
 {
-    message: User not found
+    message: "User not found"
 }
 ```
 
@@ -301,7 +301,7 @@ Status 200
 ```
 Status 500
 {
-    message: User not found
+    message: "User not found"
 }
 ```
 
@@ -358,10 +358,10 @@ Status 200
 ```
 Status 500
 {
-    message: restaurant not found
+    message: "restaurant not found"
 }
 {
-    message: user not found
+    message: "user not found"
 }
 ```
 
@@ -420,10 +420,10 @@ Status 200
 ```
 Status 500
 {
-    message: restaurant not found
+    message: "restaurant not found"
 }
 {
-    message: user not found
+    message: "user not found"
 }
 ```
 

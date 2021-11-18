@@ -17,7 +17,7 @@
       interested_tag: UUID<tag_id>[],
       max_member: int,
       schedule_time: 2021-04-24T18:50:18.000Z,
-      open_chat_link: Sting<URL>
+      open_chat_link: String<URL>
     },
 }
 ```
@@ -26,7 +26,7 @@
 
 ```
 {
-    message: update success
+    message: "update success"
 }
 ```
 
@@ -35,27 +35,27 @@
 ```
 Status 403
 {
-    message: Permission Denied
+    message: "Permission Denied"
 }
 Status 400
 {
-    message: Party not found
+    message: "Party not found"
 }
 {
-    message: Party type invalid
+    message: "Party type invalid"
 }
 {
-    message: Private party must have passcode
+    message: "Private party must have passcode"
 }
 {
-    message: invalid link
+    message: "invalid link"
 }
 Status 500 
 {
-    message: update failed
+    message: "update failed"
 }
 {
-    message: User not found
+    message: "User not found"
 }
 ```
 
@@ -80,7 +80,7 @@ Status 500
 
 ```
 {
-    message: update success
+    message: "update success"
 }
 ```
 

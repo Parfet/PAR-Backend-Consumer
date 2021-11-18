@@ -16,13 +16,13 @@
 }
 {
     user: {
-        "email": STRING
-        "last_name": STRING
-        "provider": STRING
-        "username": STRING
-        "display_name": STRING
-        "first_name": STRING
-        "image_url": STRING
+        "email": String,
+        "last_name": String,
+        "provider": String,
+        "username": String,
+        "display_name": String,
+        "first_name": String,
+        "image_url": String,
     }
 }
 ```

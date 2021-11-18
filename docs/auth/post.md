@@ -98,13 +98,13 @@ Status 400
 
 ```
 {
-    username: STRING,
-    email: STRING,
-    provider: STRING,
-    display_name: STRING,
-    first_name: STRING,
-    last_name: STRING,
-    image_url: STRING<URL>,
+    username: String,
+    email: String,
+    provider: String,
+    display_name: String,
+    first_name: String,
+    last_name: String,
+    image_url: String<URL>,
     accept_term_of_use: boolean
     interested_tag: <INTEREST_TAG:UUID>[] [optional]
 }
