@@ -637,7 +637,7 @@ module.exports = {
         }
       }
 
-      if (!req.body.open_chat_link) {
+      if (req.body.open_chat_link === undefined) {
         return res.status(400).json({
           message: "link invalid",
         });
