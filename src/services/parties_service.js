@@ -25,9 +25,6 @@ const findPartyByRestaurantId = async ({ restaurant_id }) => {
     },
     include: {
       model: partyModel,
-      where: {
-        archived_at: null,
-      },
       through: {
         attributes: [],
       },
@@ -403,9 +400,6 @@ const getPartyByUserId = async ({ user_id }) => {
     },
     include: {
       model: partyModel,
-      where: {
-        archived_at: null,
-      },
       include: [
         {
           model: userModel,
@@ -459,9 +453,6 @@ const waitingRequestJoinByUserId = async ({ user_id }) => {
     },
     include: {
       model: partyModel,
-      where: {
-        archived_at: null,
-      },
       attributes: {
         exclude: ["archived_at", "updated_at", "passcode", "party_type"],
       },
