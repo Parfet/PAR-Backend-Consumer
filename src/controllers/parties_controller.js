@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { sequelize } = require("../../models/index");
 const axios = require("axios");
+const moment = require("moment");
 
 const models = require("../../models/index");
 const userService = require("../services/users_service");
@@ -26,37 +27,44 @@ module.exports = {
       const party_list = [];
 
       for (const party of data[0].parties) {
-        let _userWithDetailList = [];
-        for (const member of party.members) {
-          const _user = await userService.getUserByUserId({
-            user_id: member.user_id,
-          });
-
-          if (_user === "") {
-            return res.status(500).json({
-              message: "user not found",
+        // TODO: wait migrate timestamp field from string to datetime
+        const _diff_time = moment(party.dataValues.schedule_time).diff(
+          moment().format(),
+          "minutes"
+        );
+        if (_diff_time > 0) {
+          let _userWithDetailList = [];
+          for (const member of party.members) {
+            const _user = await userService.getUserByUserId({
+              user_id: member.user_id,
             });
-          }
 
-          _userWithDetailList.push(_user);
+            if (_user === "") {
+              return res.status(500).json({
+                message: "user not found",
+              });
+            }
+
+            _userWithDetailList.push(_user);
+          }
+          const partyResponse = {
+            party_id: party.party_id,
+            party_name: party.party_name,
+            head_party: await userService.getUserByUserId({
+              user_id: party.head_party,
+            }),
+            party_type: party.party_type,
+            interested_topic: party.interested_topic,
+            max_member: party.max_member,
+            schedule_time: party.schedule_time,
+            created_at: party.created_at,
+            updated_at: party.updated_at,
+            open_chat_link: party.open_chat_link,
+            members: _userWithDetailList,
+            interest_tags: party.interest_tags,
+          };
+          party_list.push(partyResponse);
         }
-        const partyResponse = {
-          party_id: party.party_id,
-          party_name: party.party_name,
-          head_party: await userService.getUserByUserId({
-            user_id: party.head_party,
-          }),
-          party_type: party.party_type,
-          interested_topic: party.interested_topic,
-          max_member: party.max_member,
-          schedule_time: party.schedule_time,
-          created_at: party.created_at,
-          updated_at: party.updated_at,
-          open_chat_link: party.open_chat_link,
-          members: _userWithDetailList,
-          interest_tags: party.interest_tags,
-        };
-        party_list.push(partyResponse);
       }
 
       return res.status(200).json({
@@ -226,75 +234,82 @@ module.exports = {
       const party_list = [];
 
       for (const party of party_raw_data_list) {
-        const memberList = [];
+        // TODO: wait migrate timestamp field from string to datetime
+        const _diff_time = moment(party.dataValues.archived_at).diff(
+          moment().format(),
+          "minutes"
+        );
+        if (_diff_time > 0) {
+          const memberList = [];
 
-        const head_party_raw_data = await userService.getUserByUserId({
-          user_id: party.dataValues.head_party,
-        });
-
-        if (head_party_raw_data === "") {
-          return res.status(500).json({
-            message: "user not found",
-          });
-        }
-
-        const restaurant_raw_data = party.dataValues.restaurants[0];
-
-        for (const member of party.dataValues.members) {
-          const user_raw_data = await userService.getUserByUserId({
-            user_id: member.user_id,
+          const head_party_raw_data = await userService.getUserByUserId({
+            user_id: party.dataValues.head_party,
           });
 
-          if (user_raw_data === "") {
+          if (head_party_raw_data === "") {
             return res.status(500).json({
-              message: "User not found",
+              message: "user not found",
             });
           }
 
-          const user_format_data = {
-            user_id: member.user_id,
-            provider: user_raw_data.provider,
-            display_name: user_raw_data.display_name,
-            email: user_raw_data.email,
-            image_url: user_raw_data.image_url,
-            username: user_raw_data.username,
+          const restaurant_raw_data = party.dataValues.restaurants[0];
+
+          for (const member of party.dataValues.members) {
+            const user_raw_data = await userService.getUserByUserId({
+              user_id: member.user_id,
+            });
+
+            if (user_raw_data === "") {
+              return res.status(500).json({
+                message: "User not found",
+              });
+            }
+
+            const user_format_data = {
+              user_id: member.user_id,
+              provider: user_raw_data.provider,
+              display_name: user_raw_data.display_name,
+              email: user_raw_data.email,
+              image_url: user_raw_data.image_url,
+              username: user_raw_data.username,
+            };
+
+            memberList.push(user_format_data);
+          }
+
+          const head_party_format_data = {
+            user_id: party.dataValues.head_party,
+            provider: head_party_raw_data.provider,
+            display_name: head_party_raw_data.display_name,
+            email: head_party_raw_data.email,
+            image_url: head_party_raw_data.image_url,
+            username: head_party_raw_data.username,
           };
 
-          memberList.push(user_format_data);
+          const restaurant_format_data = {
+            restaurant_name: restaurant_raw_data.restaurant_name,
+            restaurant_photo_ref: restaurant_raw_data.restaurant_photo_ref,
+          };
+
+          const party_format_data = {
+            party_id: party.party_id,
+            party_name: party.dataValues.party_name,
+            head_party: head_party_format_data,
+            party_type: party.dataValues.party_type,
+            interested_topic: party.dataValues.interested_topic,
+            max_member: party.dataValues.max_member,
+            schedule_time: party.dataValues.schedule_time,
+            created_at: party.dataValues.created_at,
+            updated_at: party.dataValues.updated_at,
+            archived_at: party.dataValues.archived_at,
+            members: memberList,
+            interest_tags: party.dataValues.interest_tags,
+            restaurant: restaurant_format_data,
+            open_chat_link: party.dataValues.open_chat_link,
+          };
+
+          party_list.push(party_format_data);
         }
-
-        const head_party_format_data = {
-          user_id: party.dataValues.head_party,
-          provider: head_party_raw_data.provider,
-          display_name: head_party_raw_data.display_name,
-          email: head_party_raw_data.email,
-          image_url: head_party_raw_data.image_url,
-          username: head_party_raw_data.username,
-        };
-
-        const restaurant_format_data = {
-          restaurant_name: restaurant_raw_data.restaurant_name,
-          restaurant_photo_ref: restaurant_raw_data.restaurant_photo_ref,
-        };
-
-        const party_format_data = {
-          party_id: party.party_id,
-          party_name: party.dataValues.party_name,
-          head_party: head_party_format_data,
-          party_type: party.dataValues.party_type,
-          interested_topic: party.dataValues.interested_topic,
-          max_member: party.dataValues.max_member,
-          schedule_time: party.dataValues.schedule_time,
-          created_at: party.dataValues.created_at,
-          updated_at: party.dataValues.updated_at,
-          archived_at: party.dataValues.archived_at,
-          members: memberList,
-          interest_tags: party.dataValues.interest_tags,
-          restaurant: restaurant_format_data,
-          open_chat_link: party.dataValues.open_chat_link,
-        };
-
-        party_list.push(party_format_data);
       }
 
       return res.status(200).json({
@@ -852,47 +867,54 @@ module.exports = {
       const waiting_request_list = [];
 
       for (const request of data) {
+        // TODO: wait migrate timestamp field from string to datetime
         const { party } = request;
+        const _diff_time = moment(party.schedule_time).diff(
+          moment().format(),
+          "minutes"
+        );
+        if (_diff_time > 0) {
+          if (party.restaurants.length < 1) {
+            return res.status(500).json({
+              message: "restaurant not found",
+            });
+          }
 
-        if (party.restaurants.length < 1) {
-          return res.status(500).json({
-            message: "restaurant not found",
+          const restaurant = party.restaurants[0];
+
+          const head_party = await userService.getUserByUserId({
+            user_id: party.head_party,
           });
+
+          if (head_party === "") {
+            return res.status(500).json({
+              message: "user not found",
+            });
+          }
+
+          const request_format_data = {
+            party_id: request.party_id,
+            party_name: party.party_name,
+            head_party: {
+              provider: head_party.provider,
+              display_name: head_party.display_name,
+              image_url: head_party.image_url,
+              username: head_party.username,
+            },
+            interested_topic: party.interested_topic,
+            schedule_time: party.schedule_time,
+            status: request.status,
+            restaurant: {
+              restaurant_name: restaurant.restaurant_name,
+              restaurant_photo_ref: restaurant.restaurant_photo_ref,
+            },
+            interest_tags: party.interest_tags,
+          };
+
+          waiting_request_list.push(request_format_data);
         }
-
-        const restaurant = party.restaurants[0];
-
-        const head_party = await userService.getUserByUserId({
-          user_id: party.head_party,
-        });
-
-        if (head_party === "") {
-          return res.status(500).json({
-            message: "user not found",
-          });
-        }
-
-        const request_format_data = {
-          party_id: request.party_id,
-          party_name: party.party_name,
-          head_party: {
-            provider: head_party.provider,
-            display_name: head_party.display_name,
-            image_url: head_party.image_url,
-            username: head_party.username,
-          },
-          interested_topic: party.interested_topic,
-          schedule_time: party.schedule_time,
-          status: request.status,
-          restaurant: {
-            restaurant_name: restaurant.restaurant_name,
-            restaurant_photo_ref: restaurant.restaurant_photo_ref,
-          },
-          interest_tags: party.interest_tags,
-        };
-
-        waiting_request_list.push(request_format_data);
       }
+      // TODO: wait return 204 when empty
 
       return res.status(200).json({
         request_list: waiting_request_list,
@@ -919,47 +941,56 @@ module.exports = {
 
       for (const item of data) {
         const { party } = item;
-        if (party.restaurants.length < 1) {
-          return res.status(500).json({
-            message: "restaurant not found",
+        // TODO: wait migrate timestamp field from string to datetime
+        const _diff_time = moment(party.archived_at).diff(
+          moment().format(),
+          "minutes"
+        );
+        if (_diff_time < 0) {
+          if (party.restaurants.length < 1) {
+            return res.status(500).json({
+              message: "restaurant not found",
+            });
+          }
+
+          const restaurant = party.restaurants[0];
+
+          const head_party = await userService.getUserByUserId({
+            user_id: party.head_party,
           });
+
+          if (head_party === "") {
+            return res.status(500).json({
+              message: "user not found",
+            });
+          }
+
+          const history_format_data = {
+            party_id: party.party_id,
+            party_name: party.party_name,
+            head_party: {
+              provider: head_party.provider,
+              display_name: head_party.display_name,
+              image_url: head_party.image_url,
+              username: head_party.username,
+            },
+            interested_topic: party.interested_topic,
+            schedule_time: party.schedule_time,
+            archived_at: party.archived_at,
+            status: item.status,
+            restaurant: {
+              restaurant_name: restaurant.restaurant_name,
+              restaurant_photo_ref: restaurant.restaurant_photo_ref,
+            },
+            interest_tags: party.interest_tags,
+            open_chat_link: party.open_chat_link,
+          };
+
+          history_format_data_list.push(history_format_data);
         }
-
-        const restaurant = party.restaurants[0];
-
-        const head_party = await userService.getUserByUserId({
-          user_id: party.head_party,
-        });
-
-        if (head_party === "") {
-          return res.status(500).json({
-            message: "user not found",
-          });
-        }
-
-        const history_format_data = {
-          party_id: party.party_id,
-          party_name: party.party_name,
-          head_party: {
-            provider: head_party.provider,
-            display_name: head_party.display_name,
-            image_url: head_party.image_url,
-            username: head_party.username,
-          },
-          interested_topic: party.interested_topic,
-          schedule_time: party.schedule_time,
-          archived_at: party.archived_at,
-          status: item.status,
-          restaurant: {
-            restaurant_name: restaurant.restaurant_name,
-            restaurant_photo_ref: restaurant.restaurant_photo_ref,
-          },
-          interest_tags: party.interest_tags,
-          open_chat_link: party.open_chat_link,
-        };
-
-        history_format_data_list.push(history_format_data);
       }
+
+      // TODO: wait implement return 204 when empty
 
       return res.status(200).json({
         history: history_format_data_list,
