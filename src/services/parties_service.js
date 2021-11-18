@@ -202,6 +202,7 @@ const createParty = async ({
       schedule_time: schedule_time,
       created_at: moment().format(),
       open_chat_link: open_chat_link,
+      archived_at: moment(schedule_time).add(3, "hours").format(),
     },
     {
       transaction: transaction,
