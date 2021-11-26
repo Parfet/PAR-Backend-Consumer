@@ -517,7 +517,6 @@ module.exports = {
           message: "Party Member Limit",
         });
       }
-      // TODO: check limit party member
       if (
         party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&
         (req.body.passcode === null || req.body.passcode !== party[0].passcode)
