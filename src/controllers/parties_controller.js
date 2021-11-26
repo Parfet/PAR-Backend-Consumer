@@ -1103,9 +1103,15 @@ module.exports = {
         }
         for (const party of party_list[0].parties) {
           const request_list = party.members.map((e) => e.user_id);
+          const _diff_time = moment(party.schedule_time).diff(
+            moment().format(),
+            "minutes"
+          );
+
           if (
             !request_list.includes(req.user) &&
-            party.max_member > party.members.length
+            party.max_member > party.members.length &&
+            _diff_time > 0
           ) {
             const member_list = await partyService.getMemberListByPartyId({
               party_id: party.party_id,

@@ -66,7 +66,6 @@ const quickJoinFindPartyByRestaurantId = async ({ restaurant_id }) => {
     include: {
       model: partyModel,
       where: {
-        archived_at: null,
         party_type: ENUM.PARTY_TYPE.PUBLIC,
       },
       through: {
