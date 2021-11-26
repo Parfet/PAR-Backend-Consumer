@@ -502,7 +502,7 @@ module.exports = {
     }
   },
 
-  joinPartyByPartyId: async (req, res) => {
+  requestJoinPartyByPartyId: async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
       const party = await partyService.findPartyByPartyId({
@@ -523,7 +523,7 @@ module.exports = {
       ) {
         res.status(400).json({ message: "Passcode incorrect" });
       }
-      const ever_join = await partyService.requestJoinByUserId({
+      const ever_join = await partyService.checkRequestJoinByUserId({
         party_id: party[0].party_id,
         user_id: req.user,
       });
@@ -531,6 +531,15 @@ module.exports = {
         return res
           .status(400)
           .json({ message: "You already request to join this party" });
+      }
+      const ever_cancel_join = await partyService.checkCancelJoinByUserId({
+        party_id: party[0].party_id,
+        user_id: req.user,
+      });
+      if (ever_cancel_join) {
+        return res
+          .status(400)
+          .json({ message: "You already cancel request to join this party" });
       }
       const data = await partyService.joinParty({
         party_id: req.params.party_id,
@@ -547,6 +556,54 @@ module.exports = {
       return res.status(200).json({
         message: "Request Success",
       });
+    } catch (e) {
+      console.log(e);
+      await transaction.rollback();
+      return res.status(500).json({
+        message: e.message || e,
+      });
+    }
+  },
+
+  cancelJoinPartyByPartyId: async (req, res) => {
+    const transaction = await sequelize.transaction();
+    try {
+      const party = await partyService.findPartyByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (party.length === 0) {
+        res.status(400).json({ message: "Party not found" });
+      }
+
+      if (
+        party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&
+        (req.body.passcode === null || req.body.passcode !== party[0].passcode)
+      ) {
+        res.status(400).json({ message: "Passcode incorrect" });
+      }
+      const ever_cancel_join = await partyService.checkCancelJoinByUserId({
+        party_id: party[0].party_id,
+        user_id: req.user,
+      });
+      console.log(ever_cancel_join);
+      if (ever_cancel_join.length > 0) {
+        return res
+          .status(400)
+          .json({ message: "You already cancel request to join this party" });
+      }
+      const data = await partyService.handleMemberRequest({
+        party_id: req.params.party_id,
+        user_id: req.user,
+        status: ENUM.REQUEST_STATUS.DECLINE,
+        transaction: transaction,
+      });
+      if (data.status === null) {
+        return res.status(500).json({
+          message: "Request Failed",
+        });
+      }
+      await transaction.commit();
+      return res.status(204).json();
     } catch (e) {
       console.log(e);
       await transaction.rollback();

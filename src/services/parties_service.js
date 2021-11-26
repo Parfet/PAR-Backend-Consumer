@@ -241,7 +241,7 @@ const requestJoinList = async ({ party_id }) => {
   return data;
 };
 
-const requestJoinByUserId = async ({ party_id, user_id }) =>
+const checkRequestJoinByUserId = async ({ party_id, user_id }) =>
   userPartyModel.findAll({
     attributes: {
       include: ["user_id", "party_id", "status"],
@@ -251,6 +251,26 @@ const requestJoinByUserId = async ({ party_id, user_id }) =>
       user_id: user_id,
       status: {
         [Op.or]: [ENUM.REQUEST_STATUS.ACCEPT, ENUM.REQUEST_STATUS.WAITING],
+      },
+    },
+    // TODO: change to user in firebase auth
+    // include: {
+    //   model: userModel,
+    //   as: "user",
+    //   attributes: ["user_id"],
+    // },
+  });
+
+const checkCancelJoinByUserId = async ({ party_id, user_id }) =>
+  userPartyModel.findAll({
+    attributes: {
+      include: ["user_id", "party_id", "status"],
+    },
+    where: {
+      party_id: party_id,
+      user_id: user_id,
+      status: {
+        [Op.or]: [ENUM.REQUEST_STATUS.DECLINE],
       },
     },
     // TODO: change to user in firebase auth
@@ -476,7 +496,11 @@ const removePartyMember = async ({ party_id, user_id, transaction }) =>
   userPartyModel.destroy(
     {
       where: {
-        [Op.and]: [{ user_id: user_id }, { party_id: party_id }],
+        [Op.and]: [
+          { user_id: user_id },
+          { party_id: party_id },
+          // { status: ENUM.REQUEST_STATUS.ACCEPT },
+        ],
       },
     },
     {
@@ -534,7 +558,7 @@ module.exports = {
   archiveParty,
   updatePartyInfo,
   checkIsMemberParty,
-  requestJoinByUserId,
+  checkRequestJoinByUserId,
   handleMemberRequest,
   handleCheckMemberRequest,
   deletePartyById,
@@ -547,4 +571,5 @@ module.exports = {
   quickJoinFindPartyByRestaurantId,
   getMemberListByPartyId,
   checkStatusByPartyIdAndUserId,
+  checkCancelJoinByUserId,
 };

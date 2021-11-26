@@ -108,7 +108,10 @@ Status 400
     message: "You already request to join this party"
 }
 {
-    message: Party Member Limit
+    message: "Party Member Limit"
+}
+{
+    message: "You already cancel request to join this party"
 }
 Status 500
 {
@@ -249,6 +252,39 @@ Status 200
 > ### Error Response
 
 ```
+Status 500
+{
+    message: String
+}
+```
+
+> ### Notes
+
+-
+
+6. Cancel Join
+
+` https://${url}/party/info/:party_id/cancel`
+
+> ### Request Body
+
+```
+
+```
+
+> ### Success Response
+
+```
+Status 204
+```
+
+> ### Error Response
+
+```
+Status 400
+{
+    message: "You already cancel request to join this party"
+}
 Status 500
 {
     message: String

@@ -28,7 +28,11 @@ partiesRouter.get(
 );
 partiesRouter.post(
   "/info/:party_id/join",
-  partiesController.joinPartyByPartyId
+  partiesController.requestJoinPartyByPartyId
+);
+partiesRouter.post(
+  "/info/:party_id/cancel",
+  partiesController.cancelJoinPartyByPartyId
 );
 partiesRouter.put(
   "/info/:party_id/join",
