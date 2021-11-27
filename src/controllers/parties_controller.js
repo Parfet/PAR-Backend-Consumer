@@ -94,6 +94,22 @@ module.exports = {
         const _user = await userService.getUserByUserId({
           user_id: item.user_id,
         });
+        const _interest_tag = await userService.getInterestedTagByUserId({
+          user_id: item.user_id,
+        });
+        if (_interest_tag.length > 0) {
+          const interest_tag_format_data = _interest_tag[0].interest_tags.map(
+            (e) => {
+              return {
+                tag_id: e.tag_id,
+                tag_name: e.tag_name,
+              };
+            }
+          );
+          _user["interested_tag"] = interest_tag_format_data;
+        } else {
+          _user["interested_tag"] = [];
+        }
         _user_with_detail_list.push(_user);
       }
 
@@ -105,6 +121,22 @@ module.exports = {
         return res.status(500).json({
           message: "User not found",
         });
+      }
+
+      const _head_party_interest_tag =
+        await userService.getInterestedTagByUserId({
+          user_id: data[0].head_party,
+        });
+
+      if (_head_party_interest_tag.length > 0) {
+        const interest_tag_format_data =
+          _head_party_interest_tag[0].interest_tags.map((e) => ({
+            tag_id: e.tag_id,
+            tag_name: e.tag_name,
+          }));
+        head_party_raw_data["interested_tag"] = interest_tag_format_data;
+      } else {
+        head_party_raw_data["interested_tag"] = [];
       }
 
       const party_response = {
@@ -536,7 +568,8 @@ module.exports = {
         party_id: party[0].party_id,
         user_id: req.user,
       });
-      if (ever_cancel_join) {
+
+      if (ever_cancel_join.length > 0) {
         return res
           .status(400)
           .json({ message: "You already cancel request to join this party" });
@@ -591,7 +624,7 @@ module.exports = {
           .status(400)
           .json({ message: "You already cancel request to join this party" });
       }
-      const data = await partyService.handleMemberRequest({
+      const data = await partyService.handleRequestStatus({
         party_id: req.params.party_id,
         user_id: req.user,
         status: ENUM.REQUEST_STATUS.DECLINE,
@@ -777,7 +810,7 @@ module.exports = {
         }
       }
 
-      const data = await partyService.handleMemberRequest({
+      const data = await partyService.handleRequestStatus({
         user_id: req.body.user_id,
         party_id: req.params.party_id,
         status: req.body.status,

@@ -361,7 +361,7 @@ const checkIsMemberParty = async ({ party_id, user_id }) =>
     },
   });
 
-const handleMemberRequest = async ({
+const handleRequestStatus = async ({
   status,
   user_id,
   party_id,
@@ -558,7 +558,7 @@ module.exports = {
   updatePartyInfo,
   checkIsMemberParty,
   checkRequestJoinByUserId,
-  handleMemberRequest,
+  handleRequestStatus,
   handleCheckMemberRequest,
   deletePartyById,
   getInterestTag,
