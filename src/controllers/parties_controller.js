@@ -28,11 +28,15 @@ module.exports = {
 
       for (const party of data[0].parties) {
         // TODO: wait migrate timestamp field from string to datetime
-        const _diff_time = moment(party.dataValues.schedule_time).diff(
+        const _diff_time_schedule_time = moment(party.schedule_time).diff(
           moment().format(),
           "minutes"
         );
-        if (_diff_time > 0) {
+        const _diff_time_archived_time = moment(party.archived_at).diff(
+          moment().format(),
+          "minutes"
+        );
+        if (_diff_time_schedule_time > 0 && _diff_time_archived_time > 0) {
           let _userWithDetailList = [];
           for (const member of party.members) {
             const _user = await userService.getUserByUserId({
@@ -1161,8 +1165,20 @@ module.exports = {
           if (ever_cancel_join.length > 0) {
             continue;
           }
+          const request_waiting_or_accept_status =
+            await partyService.checkRequestJoinByUserId({
+              party_id: party.party_id,
+              user_id: req.user,
+            });
+          if (request_waiting_or_accept_status.length > 0) {
+            continue;
+          }
           const request_list = party.members.map((e) => e.user_id);
-          const _diff_time = moment(party.schedule_time).diff(
+          const _diff_time_schedule_time = moment(party.schedule_time).diff(
+            moment().format(),
+            "minutes"
+          );
+          const _diff_time_archived_time = moment(party.archived_at).diff(
             moment().format(),
             "minutes"
           );
@@ -1170,7 +1186,8 @@ module.exports = {
           if (
             !request_list.includes(req.user) &&
             party.max_member > party.members.length &&
-            _diff_time > 0
+            _diff_time_schedule_time > 0 &&
+            _diff_time_archived_time > 0
           ) {
             const member_list = await partyService.getMemberListByPartyId({
               party_id: party.party_id,

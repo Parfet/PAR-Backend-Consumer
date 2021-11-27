@@ -298,8 +298,8 @@ const joinParty = async ({ party_id, user_id, status, transaction }) =>
 const archiveParty = async ({ party_id }) =>
   partyModel.update(
     {
-      archived_at: moment(),
-      updated_at: moment(),
+      archived_at: moment().format(),
+      updated_at: moment().format(),
     },
     {
       where: {
@@ -518,11 +518,6 @@ const getPartyHistoryByUser = async ({ user_id }) => {
     },
     include: {
       model: partyModel,
-      where: {
-        archived_at: {
-          [Op.ne]: null,
-        },
-      },
       attributes: {
         exclude: ["updated_at", "passcode"],
       },
