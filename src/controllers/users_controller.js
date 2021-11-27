@@ -67,6 +67,9 @@ module.exports = {
             message: "interest_tag is invalid",
           });
         }
+        await userService.deleteInterestTagByUserId({
+          user_id: req.user,
+        });
         for (const tag of interested_tag) {
           await userService.updateInterestedTagByUserId({
             user_id: req.user,

@@ -64,7 +64,6 @@ const createInterestedTagMatchWithUserId = async ({
 };
 
 const updateInterestedTagByUserId = async ({ user_id, interested_tag }) => {
-  await deleteInterestTagByUserId({ user_id: user_id });
   await createInterestedTagMatchWithUserId({
     user_id: user_id,
     interested_tag: interested_tag,
