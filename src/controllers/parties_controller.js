@@ -618,18 +618,37 @@ module.exports = {
         party_id: party[0].party_id,
         user_id: req.user,
       });
-      console.log(ever_cancel_join);
+      console.log(ever_cancel_join.length > 0);
       if (ever_cancel_join.length > 0) {
         return res
           .status(400)
           .json({ message: "You already cancel request to join this party" });
       }
-      const data = await partyService.handleRequestStatus({
-        party_id: req.params.party_id,
+
+      const ever_join = await partyService.checkRequestJoinByUserId({
+        party_id: party[0].party_id,
         user_id: req.user,
-        status: ENUM.REQUEST_STATUS.DECLINE,
-        transaction: transaction,
       });
+
+      let data;
+
+      if (ever_join.length > 0) {
+        data = await partyService.handleRequestStatus({
+          party_id: party[0].party_id,
+          user_id: req.user,
+          status: ENUM.REQUEST_STATUS.DECLINE,
+          transaction: transaction,
+        });
+      } else {
+        data = await partyService.joinParty({
+          party_id: party[0].party_id,
+          user_id: req.user,
+          status: ENUM.REQUEST_STATUS.DECLINE,
+          transaction: transaction,
+        });
+      }
+
+      console.log(data);
       if (data.status === null) {
         return res.status(500).json({
           message: "Request Failed",
