@@ -618,7 +618,7 @@ module.exports = {
         party_id: party[0].party_id,
         user_id: req.user,
       });
-      console.log(ever_cancel_join.length > 0);
+      
       if (ever_cancel_join.length > 0) {
         return res
           .status(400)
@@ -648,7 +648,7 @@ module.exports = {
         });
       }
 
-      console.log(data);
+
       if (data.status === null) {
         return res.status(500).json({
           message: "Request Failed",

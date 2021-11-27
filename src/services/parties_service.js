@@ -77,6 +77,9 @@ const quickJoinFindPartyByRestaurantId = async ({ restaurant_id }) => {
           as: "members",
           through: {
             attributes: [],
+            where: {
+              status: ENUM.REQUEST_STATUS.ACCEPT,
+            },
           },
         },
         {
