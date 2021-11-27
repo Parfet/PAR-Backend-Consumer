@@ -36,7 +36,7 @@ partiesRouter.post(
 );
 partiesRouter.put(
   "/info/:party_id/join",
-  partiesController.handleRequestStatus
+  partiesController.handleMemberRequest
 );
 
 partiesRouter.delete("/:party_id", partiesController.leaveParty);
