@@ -618,7 +618,7 @@ module.exports = {
         party_id: party[0].party_id,
         user_id: req.user,
       });
-      
+
       if (ever_cancel_join.length > 0) {
         return res
           .status(400)
@@ -647,7 +647,6 @@ module.exports = {
           transaction: transaction,
         });
       }
-
 
       if (data.status === null) {
         return res.status(500).json({
@@ -1153,7 +1152,15 @@ module.exports = {
         if (party_list.length === 0) {
           continue;
         }
+
         for (const party of party_list[0].parties) {
+          const ever_cancel_join = await partyService.checkCancelJoinByUserId({
+            party_id: party.party_id,
+            user_id: req.user,
+          });
+          if (ever_cancel_join.length > 0) {
+            continue;
+          }
           const request_list = party.members.map((e) => e.user_id);
           const _diff_time = moment(party.schedule_time).diff(
             moment().format(),
