@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const moment =require('moment')
 
 const handleErrors = require("./middlewares/handle_errors");
 const firebaseAuthen = require("./middlewares/auth/external/firebase_auth");
@@ -16,10 +17,66 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use("/auth", firebaseAuthen.verifyAccessToken, authRouter);
-app.use("/user", firebaseAuthen.verifyAccessToken, usersRouter);
-app.use("/party", firebaseAuthen.verifyAccessToken, partiesRouter);
-app.use("/restaurant", firebaseAuthen.verifyAccessToken, restaurantsRouter);
+app.use(
+  "/auth",
+  firebaseAuthen.verifyAccessToken,
+  (req, res, next) => {
+    console.log("==========> ", moment().format(), " <=========");
+    console.log("user: ", req.user);
+    console.log("method: ", req.method);
+    console.log("url: ", req.originalUrl);
+    console.log("param: ", req.params);
+    console.log("query: ", req.query);
+    console.log("body: ", req.body);
+    next();
+  },
+  authRouter
+);
+app.use(
+  "/user",
+  firebaseAuthen.verifyAccessToken,
+  (req, res, next) => {
+    console.log("==========> ", moment().format(), " <=========");
+    console.log("user: ", req.user);
+    console.log("method: ", req.method);
+    console.log("url: ", req.originalUrl);
+    console.log("param: ", req.params);
+    console.log("query: ", req.query);
+    console.log("body: ", req.body);
+    next();
+  },
+  usersRouter
+);
+app.use(
+  "/party",
+  firebaseAuthen.verifyAccessToken,
+  (req, res, next) => {
+    console.log("==========> ", moment().format(), " <=========");
+    console.log("user: ", req.user);
+    console.log("method: ", req.method);
+    console.log("url: ", req.originalUrl);
+    console.log("param: ", req.params);
+    console.log("query: ", req.query);
+    console.log("body: ", req.body);
+    next();
+  },
+  partiesRouter
+);
+app.use(
+  "/restaurant",
+  firebaseAuthen.verifyAccessToken,
+  (req, res, next) => {
+    console.log("==========> ", moment().format(), " <=========");
+    console.log("user: ", req.user);
+    console.log("method: ", req.method);
+    console.log("url: ", req.originalUrl);
+    console.log("param: ", req.params);
+    console.log("query: ", req.query);
+    console.log("body: ", req.body);
+    next();
+  },
+  restaurantsRouter
+);
 
 app.use(handleErrors);
 
