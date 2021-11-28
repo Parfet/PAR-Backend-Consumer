@@ -11,14 +11,15 @@ module.exports = {
     dialectOptions: {
       bigNumberStrings: true,
     },
+    logging: false,
   },
   production: {
-    database: process.env.DATABASE_PARFET || "par_db_dev",
-    username: process.env.DB_USERNAME_PARFET || "smurf",
-    password: process.env.DB_PASSWORD_PARFET || "",
-    host: process.env.DB_HOST_PARFET || "127.0.0.1",
-    dialect: process.env.DB_DIALECT_PARFET || "postgres",
-    port: process.env.DB_PORT_PARFET || 5432,
+    database: process.env.PROD_DATABASE_PARFET || "par_db_prod",
+    username: process.env.PROD_DB_USERNAME_PARFET || "smurf",
+    password: process.env.PROD_DB_PASSWORD_PARFET || "",
+    host: process.env.PROD_DB_HOST_PARFET || "127.0.0.1",
+    dialect: process.env.PROD_DB_DIALECT_PARFET || "postgres",
+    port: process.env.PROD_DB_PORT_PARFET || 5432,
     dialectOptions: {
       bigNumberStrings: true,
     },

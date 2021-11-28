@@ -80,21 +80,6 @@ module.exports = {
       });
     }
   },
-  findRestaurantByName: async (req, res) => {
-    try {
-      if (!req.params.restaurant_name) {
-        return res.status(400).json({
-          message: "restaurant name invalid",
-        });
-      }
-      return res.status(204).json();
-    } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        message: e.message || e,
-      });
-    }
-  },
   findRestaurantByRestaurantId: async (req, res) => {
     try {
       const restaurant = await restaurantService.findRestaurantByRestaurantId({

@@ -545,7 +545,7 @@ module.exports = {
         party_id: req.params.party_id,
       });
       if (party.length === 0) {
-        res.status(400).json({ message: "Party not found" });
+        return res.status(400).json({ message: "Party not found" });
       }
 
       if (party[0].members.length >= party[0].max_member) {
@@ -557,7 +557,7 @@ module.exports = {
         party[0].party_type === ENUM.PARTY_TYPE.PRIVATE &&
         (req.body.passcode === null || req.body.passcode !== party[0].passcode)
       ) {
-        res.status(400).json({ message: "Passcode incorrect" });
+        return res.status(400).json({ message: "Passcode incorrect" });
       }
       const ever_join = await partyService.checkRequestJoinByUserId({
         party_id: party[0].party_id,
