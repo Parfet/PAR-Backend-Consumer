@@ -6,8 +6,8 @@ const partyModel = models.parties;
 const userModel = models.users;
 const userPartyModel = models.users_parties;
 const restaurantModel = models.restaurants;
-const ratingUserModel = models.rating_users;
 const interestTagModel = models.interest_tags;
+const interestTagPartyModel = models.parties_interest_tags;
 const ENUM = require("../constants/enum");
 const { Op } = require("sequelize");
 
@@ -218,28 +218,6 @@ const requestJoinList = async ({ party_id }) => {
       status: ENUM.REQUEST_STATUS.WAITING,
     },
   });
-
-  // TODO: rating of user
-  const rate = await ratingUserModel.findAll();
-
-  // data.map((e, _i) => {
-  //   let rating = [];
-  //   let finalRate = 0;
-
-  //   for (let element of rate) {
-  //     if (e.user.user_id === element.receive_rate_user_id) {
-  //       rating.push(element.rating);
-  //     }
-  //   }
-  //   rating.forEach((tempRate, _k) => {
-  //     finalRate = parseFloat(finalRate) + parseFloat(tempRate);
-  //   });
-  //   e.user.dataValues.rating = parseFloat(finalRate / rating.length).toFixed(2);
-  // });
-
-  // data.map((e, _) => {
-  //   e.dataValues = e.dataValues.user.dataValues;
-  // });
   return data;
 };
 
@@ -537,13 +515,38 @@ const getPartyHistoryByUser = async ({ user_id }) => {
   });
 };
 
-const checkStatusByPartyIdAndUserId = ({ party_id, user_id }) =>
+const checkStatusByPartyIdAndUserId = async ({ party_id, user_id }) =>
   userPartyModel.findAll({
     where: {
       party_id: party_id,
       user_id: user_id,
     },
   });
+
+const createInterestedTagByPartyId = async ({
+  party_id,
+  tag_id,
+  transaction,
+}) =>
+  interestTagPartyModel.create(
+    {
+      party_id: party_id,
+      tag_id: tag_id,
+    },
+    { transaction }
+  );
+
+const removeInterestedTagByPartyId = async ({ party_id, transaction }) =>
+  interestTagPartyModel.destroy(
+    {
+      where: {
+        party_id: party_id,
+      },
+    },
+    {
+      transaction,
+    }
+  );
 
 module.exports = {
   findPartyByRestaurantId,
@@ -569,4 +572,6 @@ module.exports = {
   getMemberListByPartyId,
   checkStatusByPartyIdAndUserId,
   checkCancelJoinByUserId,
+  createInterestedTagByPartyId,
+  removeInterestedTagByPartyId,
 };

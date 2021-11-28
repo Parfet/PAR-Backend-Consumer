@@ -516,14 +516,13 @@ module.exports = {
         transaction: transaction,
       });
       for (const interest_tag of interest_tags) {
-        await models.parties_interest_tags.create(
-          {
-            party_id: party.party_id,
-            tag_id: interest_tag,
-          },
-          { transaction }
-        );
+        await partyService.createInterestedTagByPartyId({
+          party_id: party.party_id,
+          tag_id: interest_tag,
+          transaction: transaction,
+        });
       }
+
       await transaction.commit();
 
       return res.status(200).json({
@@ -703,6 +702,7 @@ module.exports = {
   },
 
   updatePartyInfo: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
       if (req.params.party_id) {
         const party = await partyService.findPartyByPartyId({
@@ -718,8 +718,10 @@ module.exports = {
         }
       }
       if (req.body.head_party) {
-        const user = await models.users.findByPk(req.body.head_party);
-        if (!user) {
+        const user = await userService.getUserByUserId({
+          user_id: req.body.head_party,
+        });
+        if (user === "") {
           return res.status(500).json({
             message: "User not found",
           });
@@ -754,6 +756,12 @@ module.exports = {
         });
       }
 
+      if (req.body.interest_tags === undefined) {
+        return res.status(400).json({
+          message: "interest tag is invalid",
+        });
+      }
+
       const data = await partyService.updatePartyInfo({
         party_id: req.params.party_id,
         party_name: req.body.party_name,
@@ -767,6 +775,18 @@ module.exports = {
         open_chat_link: req.body.open_chat_link,
       });
 
+      await partyService.removeInterestedTagByPartyId({
+        party_id: req.params.party_id,
+      });
+      if (req.body.interest_tags.length > 0) {
+        for (const tag of req.body.interest_tags) {
+          await partyService.createInterestedTagByPartyId({
+            party_id: req.params.party_id,
+            tag_id: tag,
+          });
+        }
+      }
+      await transaction.commit();
       if (data) {
         return res.status(200).json({
           message: "update success",
@@ -777,6 +797,7 @@ module.exports = {
         });
       }
     } catch (e) {
+      await transaction.rollback();
       console.log(e);
       return res.status(500).json({
         message: e.message || e,
