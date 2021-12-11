@@ -1,11 +1,11 @@
 {
-  "name": "PAR-Backend-Consumer",
+  "name": "Parfet-Backend-Consumer",
   "version": "1.0.0",
   "description": "This is api service for PARFET.",
   "main": "src/index.js",
   "repository": "https://github.com/Parfet/PAR-Backend-Consumer.git",
   "author": "Apiwat Aeeabundit",
-  "license": "MIT",
+  "license": "Attribution-NonCommercial 4.0 International",
   "scripts": {
     "start": "cross-env NODE_ENV=development nodemon src/index.js",
     "test": "cross-env NODE_ENV=test mocha ./test/*"
