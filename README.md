@@ -113,7 +113,10 @@ To get a local copy up and running follow these simple example steps.
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
-
+### How to run
+```
+docker-compose up -d --build
+```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
